@@ -1,3 +1,9 @@
+require.config({
+    urlArgs: "r=" + Math.random()
+});
+
+requirejs(["map/Map"]);
+
 /**
  * SDI4Apps client-side library for rapid application development based on the
  * SDI4Apps platform OpenAPI

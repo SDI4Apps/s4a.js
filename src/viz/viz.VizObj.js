@@ -7,21 +7,27 @@
  * @returns {s4a.viz.VizObj}
  */
 s4a.viz.VizObj = (function (pViewCoordinator) {
-    
-    var _i = 0;
-    var _self = this;
-  
+
+    var _i = 0,
+            _self = this,
+            _viewCoordinator = pViewCoordinator;
+
     this.update = function (pData) {
-        return true;
+        _self.increment();
     };
-    
+
     this.increment = function () {
-        _i++;
+        self._i++;
     };
-    
+
     this.get = function () {
-        return _i++;
+        return self._i++;
     };
-    
+
+    this.filter = function (pFilter) {
+        _viewCoordinator.applyFilter();
+    }
+
     pViewCoordinator.subscribe(_self);
+
 });

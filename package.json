@@ -1,0 +1,40 @@
+{
+  "name": "s4a",
+  "description": "SDI4Apps Client Side Javascript Library",
+  "version": "0.1.0",
+  "homepage": "https://github.com/SDI4Apps/s4a.js",
+  "author": {
+    "name": "SDI4Apps Partnership",
+    "email": "rb@avinet.no",
+    "url": "http://www.avinet.no"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SDI4Apps/s4a.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SDI4Apps/s4a.js/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/SDI4Apps/s4a.js/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/s4a",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "scripts": {
+    "test": "grunt nodeunit"
+  },
+  "devDependencies": {
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-contrib-watch": "~0.4.0",
+    "grunt": "~0.4.5"
+  },
+  "keywords": []
+}

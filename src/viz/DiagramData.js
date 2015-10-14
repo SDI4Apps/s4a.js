@@ -28,9 +28,8 @@
  * @property {Number} [mapHeight="auto"] The width of the map in pixels or auto to use
  *              height of containing DOM element
  */
-AASDiag.DiagramData = function() {
-    var mDiagramData = {
-        title: null,
+s4a.viz.DiagramData = function() {
+var mDiagramData = {title: null,
         mapType: "choroplethMap",
         mapUnitType: null,
         mapUnitIDs: null,
@@ -42,7 +41,6 @@ AASDiag.DiagramData = function() {
         showSeries: [0],
         mapWidth: "auto",
         mapHeight: "auto",
-        fontSize: 12
-    };
-    return mDiagramData;
+        fontSize: 12};
+        return mDiagramData;
 };

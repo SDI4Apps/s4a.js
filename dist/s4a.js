@@ -20,7 +20,7 @@ s4a.viz = (function () {
  * @constructor
  * @returns {s4a.viz.ViewCoordinator}
  */
-s4a.viz.ViewCoordinator = (function (pData) {
+s4a.viz.ViewCoordinator = function (pData) {
 
     var _data = pData,
             _listeners = [],
@@ -93,8 +93,8 @@ s4a.viz.ViewCoordinator = (function (pData) {
         return this;
     };
 
-});
-AASDiag.Colors = {
+};
+s4a.viz.Colors = {
     /**
      * Yellow to green
      * @type Object
@@ -435,451 +435,7 @@ AASDiag.Colors = {
         11: ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5"],
         12: ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
     }};
-AASDiag.Util = AASDiag.Util || {};
-
-/**
- * Return a unique URL to ensure that scripts/styles are reloaded every time
- * @param {String} pUrl An URL
- * @returns {String} URL with unique suffix
- */
-AASDiag.Util.secureReload = function (pUrl) {
-    var mConcatChar = pUrl.indexOf('?' !== -1) ? '?' : '&';
-    return pUrl + mConcatChar + "rnd=" + (Math.random() * 100).toString();
-};
-
-/**
- * Returns the number of characters in the longest formatted number in an array
- * @param {Array} pArray An array of numbers
- * @returns {Number} The number of characters in formatted number
- */
-AASDiag.Util.getLengthOfLongest = function (pArray) {
-    var mLength = 0;
-    if (pArray !== null && pArray.length > 1) {
-        var tmpLength;
-        for (var i = (pArray.length - 1); i > 0; i--) {
-            var mLabel = jQuery.number(pArray[i - 1]) + " - " + jQuery.number(pArray[i]);
-            var tmpLength = mLabel.length;
-            if (tmpLength > mLength) {
-                mLength = tmpLength;
-            }
-        }
-    }
-    return mLength;
-};
-
-/**
- * Return the longest entry from an array
- * @param {Array} pArray
- * @returns {String}
- */
-AASDiag.Util.getLongestStringInArray = function (pArray) {
-    mArray = pArray.slice();
-    return mArray.sort(function (a, b) {
-        return b.toString().length - a.toString().length;
-    })[0];
-};
-
-/**
- * Get the total product of the items in an array of numbers, i.e. passing the
- * array [1,3,4,5] to this function will return 1+3+4+5 = 13. Non-numeric values
- * will be ignored.
- * @param {Number} pDataArray An array of numbers
- * @returns {Number}
- */
-AASDiag.Util.getTotal = function (pDataArray) {
-    var pTotal = 0;
-    for (var j = 0; j < pDataArray.length; j++) {
-        pTotal += (typeof pDataArray[j] === 'number') ? pDataArray[j] : 0;
-    }
-    return pTotal;
-};
-/**
- * Method to transform json returned by xml2json to the correct format for the
- * diagram data object
- * @param {Object} pObject
- * @returns {AASDiag.DiagramData}
- */
-AASDiag.Util.fixJsonData = function (pObject) {
-    var mDiagramData = new AASDiag.DiagramData();
-    mDiagramData.title = pObject.title[0] || null;
-    mDiagramData.mapType = pObject.type !== undefined ? pObject.type : mDiagramData.mapType;
-    mDiagramData.mapUnitType = pObject.mapUnitType;
-    mDiagramData.mapUnitIDs = pObject.categoryLabels.string;
-    mDiagramData.seriesLabels = pObject.title.string;
-    mDiagramData.seriesData = AASDiag.Util.fixSeriesJsonData(pObject.seriesData);
-    mDiagramData.domains = pObject.intervals.float;
-    mDiagramData.showLabels = pObject.showLabels || false;
-    mDiagramData.showSeries = pObject.showSeries || [0];
-
-    //Special handling of colors
-    if (pObject.palette !== undefined) {
-        mDiagramData.colors = pObject.palette !== undefined ? [pObject.palette] : mDiagramData.colors;
-    } else {
-        mDiagramData.colors = pObject.colors !== undefined ? [pObject.colors] : mDiagramData.colors;
-    }
-
-    return mDiagramData;
-};
-
-/**
- * Transform the series data object
- * @param {Object} pSeriesData
- * @returns {Array} Array of arrays containing series data
- */
-AASDiag.Util.fixSeriesJsonData = function (pSeriesData) {
-    var mSeriesData = [];
-    for (var i = 0; i < pSeriesData.ArrayOfDecimal.length; i++) {
-        mSeriesData.push(pSeriesData.ArrayOfDecimal[i].decimal);
-    }
-    return mSeriesData;
-};
-/**
- * Return the bounds of a feature collections
- * @param {Object} pPath A d3.js geo.path
- * @param {type} pFeatures An array of geojson features
- * @returns {Array} The combined bounds of the features [[xmin,ymin], [xmax,ymax]]
- */
-AASDiag.Util.getFeatureCollectionBounds = function (pPath, pFeatures) {
-    var mBounds = [[null, null], [null, null]];
-    for (var i = 0, j = pFeatures.length; i < j; i++) {
-        var mCBounds = pPath.bounds(pFeatures[i]);
-        if (!mBounds[0][0] || mCBounds[0][0] < mBounds[0][0]) {
-            mBounds[0][0] = mCBounds[0][0];
-        }
-        if (!mBounds[0][1] || mCBounds[0][1] < mBounds[0][1]) {
-            mBounds[0][1] = mCBounds[0][1];
-        }
-        if (!mBounds[1][0] || mCBounds[1][0] > mBounds[1][0]) {
-            mBounds[1][0] = mCBounds[1][0];
-        }
-        if (!mBounds[1][1] || mCBounds[1][1] > mBounds[1][1]) {
-            mBounds[1][1] = mCBounds[1][1];
-        }
-    }
-    return mBounds;
-};
-
-AASDiag.Util.valuesToSlices = function (pSeries) {
-    if (pSeries !== undefined && typeof pSeries === "object" && Array.isArray(pSeries) === true) {
-        var mSum = 0;
-        for (var i = 0, j = pSeries.length; i < j; i++) {
-            mSum = mSum + Number(pSeries[i]);
-        }
-        var mSlices = [];
-        for (var i = 0, j = pSeries.length; i < j; i++) {
-            mSlices.push((Number(pSeries[i]) * 100) / mSum);
-        }
-        return mSlices;
-    } else {
-        return pSeries;
-    }
-
-};
-AASDiag.Shared = AASDiag.Shared || {};
-
-/**
- * Draws the diagram title
- * @param {Object} pContext
- * @param {Number} pFontSize
- * @param {String} pTitle
- * @param {Number} pLeftMargin
- * @param {Number} pCurrentLinePosition
- * @returns {Number}
- */
-AASDiag.Shared._drawDiagramTitle = function (pContext, pFontSize, pTitle, pLeftMargin, pCurrentLinePosition) {
-    pContext.font = "bolder " + pFontSize + "px Arial";
-    pContext.textAlign = "start"; // Right align the labels
-    pContext.fillStyle = "#000000";
-    pContext.fillText(pTitle, pLeftMargin, pCurrentLinePosition);
-    return (pCurrentLinePosition += (pFontSize * 2));
-};
-
-/**
- * Draw map legend on canvas using a color scale
- * @param {Object} pContext A drawing context retrieved by calling
- * c.getContext("2d") on the HTML5 canvas element c
- * @param {Object} pColor A d3js threshold scale created by the funciton d3.scale.threshold()
- * @param {String} pTitle The title to print on top of the legend
- * @returns {void}
- */
-AASDiag.Shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, pFontSize) {
-
-    pFontSize = pFontSize !== undefined ? pFontSize : AASDiag.FontSizes.normal;
-
-    var mLeftMargin = 10;
-    var mTopMargin = 10;
-    var mLineHeight = pFontSize * 1.8;
-    var mKeyW = 20;
-    var mKeyH = pFontSize + 4;
-
-    var mYPos = mTopMargin + pFontSize;
-    // Get the length of the longest legend label entry
-    var mLongestLabel = AASDiag.Util.getLongestStringInArray(pColor.domain());
-    pContext.font = pFontSize + "px Arial";
-    var mRightAlignInset = pContext.measureText(mLongestLabel).width * 2;
-
-    if (pTitle !== undefined && pTitle !== null && pTitle !== '') {
-        mYPos = AASDiag.Shared._drawDiagramTitle(pContext, pFontSize, pTitle, mLeftMargin, mYPos);
-    }
-
-    pContext.font = pFontSize + "px Arial";
-    pContext.textAlign = "end"; // Right align the labels
-
-    // For each color in the scale
-    for (var j = pColor.domain().length - 1; j > 0; j--) {
-        var mLabel;
-        if (j === pColor.domain().length - 1) {
-            mLabel = "> " + jQuery.number(pColor.domain()[j - 1]);
-        } else if (j === 1) {
-            mLabel = "< " + jQuery.number(pColor.domain()[j]);
-        } else {
-            mLabel = jQuery.number(pColor.domain()[j - 1]) + " - " + jQuery.number(pColor.domain()[j]);
-        }
-
-        // Set legend symbol colors
-        pContext.fillStyle = pColor.range()[j];
-        pContext.strokeStyle = "#000000";
-        pContext.lineWidth = 0.2;
-        // Add legend symbol
-        pContext.beginPath();
-        pContext.rect(mLeftMargin, mYPos - pFontSize, mKeyW, mKeyH);
-        pContext.globalAlpha = AASDiag.StatAreaAlpha;
-        pContext.fill();
-        pContext.globalAlpha = 1.0;
-        pContext.stroke();
-        // Add legend label
-        pContext.fillStyle = "#000000";
-        pContext.fillText(mLabel, mLeftMargin + mKeyW + mLeftMargin + mRightAlignInset, mYPos);
-        // Move to next line
-        mYPos += mLineHeight;
-    }
-    return;
-};
-
-/**
- * Draw polygons from geometry collection
- * @param {Object} pGeoJson An iterable collection of GeoJson features
- * @param {Object} pDataMap A JavaScript object with key/value pairs
- * @param {Object} pScale A d3.scale.threshold object
- * @param {Object} pPath A d3.path.geo context
- * @param {Object} pContext A Canvas 2d-context
- * @returns {void}
- */
-AASDiag.Shared._drawPolygons = function (pGeoJson, pDataMap, pScale, pPath, pContext) {
-    pContext.globalAlpha = AASDiag.StatAreaAlpha;
-    var mRange = pScale.domain();
-    var mMax = Math.max.apply(null, mRange);
-    var mMin = Math.min.apply(null, mRange);
-    pGeoJson.forEach(function (pFeature) {
-        var mTestValue = pDataMap[pFeature.id];
-        mTestValue = mTestValue < mMax ? mTestValue : mMax - 0.0001;
-        mTestValue = mTestValue >= mMin ? mTestValue : mMin;
-        var mColor = pScale(mTestValue);
-        if (mColor !== undefined) {
-            pContext.fillStyle = mColor;
-            pContext.beginPath();
-            pPath.context(pContext)(pFeature);
-            pContext.fill();
-        }
-    });
-    pContext.globalAlpha = 1.0;
-    return;
-};
-
-/**
- * Draw polygons from geometry collection
- * @param {Object} pGeoJson An iterable collection of GeoJson features
- * @param {Object} pDataMapMulti A JavaScript object with key/value pairs
- * @param {Object} pScale A d3.scale.threshold object
- * @param {Object} pPath A d3.path.geo context
- * @param {Object} pContext A Canvas 2d-context
- * @returns {void}
- */
-AASDiag.Shared._drawPieCharts = function (pGeoJson, pDataMapMulti, pColor, pPath, pContext) {
-    pContext.globalAlpha = AASDiag.StatAreaAlpha;
-    pGeoJson.forEach(function (mFeature) {
-        var mSize = 25;
-        var mSlices = AASDiag.Util.valuesToSlices(pDataMapMulti[mFeature.id]);
-        var mStartAngle = 1.5 * Math.PI;
-        var mPoint = pPath.centroid(mFeature);
-        for (var i = 0, j = mSlices.length; i < j; i++) {
-            var mSlice = (Number(mSlices[i]) * (2 * Math.PI)) / 100;
-            var mFinishAngle = mStartAngle + mSlice;
-            if (mFinishAngle > (2 * Math.PI)) {
-                mFinishAngle = mFinishAngle - (2 * Math.PI);
-            }
-            pContext.fillStyle = pColor[i];
-            pContext.lineWidth = 2;
-            pContext.strokeStyle = 'rgba(0,0,0,0.25)';
-            pContext.beginPath();
-            pContext.moveTo(mPoint[0], mPoint[1]);
-            pContext.arc(mPoint[0], mPoint[1], mSize, mStartAngle, mFinishAngle, false);
-            pContext.closePath();
-            pContext.fill();
-            pContext.stroke();
-            mStartAngle += mSlice;
-        }
-    });
-};
-
-/**
- * Draw map legend on canvas using scale
- * @param {Object} pContext A drawing context retrieved by calling c.getContext("2d") on the HTML5 canvas element c
- * @param {Object} pColor A d3js threshold scale created by the funciton d3.scale.threshold()
- * @param {String} pTitle The title to print on top of the legend
- * @returns {void}
- */
-AASDiag.Shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle) {
-
-    var mFontSize = 12;
-    var mLeftMargin = 10;
-    var mTopMargin = 10;
-    var mLineHeight = mFontSize * 1.5;
-    var mCurrentLinePosition = mTopMargin + mFontSize;
-    // Get the length of the longest legend label entry
-    var mRightAlignInset = AASDiag.Util.getLengthOfLongest(pColor.domain()) * (mFontSize / 1.5);
-    // Insert logic for legend height here
-    pContext.font = mFontSize + "px Arial Bold";
-    pContext.textAlign = "start"; // Right align the labels
-    pContext.fillStyle = "#000000";
-    pContext.fillText("Teiknforklaring", mLeftMargin, mCurrentLinePosition);
-    mCurrentLinePosition += mLineHeight;
-    // Set font for legend items
-    pContext.font = mFontSize + "px Arial";
-    pContext.textAlign = "end"; // Right align the labels
-
-    // For each color in the scale
-    for (var j = pColor.domain().length - 1; j > 0; j--) {
-
-        var mLabel = jQuery.number(pColor.domain()[j - 1]) + " - " + jQuery.number(pColor.domain()[j]);
-        // Set legend symbol colors
-        pContext.fillStyle = pColor.range()[j];
-        pContext.strokeStyle = "#000000";
-        pContext.lineWidth = 0.2;
-        // Add legend symbol
-        pContext.beginPath();
-        pContext.arc(mLeftMargin, mCurrentLinePosition - (mFontSize / 2), 6, 0, 2 * Math.PI, false);
-//        pCanvas.arc(mFeat[0], mFeat[1], mSize, 0, 2 * Math.PI, false);
-        pContext.globalAlpha = AASDiag.StatAreaAlpha;
-        pContext.fill();
-        pContext.globalAlpha = 1;
-        pContext.stroke();
-        // Add legend label
-        pContext.fillStyle = "#000000";
-        pContext.fillText(mLabel, mLeftMargin + mRightAlignInset, mCurrentLinePosition);
-        // Move to next line
-        mCurrentLinePosition += mLineHeight;
-    }
-    return;
-};
-
-/**
- * Draw polygons from geometry collection
- * @param {Object} pGeoJson An iterable collection of GeoJson features
- * @param {Object} pDataMap A JavaScript object with key/value pairs
- * @param {Object} pSizeScale A d3.scale.threshold object mapping to bubble sizes
- * @param {Object} pColorScale A d3.scale.threshold object mapping to bubble colors
- * @param {Object} pPath A d3.path.geo context
- * @param {Object} pContext A Canvas 2d-context
- * @returns {void}
- */
-AASDiag.Shared._drawBubbles = function (pGeoJson, pDataMap, pSizeScale, pColorScale, pPath, pContext) {
-    pContext.globalAlpha = AASDiag.StatAreaAlpha;
-    pGeoJson.forEach(function (pFeature) {
-        var mSize = pSizeScale(pDataMap[pFeature.id]);
-        var mColor = pColorScale(pDataMap[pFeature.id]);
-        if (mSize !== undefined) {
-            var mFeat = pPath.centroid(pFeature);
-            pContext.beginPath();
-            pContext.arc(mFeat[0], mFeat[1], mSize, 0, 2 * Math.PI, false);
-            pContext.fillStyle = mColor;
-            pContext.fill();
-            pContext.lineWidth = 2;
-            pContext.strokeStyle = 'rgba(0,0,0,0.25)';
-            pContext.stroke();
-        }
-    });
-    pContext.globalAlpha = 1;
-};
-
-/**
- * Place labels on top of polygons
- * @param {Object} pGeoJson
- * @param {Object} pPath d3.geo.path object
- * @param {Object} pContext HTML5 2d-drawing context
- * @returns {void}
- */
-AASDiag.Shared._drawLabels = function (pContext, pPath, pGeoJson, pFontSize) {
-
-    pFontSize = pFontSize !== undefined ? pFontSize : AASDiag.FontSizes.small;
-
-    pGeoJson.forEach(function (pFeature) {
-        var xy = pPath.centroid(pFeature);
-        pContext.font = pFontSize + "px Arial";
-        pContext.textAlign = "center"; // Right align the labels
-        pContext.fillStyle = "#000000";
-        pContext.fillText(pFeature.properties.name, xy[0], xy[1]);
-    });
-};
-
-
-/**
- * Draw a geojson object on the canvas
- * @param {Object} pGeoJson
- * @param {String} pLineColor
- * @param {String} pFillColor
- * @param {Number} pLineWidth
- * @returns {void}
- */
-AASDiag.Shared._drawGeoJson = function (pContext, pPath, pGeoJson, pLineColor, pFillColor, pLineWidth) {
-    pContext.strokeStyle = pLineColor || "transparent";
-    pContext.lineWidth = pLineWidth;
-    pContext.fillStyle = pFillColor || "transparent";
-    pContext.beginPath();
-    pPath.context(pContext)(pGeoJson);
-    if (pFillColor !== "transparent") {
-        pContext.fill();
-    }
-    if (pLineColor !== "transparent") {
-        pContext.stroke();
-    }
-    return;
-};
-
-/**
- * Draw municipality borders on the map
- * @param {Object} pStatUnitTopoJson
- * @returns {void}
- */
-AASDiag.Shared._drawMunicipality = function (pContext, pPath, pStatUnitTopoJson) {
-    var mKommune = topojson.mesh(pStatUnitTopoJson, pStatUnitTopoJson.objects.kommune, function (a, b) {
-        return a.id !== b.id;
-    });
-    AASDiag.Shared._drawGeoJson(pContext, pPath, mKommune, "#000000", null, 0.5);
-};
-
-/**
- * Draw county borders on the map
- * @param {Object} pStatUnitTopoJson
- * @returns {void}
- */
-AASDiag.Shared._drawCounty = function (pContext, pPath, pStatUnitTopoJson) {
-    var mCounty = topojson.mesh(pStatUnitTopoJson, pStatUnitTopoJson.objects.fylke, function (a, b) {
-        return a.id !== b.id;
-    });
-    AASDiag.Shared._drawGeoJson(pContext, pPath, mCounty, "#000000", null, 1);
-};
-
-/**
- * Draw land polygon on the map
- * @param {Object} pStatUnitTopoJson
- * @returns {void}
- */
-AASDiag.Shared._drawLand = function (pContext, pPath, pLandTopoJson) {
-    var mLand = topojson.feature(pLandTopoJson, pLandTopoJson.objects.sea);
-    AASDiag.Shared._drawGeoJson(pContext, pPath, mLand, "#999999", "#eeeeee", 0.2);
-};
-AASDiag.Sizes = {
+s4a.viz.Sizes = {
     /**
      * From 5px to 19px
      * @type Array
@@ -902,7 +458,7 @@ AASDiag.Sizes = {
  * @readonly
  * @enum {number}
  */
-AASDiag.FontSizes = {
+s4a.viz.FontSizes = {
     /**
      * Small font size
      * @type Number
@@ -924,9 +480,8 @@ AASDiag.FontSizes = {
      */
     "large": 18
 };
-AASDiag.DiagramData = function() {
-    var mDiagramData = {
-        title: null,
+s4a.viz.DiagramData = function() {
+var mDiagramData = {title: null,
         mapType: "choroplethMap",
         mapUnitType: null,
         mapUnitIDs: null,
@@ -938,17 +493,18 @@ AASDiag.DiagramData = function() {
         showSeries: [0],
         mapWidth: "auto",
         mapHeight: "auto",
-        fontSize: 12
-    };
-    return mDiagramData;
+        fontSize: 12};
+        return mDiagramData;
 };
+
+s4a.viz.map = s4a.viz.map || {} ;
 
 /**
  * The transparency to apply to statistical areas, bubbles and their respective
  * legends
  * @type {Number}
  */
-AASDiag.StatAreaAlpha = 0.75;
+s4a.viz.map.StatAreaAlpha = 0.75;
 
 /**
  * Draw a choropleth map inside the specified canvas
@@ -958,7 +514,7 @@ AASDiag.StatAreaAlpha = 0.75;
  * @param {AASDiag.DiagramData} pDiagramData JSON
  * @returns {void}
  */
-AASDiag.getMap = function (pDomNode, pDiagramData) {
+s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
 
     // Determine default values for width/height if not present
     var pWidth = (pDiagramData.mapWidth === "auto") ? jQuery(pDomNode).width() : pDiagramData.mapWidth;
@@ -982,13 +538,13 @@ AASDiag.getMap = function (pDomNode, pDiagramData) {
                 return Number(pValue);
             }) || null,
             // Set a default color scale
-            mColor = pDiagramData.colors !== null && (pDiagramData.colors.length >= 1) ? AASDiag.Colors[pDiagramData.colors[0]][mDomain.length] :
-            AASDiag.Colors["Reds"][mDomain.length],
+            mColor = pDiagramData.colors !== null && (pDiagramData.colors.length >= 1) ? s4a.viz.map.Colors[pDiagramData.colors[0]][mDomain.length] :
+            s4a.viz.map.Colors["Reds"][mDomain.length],
             // Set a default secondary color scale
-            mColor2 = pDiagramData.colors !== null && (pDiagramData.colors.length >= 2) ? AASDiag.Colors[pDiagramData.colors[1]][mDomain.length] :
-            AASDiag.Colors["Blues"][mDomain.length],
+            mColor2 = pDiagramData.colors !== null && (pDiagramData.colors.length >= 2) ? s4a.viz.map.Colors[pDiagramData.colors[1]][mDomain.length] :
+            s4a.viz.map.Colors["Blues"][mDomain.length],
             // Set a default size range (for bubble diagrams etc)
-            mSizes = AASDiag.Sizes.medium,
+            mSizes = s4a.viz.map.Sizes.medium,
             // Construct a color scale
             mColorScale = d3.scale.threshold()
             .domain(mDomain)
@@ -1020,7 +576,7 @@ AASDiag.getMap = function (pDomNode, pDiagramData) {
     }
 
     if (pDiagramData.showSeries.length === 2) {
-        for (var i = 0, j = pDiagramData.mapUnitIDs.length; i < j; i++) {
+        for (i = 0, j = pDiagramData.mapUnitIDs.length; i < j; i++) {
             mDataMap2[pDiagramData.mapUnitIDs[i]] = Number(pDiagramData.seriesData[i][pDiagramData.showSeries[1]]);
             mSeriesValues2.push(Number(pDiagramData.seriesData[i][pDiagramData.showSeries[1]]));
         }
@@ -1055,9 +611,9 @@ AASDiag.getMap = function (pDomNode, pDiagramData) {
                         }),
                         // Get the complete bounds of all features and calculate scale and translation
                         //var mBounds = mPath.bounds(zoomArea),
-                        mBounds = AASDiag.Util.getFeatureCollectionBounds(mPath, mStatGeometries),
+                        mBounds = s4a.viz.map.Util.getFeatureCollectionBounds(mPath, mStatGeometries),
                         // Calculate the scale factor
-                        s = .95 / Math.max((mBounds[1][0] - mBounds[0][0]) / pWidth, (mBounds[1][1] - mBounds[0][1]) / pHeight),
+                        s = 0.95 / Math.max((mBounds[1][0] - mBounds[0][0]) / pWidth, (mBounds[1][1] - mBounds[0][1]) / pHeight),
                         // Calculate the translation offset from zero
                         t = [(pWidth - s * (mBounds[1][0] + mBounds[0][0])) / 2, (pHeight - s * (mBounds[1][1] + mBounds[0][1])) / 2];
 
@@ -1074,37 +630,482 @@ AASDiag.getMap = function (pDomNode, pDiagramData) {
                 mContext.fillRect(0, 0, pWidth, pHeight);
 
                 // Draw basemap features I
-                AASDiag.Shared._drawLand(mContext, mPath, pBaseMap);
+                s4a.viz.map.Shared._drawLand(mContext, mPath, pBaseMap);
 
                 // Conditionally draw choropleth polygons
                 if (pDiagramData.mapType === "choroplethMap" ||
                         pDiagramData.mapType === "bubbleChoroplethMap") {
-                    AASDiag.Shared._drawPolygons(mStatGeometries, mDataMap, mColorScale, mPath, mContext);
+                    s4a.viz.map.Shared._drawPolygons(mStatGeometries, mDataMap, mColorScale, mPath, mContext);
                 }
 
                 // Draw basemap features II
-                AASDiag.Shared._drawMunicipality(mContext, mPath, pStatAreas);
-                AASDiag.Shared._drawCounty(mContext, mPath, pStatAreas);
+                s4a.viz.map.Shared._drawMunicipality(mContext, mPath, pStatAreas);
+                s4a.viz.map.Shared._drawCounty(mContext, mPath, pStatAreas);
 
                 // Conditionally draw bubbles
                 if (pDiagramData.mapType === "bubbleMap") {
-                    AASDiag.Shared._drawBubbles(mStatGeometries, mDataMap, mSizeScale, mColorScale, mPath, mContext);
+                    s4a.viz.map.Shared._drawBubbles(mStatGeometries, mDataMap, mSizeScale, mColorScale, mPath, mContext);
                 }
                 // Conditionally draw additional bubbles (series 2)
                 else if (pDiagramData.mapType === "bubbleChoroplethMap") {
-                    AASDiag.Shared._drawBubbles(mStatGeometries, mDataMap2, mSizeScale, mColorScale2, mPath, mContext);
+                    s4a.viz.map.Shared._drawBubbles(mStatGeometries, mDataMap2, mSizeScale, mColorScale2, mPath, mContext);
                 }
                 // Conditionally draw pie charts
                 else if (pDiagramData.mapType === "pieChartMap") {
-                    AASDiag.Shared._drawPieCharts(mStatGeometries, mDataMapMulti, mColor, mPath, mContext);
+                    s4a.viz.map.Shared._drawPieCharts(mStatGeometries, mDataMapMulti, mColor, mPath, mContext);
                 }
 
                 // Draw labels
-                AASDiag.Shared._drawLabels(mContext, mPath, mStatGeometries, (pDiagramData.fontSize - 2));
+                s4a.viz.map.Shared._drawLabels(mContext, mPath, mStatGeometries, (pDiagramData.fontSize - 2));
 
                 // Draw legend  
-                AASDiag.Shared._drawRectSymMapLegend(mContext, mColorScale, pDiagramData.title, Number(pDiagramData.fontSize));
+                s4a.viz.map.Shared._drawRectSymMapLegend(mContext, mColorScale, pDiagramData.title, Number(pDiagramData.fontSize));
 
                 return mContext;
             });
+};
+s4a.viz.map.Util = s4a.viz.map.Util || {};
+
+/**
+ * Return a unique URL to ensure that scripts/styles are reloaded every time
+ * @param {String} pUrl An URL
+ * @returns {String} URL with unique suffix
+ */
+s4a.viz.map.Util.secureReload = function (pUrl) {
+    var mConcatChar = pUrl.indexOf('?' !== -1) ? '?' : '&';
+    return pUrl + mConcatChar + "rnd=" + (Math.random() * 100).toString();
+};
+
+/**
+ * Returns the number of characters in the longest formatted number in an array
+ * @param {Array} pArray An array of numbers
+ * @returns {Number} The number of characters in formatted number
+ */
+s4a.viz.map.Util.getLengthOfLongest = function (pArray) {
+    var mLength = 0;
+    if (pArray !== null && pArray.length > 1) {
+        var tmpLength;
+        for (var i = (pArray.length - 1); i > 0; i--) {
+            var mLabel = jQuery.number(pArray[i - 1]) + " - " + jQuery.number(pArray[i]);
+            tmpLength = mLabel.length;
+            if (tmpLength > mLength) {
+                mLength = tmpLength;
+            }
+        }
+    }
+    return mLength;
+};
+
+/**
+ * Return the longest entry from an array
+ * @param {Array} pArray
+ * @returns {String}
+ */
+s4a.viz.map.Util.getLongestStringInArray = function (pArray) {
+    var mArray = pArray.slice();
+    return mArray.sort(function (a, b) {
+        return b.toString().length - a.toString().length;
+    })[0];
+};
+
+/**
+ * Get the total product of the items in an array of numbers, i.e. passing the
+ * array [1,3,4,5] to this function will return 1+3+4+5 = 13. Non-numeric values
+ * will be ignored.
+ * @param {Number} pDataArray An array of numbers
+ * @returns {Number}
+ */
+s4a.viz.map.Util.getTotal = function (pDataArray) {
+    var pTotal = 0;
+    for (var j = 0; j < pDataArray.length; j++) {
+        pTotal += (typeof pDataArray[j] === 'number') ? pDataArray[j] : 0;
+    }
+    return pTotal;
+};
+
+/**
+ * Method to transform json returned by xml2json to the correct format for the
+ * diagram data object
+ * @param {Object} pObject
+ * @returns {AASDiag.DiagramData}
+ */
+s4a.viz.map.Util.fixJsonData = function (pObject) {
+    var mDiagramData = new s4a.viz.map.DiagramData();
+    mDiagramData.title = pObject.title[0] || null;
+    mDiagramData.mapType = pObject.type !== undefined ? pObject.type : mDiagramData.mapType;
+    mDiagramData.mapUnitType = pObject.mapUnitType;
+    mDiagramData.mapUnitIDs = pObject.categoryLabels.string;
+    mDiagramData.seriesLabels = pObject.title.string;
+    mDiagramData.seriesData = s4a.viz.map.Util.fixSeriesJsonData(pObject.seriesData);
+    mDiagramData.domains = pObject.intervals.float;
+    mDiagramData.showLabels = pObject.showLabels || false;
+    mDiagramData.showSeries = pObject.showSeries || [0];
+
+    //Special handling of colors
+    if (pObject.palette !== undefined) {
+        mDiagramData.colors = pObject.palette !== undefined ? [pObject.palette] : mDiagramData.colors;
+    } else {
+        mDiagramData.colors = pObject.colors !== undefined ? [pObject.colors] : mDiagramData.colors;
+    }
+
+    return mDiagramData;
+};
+
+/**
+ * Transform the series data object
+ * @param {Object} pSeriesData
+ * @returns {Array} Array of arrays containing series data
+ */
+s4a.viz.map.Util.fixSeriesJsonData = function (pSeriesData) {
+    var mSeriesData = [];
+    for (var i = 0; i < pSeriesData.ArrayOfDecimal.length; i++) {
+        mSeriesData.push(pSeriesData.ArrayOfDecimal[i].decimal);
+    }
+    return mSeriesData;
+};
+/**
+ * Return the bounds of a feature collections
+ * @param {Object} pPath A d3.js geo.path
+ * @param {type} pFeatures An array of geojson features
+ * @returns {Array} The combined bounds of the features [[xmin,ymin], [xmax,ymax]]
+ */
+s4a.viz.map.Util.getFeatureCollectionBounds = function (pPath, pFeatures) {
+    var mBounds = [[null, null], [null, null]];
+    for (var i = 0, j = pFeatures.length; i < j; i++) {
+        var mCBounds = pPath.bounds(pFeatures[i]);
+        if (!mBounds[0][0] || mCBounds[0][0] < mBounds[0][0]) {
+            mBounds[0][0] = mCBounds[0][0];
+        }
+        if (!mBounds[0][1] || mCBounds[0][1] < mBounds[0][1]) {
+            mBounds[0][1] = mCBounds[0][1];
+        }
+        if (!mBounds[1][0] || mCBounds[1][0] > mBounds[1][0]) {
+            mBounds[1][0] = mCBounds[1][0];
+        }
+        if (!mBounds[1][1] || mCBounds[1][1] > mBounds[1][1]) {
+            mBounds[1][1] = mCBounds[1][1];
+        }
+    }
+    return mBounds;
+};
+
+s4a.viz.map.Util.valuesToSlices = function (pSeries) {
+    if (pSeries !== undefined && typeof pSeries === "object" && Array.isArray(pSeries) === true) {
+        var mSum = 0;
+        for (var i = 0, j = pSeries.length; i < j; i++) {
+            mSum = mSum + Number(pSeries[i]);
+        }
+        var mSlices = [];
+        for (i = 0, j = pSeries.length; i < j; i++) {
+            mSlices.push((Number(pSeries[i]) * 100) / mSum);
+        }
+        return mSlices;
+    } else {
+        return pSeries;
+    }
+
+};
+s4a.viz.map.Shared = s4a.viz.map.Shared || {};
+
+/**
+ * Draws the diagram title
+ * @param {Object} pContext
+ * @param {Number} pFontSize
+ * @param {String} pTitle
+ * @param {Number} pLeftMargin
+ * @param {Number} pCurrentLinePosition
+ * @returns {Number}
+ */
+s4a.viz.map.Shared._drawDiagramTitle = function (pContext, pFontSize, pTitle, pLeftMargin, pCurrentLinePosition) {
+    pContext.font = "bolder " + pFontSize + "px Arial";
+    pContext.textAlign = "start"; // Right align the labels
+    pContext.fillStyle = "#000000";
+    pContext.fillText(pTitle, pLeftMargin, pCurrentLinePosition);
+    return (pCurrentLinePosition += (pFontSize * 2));
+};
+
+/**
+ * Draw map legend on canvas using a color scale
+ * @param {Object} pContext A drawing context retrieved by calling
+ * c.getContext("2d") on the HTML5 canvas element c
+ * @param {Object} pColor A d3js threshold scale created by the funciton d3.scale.threshold()
+ * @param {String} pTitle The title to print on top of the legend
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, pFontSize) {
+
+    pFontSize = pFontSize !== undefined ? pFontSize : s4a.viz.map.FontSizes.normal;
+
+    var mLeftMargin = 10;
+    var mTopMargin = 10;
+    var mLineHeight = pFontSize * 1.8;
+    var mKeyW = 20;
+    var mKeyH = pFontSize + 4;
+
+    var mYPos = mTopMargin + pFontSize;
+    // Get the length of the longest legend label entry
+    var mLongestLabel = s4a.viz.map.Util.getLongestStringInArray(pColor.domain());
+    pContext.font = pFontSize + "px Arial";
+    var mRightAlignInset = pContext.measureText(mLongestLabel).width * 2;
+
+    if (pTitle !== undefined && pTitle !== null && pTitle !== '') {
+        mYPos = s4a.viz.map.Shared._drawDiagramTitle(pContext, pFontSize, pTitle, mLeftMargin, mYPos);
+    }
+
+    pContext.font = pFontSize + "px Arial";
+    pContext.textAlign = "end"; // Right align the labels
+
+    // For each color in the scale
+    for (var j = pColor.domain().length - 1; j > 0; j--) {
+        var mLabel;
+        if (j === pColor.domain().length - 1) {
+            mLabel = "> " + jQuery.number(pColor.domain()[j - 1]);
+        } else if (j === 1) {
+            mLabel = "< " + jQuery.number(pColor.domain()[j]);
+        } else {
+            mLabel = jQuery.number(pColor.domain()[j - 1]) + " - " + jQuery.number(pColor.domain()[j]);
+        }
+
+        // Set legend symbol colors
+        pContext.fillStyle = pColor.range()[j];
+        pContext.strokeStyle = "#000000";
+        pContext.lineWidth = 0.2;
+        // Add legend symbol
+        pContext.beginPath();
+        pContext.rect(mLeftMargin, mYPos - pFontSize, mKeyW, mKeyH);
+        pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
+        pContext.fill();
+        pContext.globalAlpha = 1.0;
+        pContext.stroke();
+        // Add legend label
+        pContext.fillStyle = "#000000";
+        pContext.fillText(mLabel, mLeftMargin + mKeyW + mLeftMargin + mRightAlignInset, mYPos);
+        // Move to next line
+        mYPos += mLineHeight;
+    }
+    return;
+};
+
+/**
+ * Draw polygons from geometry collection
+ * @param {Object} pGeoJson An iterable collection of GeoJson features
+ * @param {Object} pDataMap A JavaScript object with key/value pairs
+ * @param {Object} pScale A d3.scale.threshold object
+ * @param {Object} pPath A d3.path.geo context
+ * @param {Object} pContext A Canvas 2d-context
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawPolygons = function (pGeoJson, pDataMap, pScale, pPath, pContext) {
+    pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
+    var mRange = pScale.domain();
+    var mMax = Math.max.apply(null, mRange);
+    var mMin = Math.min.apply(null, mRange);
+    pGeoJson.forEach(function (pFeature) {
+        var mTestValue = pDataMap[pFeature.id];
+        mTestValue = mTestValue < mMax ? mTestValue : mMax - 0.0001;
+        mTestValue = mTestValue >= mMin ? mTestValue : mMin;
+        var mColor = pScale(mTestValue);
+        if (mColor !== undefined) {
+            pContext.fillStyle = mColor;
+            pContext.beginPath();
+            pPath.context(pContext)(pFeature);
+            pContext.fill();
+        }
+    });
+    pContext.globalAlpha = 1.0;
+    return;
+};
+
+/**
+ * Draw polygons from geometry collection
+ * @param {Object} pGeoJson An iterable collection of GeoJson features
+ * @param {Object} pDataMapMulti A JavaScript object with key/value pairs
+ * @param {Object} pScale A d3.scale.threshold object
+ * @param {Object} pPath A d3.path.geo context
+ * @param {Object} pContext A Canvas 2d-context
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawPieCharts = function (pGeoJson, pDataMapMulti, pColor, pPath, pContext) {
+    pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
+    pGeoJson.forEach(function (mFeature) {
+        var mSize = 25;
+        var mSlices = s4a.viz.map.Util.valuesToSlices(pDataMapMulti[mFeature.id]);
+        var mStartAngle = 1.5 * Math.PI;
+        var mPoint = pPath.centroid(mFeature);
+        for (var i = 0, j = mSlices.length; i < j; i++) {
+            var mSlice = (Number(mSlices[i]) * (2 * Math.PI)) / 100;
+            var mFinishAngle = mStartAngle + mSlice;
+            if (mFinishAngle > (2 * Math.PI)) {
+                mFinishAngle = mFinishAngle - (2 * Math.PI);
+            }
+            pContext.fillStyle = pColor[i];
+            pContext.lineWidth = 2;
+            pContext.strokeStyle = 'rgba(0,0,0,0.25)';
+            pContext.beginPath();
+            pContext.moveTo(mPoint[0], mPoint[1]);
+            pContext.arc(mPoint[0], mPoint[1], mSize, mStartAngle, mFinishAngle, false);
+            pContext.closePath();
+            pContext.fill();
+            pContext.stroke();
+            mStartAngle += mSlice;
+        }
+    });
+};
+
+/**
+ * Draw map legend on canvas using scale
+ * @param {Object} pContext A drawing context retrieved by calling c.getContext("2d") on the HTML5 canvas element c
+ * @param {Object} pColor A d3js threshold scale created by the funciton d3.scale.threshold()
+ * @param {String} pTitle The title to print on top of the legend
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle) {
+
+    var mFontSize = 12;
+    var mLeftMargin = 10;
+    var mTopMargin = 10;
+    var mLineHeight = mFontSize * 1.5;
+    var mCurrentLinePosition = mTopMargin + mFontSize;
+    // Get the length of the longest legend label entry
+    var mRightAlignInset = s4a.viz.map.Util.getLengthOfLongest(pColor.domain()) * (mFontSize / 1.5);
+    // Insert logic for legend height here
+    pContext.font = mFontSize + "px Arial Bold";
+    pContext.textAlign = "start"; // Right align the labels
+    pContext.fillStyle = "#000000";
+    pContext.fillText("Teiknforklaring", mLeftMargin, mCurrentLinePosition);
+    mCurrentLinePosition += mLineHeight;
+    // Set font for legend items
+    pContext.font = mFontSize + "px Arial";
+    pContext.textAlign = "end"; // Right align the labels
+
+    // For each color in the scale
+    for (var j = pColor.domain().length - 1; j > 0; j--) {
+
+        var mLabel = jQuery.number(pColor.domain()[j - 1]) + " - " + jQuery.number(pColor.domain()[j]);
+        // Set legend symbol colors
+        pContext.fillStyle = pColor.range()[j];
+        pContext.strokeStyle = "#000000";
+        pContext.lineWidth = 0.2;
+        // Add legend symbol
+        pContext.beginPath();
+        pContext.arc(mLeftMargin, mCurrentLinePosition - (mFontSize / 2), 6, 0, 2 * Math.PI, false);
+//        pCanvas.arc(mFeat[0], mFeat[1], mSize, 0, 2 * Math.PI, false);
+        pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
+        pContext.fill();
+        pContext.globalAlpha = 1;
+        pContext.stroke();
+        // Add legend label
+        pContext.fillStyle = "#000000";
+        pContext.fillText(mLabel, mLeftMargin + mRightAlignInset, mCurrentLinePosition);
+        // Move to next line
+        mCurrentLinePosition += mLineHeight;
+    }
+    return;
+};
+
+/**
+ * Draw polygons from geometry collection
+ * @param {Object} pGeoJson An iterable collection of GeoJson features
+ * @param {Object} pDataMap A JavaScript object with key/value pairs
+ * @param {Object} pSizeScale A d3.scale.threshold object mapping to bubble sizes
+ * @param {Object} pColorScale A d3.scale.threshold object mapping to bubble colors
+ * @param {Object} pPath A d3.path.geo context
+ * @param {Object} pContext A Canvas 2d-context
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawBubbles = function (pGeoJson, pDataMap, pSizeScale, pColorScale, pPath, pContext) {
+    pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
+    pGeoJson.forEach(function (pFeature) {
+        var mSize = pSizeScale(pDataMap[pFeature.id]);
+        var mColor = pColorScale(pDataMap[pFeature.id]);
+        if (mSize !== undefined) {
+            var mFeat = pPath.centroid(pFeature);
+            pContext.beginPath();
+            pContext.arc(mFeat[0], mFeat[1], mSize, 0, 2 * Math.PI, false);
+            pContext.fillStyle = mColor;
+            pContext.fill();
+            pContext.lineWidth = 2;
+            pContext.strokeStyle = 'rgba(0,0,0,0.25)';
+            pContext.stroke();
+        }
+    });
+    pContext.globalAlpha = 1;
+};
+
+/**
+ * Place labels on top of polygons
+ * @param {Object} pGeoJson
+ * @param {Object} pPath d3.geo.path object
+ * @param {Object} pContext HTML5 2d-drawing context
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawLabels = function (pContext, pPath, pGeoJson, pFontSize) {
+
+    pFontSize = pFontSize !== undefined ? pFontSize : s4a.viz.map.FontSizes.small;
+
+    pGeoJson.forEach(function (pFeature) {
+        var xy = pPath.centroid(pFeature);
+        pContext.font = pFontSize + "px Arial";
+        pContext.textAlign = "center"; // Right align the labels
+        pContext.fillStyle = "#000000";
+        pContext.fillText(pFeature.properties.name, xy[0], xy[1]);
+    });
+};
+
+
+/**
+ * Draw a geojson object on the canvas
+ * @param {Object} pGeoJson
+ * @param {String} pLineColor
+ * @param {String} pFillColor
+ * @param {Number} pLineWidth
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawGeoJson = function (pContext, pPath, pGeoJson, pLineColor, pFillColor, pLineWidth) {
+    pContext.strokeStyle = pLineColor || "transparent";
+    pContext.lineWidth = pLineWidth;
+    pContext.fillStyle = pFillColor || "transparent";
+    pContext.beginPath();
+    pPath.context(pContext)(pGeoJson);
+    if (pFillColor !== "transparent") {
+        pContext.fill();
+    }
+    if (pLineColor !== "transparent") {
+        pContext.stroke();
+    }
+    return;
+};
+
+/**
+ * Draw municipality borders on the map
+ * @param {Object} pStatUnitTopoJson
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawMunicipality = function (pContext, pPath, pStatUnitTopoJson) {
+    var mKommune = topojson.mesh(pStatUnitTopoJson, pStatUnitTopoJson.objects.kommune, function (a, b) {
+        return a.id !== b.id;
+    });
+    s4a.viz.map.Shared._drawGeoJson(pContext, pPath, mKommune, "#000000", null, 0.5);
+};
+
+/**
+ * Draw county borders on the map
+ * @param {Object} pStatUnitTopoJson
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawCounty = function (pContext, pPath, pStatUnitTopoJson) {
+    var mCounty = topojson.mesh(pStatUnitTopoJson, pStatUnitTopoJson.objects.fylke, function (a, b) {
+        return a.id !== b.id;
+    });
+    s4a.viz.map.Shared._drawGeoJson(pContext, pPath, mCounty, "#000000", null, 1);
+};
+
+/**
+ * Draw land polygon on the map
+ * @param {Object} pStatUnitTopoJson
+ * @returns {void}
+ */
+s4a.viz.map.Shared._drawLand = function (pContext, pPath, pLandTopoJson) {
+    var mLand = topojson.feature(pLandTopoJson, pLandTopoJson.objects.sea);
+    s4a.viz.map.Shared._drawGeoJson(pContext, pPath, mLand, "#999999", "#eeeeee", 0.2);
 };

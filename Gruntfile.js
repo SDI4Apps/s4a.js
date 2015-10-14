@@ -1,5 +1,4 @@
 'use strict';
-
 module.exports = function (grunt) {
 
     // Project configuration.
@@ -22,14 +21,22 @@ module.exports = function (grunt) {
                     'src/viz/viz.js',
                     'src/viz/ViewCoordinator.js',
                     'src/viz/Colors.js',
-                    'src/viz/map/Util.js',
-                    'src/viz/map/Shared.js',
-                    'src/viz/map/Sizes.js',
-                    'src/viz/map/DiagramData.js',
+                    'src/viz/Sizes.js',
+                    'src/viz/DiagramData.js',
                     'src/viz/map/Map.js',
+                    'src/viz/map/Util.js',
+                    'src/viz/map/Shared.js'
                 ],
                 dest: 'dist/<%= pkg.name %>.js'
             },
+        },
+        jsdoc: {
+            dist: {
+                src: ['dist/*.js'],
+                options: {
+                    destination: 'doc'
+                }
+            }
         },
         uglify: {
             options: {
@@ -75,7 +82,6 @@ module.exports = function (grunt) {
             },
         },
     });
-
     // These plugins provide necessary tasks.
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -83,9 +89,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-jsdoc');
-    
     // Default task.
-    grunt.registerTask('default', ['jshint', 'nodeunit', 'concat', 'uglify']);
-    grunt.registerTask('second', ['concat', 'uglify']);
-
+    grunt.registerTask('default', ['jshint', 'concat', 'nodeunit', 'uglify']);
+    grunt.registerTask('build-with-docs', ['concat', 'uglify', 'jsdoc']);
 };

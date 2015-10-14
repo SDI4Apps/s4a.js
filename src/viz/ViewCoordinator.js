@@ -6,7 +6,7 @@
  * @constructor
  * @returns {s4a.viz.ViewCoordinator}
  */
-s4a.viz.ViewCoordinator = (function (pData) {
+s4a.viz.ViewCoordinator = function (pData) {
 
     var _data = pData,
             _listeners = [],
@@ -79,4 +79,4 @@ s4a.viz.ViewCoordinator = (function (pData) {
         return this;
     };
 
-});
+};

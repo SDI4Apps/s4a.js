@@ -1,11 +1,13 @@
 /* global s4a */
 
+s4a.viz.map = s4a.viz.map || {} ;
+
 /**
  * The transparency to apply to statistical areas, bubbles and their respective
  * legends
  * @type {Number}
  */
-AASDiag.StatAreaAlpha = 0.75;
+s4a.viz.map.StatAreaAlpha = 0.75;
 
 /**
  * Draw a choropleth map inside the specified canvas
@@ -15,7 +17,7 @@ AASDiag.StatAreaAlpha = 0.75;
  * @param {AASDiag.DiagramData} pDiagramData JSON
  * @returns {void}
  */
-AASDiag.getMap = function (pDomNode, pDiagramData) {
+s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
 
     // Determine default values for width/height if not present
     var pWidth = (pDiagramData.mapWidth === "auto") ? jQuery(pDomNode).width() : pDiagramData.mapWidth;
@@ -39,13 +41,13 @@ AASDiag.getMap = function (pDomNode, pDiagramData) {
                 return Number(pValue);
             }) || null,
             // Set a default color scale
-            mColor = pDiagramData.colors !== null && (pDiagramData.colors.length >= 1) ? AASDiag.Colors[pDiagramData.colors[0]][mDomain.length] :
-            AASDiag.Colors["Reds"][mDomain.length],
+            mColor = pDiagramData.colors !== null && (pDiagramData.colors.length >= 1) ? s4a.viz.map.Colors[pDiagramData.colors[0]][mDomain.length] :
+            s4a.viz.map.Colors["Reds"][mDomain.length],
             // Set a default secondary color scale
-            mColor2 = pDiagramData.colors !== null && (pDiagramData.colors.length >= 2) ? AASDiag.Colors[pDiagramData.colors[1]][mDomain.length] :
-            AASDiag.Colors["Blues"][mDomain.length],
+            mColor2 = pDiagramData.colors !== null && (pDiagramData.colors.length >= 2) ? s4a.viz.map.Colors[pDiagramData.colors[1]][mDomain.length] :
+            s4a.viz.map.Colors["Blues"][mDomain.length],
             // Set a default size range (for bubble diagrams etc)
-            mSizes = AASDiag.Sizes.medium,
+            mSizes = s4a.viz.map.Sizes.medium,
             // Construct a color scale
             mColorScale = d3.scale.threshold()
             .domain(mDomain)
@@ -77,7 +79,7 @@ AASDiag.getMap = function (pDomNode, pDiagramData) {
     }
 
     if (pDiagramData.showSeries.length === 2) {
-        for (var i = 0, j = pDiagramData.mapUnitIDs.length; i < j; i++) {
+        for (i = 0, j = pDiagramData.mapUnitIDs.length; i < j; i++) {
             mDataMap2[pDiagramData.mapUnitIDs[i]] = Number(pDiagramData.seriesData[i][pDiagramData.showSeries[1]]);
             mSeriesValues2.push(Number(pDiagramData.seriesData[i][pDiagramData.showSeries[1]]));
         }
@@ -112,9 +114,9 @@ AASDiag.getMap = function (pDomNode, pDiagramData) {
                         }),
                         // Get the complete bounds of all features and calculate scale and translation
                         //var mBounds = mPath.bounds(zoomArea),
-                        mBounds = AASDiag.Util.getFeatureCollectionBounds(mPath, mStatGeometries),
+                        mBounds = s4a.viz.map.Util.getFeatureCollectionBounds(mPath, mStatGeometries),
                         // Calculate the scale factor
-                        s = .95 / Math.max((mBounds[1][0] - mBounds[0][0]) / pWidth, (mBounds[1][1] - mBounds[0][1]) / pHeight),
+                        s = 0.95 / Math.max((mBounds[1][0] - mBounds[0][0]) / pWidth, (mBounds[1][1] - mBounds[0][1]) / pHeight),
                         // Calculate the translation offset from zero
                         t = [(pWidth - s * (mBounds[1][0] + mBounds[0][0])) / 2, (pHeight - s * (mBounds[1][1] + mBounds[0][1])) / 2];
 
@@ -131,36 +133,36 @@ AASDiag.getMap = function (pDomNode, pDiagramData) {
                 mContext.fillRect(0, 0, pWidth, pHeight);
 
                 // Draw basemap features I
-                AASDiag.Shared._drawLand(mContext, mPath, pBaseMap);
+                s4a.viz.map.Shared._drawLand(mContext, mPath, pBaseMap);
 
                 // Conditionally draw choropleth polygons
                 if (pDiagramData.mapType === "choroplethMap" ||
                         pDiagramData.mapType === "bubbleChoroplethMap") {
-                    AASDiag.Shared._drawPolygons(mStatGeometries, mDataMap, mColorScale, mPath, mContext);
+                    s4a.viz.map.Shared._drawPolygons(mStatGeometries, mDataMap, mColorScale, mPath, mContext);
                 }
 
                 // Draw basemap features II
-                AASDiag.Shared._drawMunicipality(mContext, mPath, pStatAreas);
-                AASDiag.Shared._drawCounty(mContext, mPath, pStatAreas);
+                s4a.viz.map.Shared._drawMunicipality(mContext, mPath, pStatAreas);
+                s4a.viz.map.Shared._drawCounty(mContext, mPath, pStatAreas);
 
                 // Conditionally draw bubbles
                 if (pDiagramData.mapType === "bubbleMap") {
-                    AASDiag.Shared._drawBubbles(mStatGeometries, mDataMap, mSizeScale, mColorScale, mPath, mContext);
+                    s4a.viz.map.Shared._drawBubbles(mStatGeometries, mDataMap, mSizeScale, mColorScale, mPath, mContext);
                 }
                 // Conditionally draw additional bubbles (series 2)
                 else if (pDiagramData.mapType === "bubbleChoroplethMap") {
-                    AASDiag.Shared._drawBubbles(mStatGeometries, mDataMap2, mSizeScale, mColorScale2, mPath, mContext);
+                    s4a.viz.map.Shared._drawBubbles(mStatGeometries, mDataMap2, mSizeScale, mColorScale2, mPath, mContext);
                 }
                 // Conditionally draw pie charts
                 else if (pDiagramData.mapType === "pieChartMap") {
-                    AASDiag.Shared._drawPieCharts(mStatGeometries, mDataMapMulti, mColor, mPath, mContext);
+                    s4a.viz.map.Shared._drawPieCharts(mStatGeometries, mDataMapMulti, mColor, mPath, mContext);
                 }
 
                 // Draw labels
-                AASDiag.Shared._drawLabels(mContext, mPath, mStatGeometries, (pDiagramData.fontSize - 2));
+                s4a.viz.map.Shared._drawLabels(mContext, mPath, mStatGeometries, (pDiagramData.fontSize - 2));
 
                 // Draw legend  
-                AASDiag.Shared._drawRectSymMapLegend(mContext, mColorScale, pDiagramData.title, Number(pDiagramData.fontSize));
+                s4a.viz.map.Shared._drawRectSymMapLegend(mContext, mColorScale, pDiagramData.title, Number(pDiagramData.fontSize));
 
                 return mContext;
             });

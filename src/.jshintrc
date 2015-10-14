@@ -1,13 +1,21 @@
 {
-  "curly": true,
-  "eqeqeq": true,
-  "immed": true,
-  "latedef": true,
-  "newcap": true,
-  "noarg": true,
-  "sub": true,
-  "undef": true,
-  "boss": true,
-  "eqnull": true,
-  "predef": ["exports"]
+    "curly": true,
+    "eqeqeq": true,
+    "immed": true,
+    "latedef": true,
+    "newcap": true,
+    "noarg": true,
+    "sub": true,
+    "undef": true,
+    "boss": true,
+    "eqnull": true,
+    "predef": ["exports"],
+    "globals": {
+        "jQuery": true,
+        "d3": true,
+        "topojson": true,
+        "console": true,
+        "queue": true,
+        "s4a": true
+    }
 }

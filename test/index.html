@@ -13,14 +13,15 @@ and open the template in the editor.
         <script>
 
             function log(pMsg) {
-                document.body.innerHTML = document.body.innerHTML + pMsg + '<br/>' ;
+                document.body.innerHTML = document.body.innerHTML + pMsg + '<br/>';
             }
 
             function onLoad() {
                 log('Version number: ' + s4a.version);
-                var t = s4a.map.createMap('map','123-1241-123124-13', ['123', 'asv', '1244']);
+                var t = s4a.map.createMap('map', '123-1241-123124-13', ['123', 'asv', '1244']);
                 s4a.map.createMap()
             }
+
         </script>
     </head>
     <body onload="onLoad()">

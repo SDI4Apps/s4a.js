@@ -8,9 +8,9 @@
  */
 s4a.viz.ViewCoordinator = (function (pData) {
 
-    var _data = pData;
-    var _listeners = [];
-    var _self = this;
+    var _data = pData,
+            _listeners = [],
+            _self = this;
 
     /**
      * Subscribes an object to publish events from the ViewCoordinator
@@ -28,7 +28,6 @@ s4a.viz.ViewCoordinator = (function (pData) {
         }
         return this;
     };
-
 
     var _setData = function (pData) {
         console.info('Updated data');
@@ -74,7 +73,7 @@ s4a.viz.ViewCoordinator = (function (pData) {
         _listeners = _modListeners;
         return this;
     };
-    
+
     this.applyFilter = function () {
         _self.publish();
         return this;

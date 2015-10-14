@@ -17,38 +17,38 @@ jQuery("document").ready(function () {
              * Diagram data
              * @type AASDiag.DiagramData
              */
-            var mDiagramData = s4a.viz.map.Util.fixJsonData(jQuery.xml2json(pXmlData));
+            var mDiagramData = s4a.viz.map.util.fixJsonData(jQuery.xml2json(pXmlData));
             console.log(JSON.stringify(mDiagramData));
 
             mDiagramData.mapType = "choroplethMap";
-            s4a.viz.viz.getMap("div#diagram1", mDiagramData, mWidth, mHeight);
+            s4a.viz.map.getMap("div#diagram1", mDiagramData, mWidth, mHeight);
 
             /**
              * @type AASDiag.DiagramData
              */
-            var mDiagramData2 = s4a.viz.map.Util.fixJsonData(jQuery.xml2json(pXmlData));
+            var mDiagramData2 = s4a.viz.map.util.fixJsonData(jQuery.xml2json(pXmlData));
 
             mDiagramData2.mapType = "bubbleMap";
             mDiagramData2.colors = ["Blues"];
-            s4a.viz.viz.getMap("div#diagram2", mDiagramData2, mWidth, mHeight);
+            s4a.viz.map.getMap("div#diagram2", mDiagramData2, mWidth, mHeight);
 
             /**
              * @type AASDiag.DiagramData
              */
-            var mDiagramData3 = s4a.viz.map.Util.fixJsonData(jQuery.xml2json(pXmlData));
+            var mDiagramData3 = s4a.viz.map.util.fixJsonData(jQuery.xml2json(pXmlData));
             mDiagramData3.mapType = "pieChartMap";
             mDiagramData3.title = "Testdiagram med kaker";
-            s4a.viz.viz.getMap("div#diagram3", mDiagramData3, mWidth, mHeight);
+            s4a.viz.map.getMap("div#diagram3", mDiagramData3, mWidth, mHeight);
 
             /**
              * @type AASDiag.DiagramData
              */
-            var mDiagramData4 = s4a.viz.map.Util.fixJsonData(jQuery.xml2json(pXmlData));
+            var mDiagramData4 = s4a.viz.map.util.fixJsonData(jQuery.xml2json(pXmlData));
 
             mDiagramData4.mapType = "bubbleChoroplethMap";
             mDiagramData4.showSeries = [0, 1];
             mDiagramData4.colors = ["Reds", "Blues"];
-            s4a.viz.viz.getMap("div#diagram4", mDiagramData4, mWidth, mHeight);
+            s4a.viz.map.getMap("div#diagram4", mDiagramData4, mWidth, mHeight);
         }
     });
 });

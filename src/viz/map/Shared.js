@@ -1,10 +1,9 @@
 /**
  * Define namespace utilities
- * @namespace AASDiag.Shared
- * @memberOf AASDiag
+ * @namespace
  * @type {Object}
  */
-s4a.viz.map.Shared = s4a.viz.map.Shared || {};
+s4a.viz.map.shared = {};
 
 /**
  * Draws the diagram title
@@ -15,7 +14,7 @@ s4a.viz.map.Shared = s4a.viz.map.Shared || {};
  * @param {Number} pCurrentLinePosition
  * @returns {Number}
  */
-s4a.viz.map.Shared._drawDiagramTitle = function (pContext, pFontSize, pTitle, pLeftMargin, pCurrentLinePosition) {
+s4a.viz.map.shared._drawDiagramTitle = function (pContext, pFontSize, pTitle, pLeftMargin, pCurrentLinePosition) {
     pContext.font = "bolder " + pFontSize + "px Arial";
     pContext.textAlign = "start"; // Right align the labels
     pContext.fillStyle = "#000000";
@@ -31,7 +30,7 @@ s4a.viz.map.Shared._drawDiagramTitle = function (pContext, pFontSize, pTitle, pL
  * @param {String} pTitle The title to print on top of the legend
  * @returns {void}
  */
-s4a.viz.map.Shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, pFontSize) {
+s4a.viz.map.shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, pFontSize) {
 
     pFontSize = pFontSize !== undefined ? pFontSize : s4a.viz.map.FontSizes.normal;
 
@@ -43,12 +42,12 @@ s4a.viz.map.Shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, p
 
     var mYPos = mTopMargin + pFontSize;
     // Get the length of the longest legend label entry
-    var mLongestLabel = s4a.viz.map.Util.getLongestStringInArray(pColor.domain());
+    var mLongestLabel = s4a.viz.map.util.getLongestStringInArray(pColor.domain());
     pContext.font = pFontSize + "px Arial";
     var mRightAlignInset = pContext.measureText(mLongestLabel).width * 2;
 
     if (pTitle !== undefined && pTitle !== null && pTitle !== '') {
-        mYPos = s4a.viz.map.Shared._drawDiagramTitle(pContext, pFontSize, pTitle, mLeftMargin, mYPos);
+        mYPos = s4a.viz.map.shared._drawDiagramTitle(pContext, pFontSize, pTitle, mLeftMargin, mYPos);
     }
 
     pContext.font = pFontSize + "px Arial";
@@ -94,7 +93,7 @@ s4a.viz.map.Shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, p
  * @param {Object} pContext A Canvas 2d-context
  * @returns {void}
  */
-s4a.viz.map.Shared._drawPolygons = function (pGeoJson, pDataMap, pScale, pPath, pContext) {
+s4a.viz.map.shared._drawPolygons = function (pGeoJson, pDataMap, pScale, pPath, pContext) {
     pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
     var mRange = pScale.domain();
     var mMax = Math.max.apply(null, mRange);
@@ -124,11 +123,11 @@ s4a.viz.map.Shared._drawPolygons = function (pGeoJson, pDataMap, pScale, pPath, 
  * @param {Object} pContext A Canvas 2d-context
  * @returns {void}
  */
-s4a.viz.map.Shared._drawPieCharts = function (pGeoJson, pDataMapMulti, pColor, pPath, pContext) {
+s4a.viz.map.shared._drawPieCharts = function (pGeoJson, pDataMapMulti, pColor, pPath, pContext) {
     pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
     pGeoJson.forEach(function (mFeature) {
         var mSize = 25;
-        var mSlices = s4a.viz.map.Util.valuesToSlices(pDataMapMulti[mFeature.id]);
+        var mSlices = s4a.viz.map.util.valuesToSlices(pDataMapMulti[mFeature.id]);
         var mStartAngle = 1.5 * Math.PI;
         var mPoint = pPath.centroid(mFeature);
         for (var i = 0, j = mSlices.length; i < j; i++) {
@@ -158,7 +157,7 @@ s4a.viz.map.Shared._drawPieCharts = function (pGeoJson, pDataMapMulti, pColor, p
  * @param {String} pTitle The title to print on top of the legend
  * @returns {void}
  */
-s4a.viz.map.Shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle) {
+s4a.viz.map.shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle) {
 
     var mFontSize = 12;
     var mLeftMargin = 10;
@@ -166,7 +165,7 @@ s4a.viz.map.Shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle)
     var mLineHeight = mFontSize * 1.5;
     var mCurrentLinePosition = mTopMargin + mFontSize;
     // Get the length of the longest legend label entry
-    var mRightAlignInset = s4a.viz.map.Util.getLengthOfLongest(pColor.domain()) * (mFontSize / 1.5);
+    var mRightAlignInset = s4a.viz.map.util.getLengthOfLongest(pColor.domain()) * (mFontSize / 1.5);
     // Insert logic for legend height here
     pContext.font = mFontSize + "px Arial Bold";
     pContext.textAlign = "start"; // Right align the labels
@@ -212,7 +211,7 @@ s4a.viz.map.Shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle)
  * @param {Object} pContext A Canvas 2d-context
  * @returns {void}
  */
-s4a.viz.map.Shared._drawBubbles = function (pGeoJson, pDataMap, pSizeScale, pColorScale, pPath, pContext) {
+s4a.viz.map.shared._drawBubbles = function (pGeoJson, pDataMap, pSizeScale, pColorScale, pPath, pContext) {
     pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
     pGeoJson.forEach(function (pFeature) {
         var mSize = pSizeScale(pDataMap[pFeature.id]);
@@ -238,7 +237,7 @@ s4a.viz.map.Shared._drawBubbles = function (pGeoJson, pDataMap, pSizeScale, pCol
  * @param {Object} pContext HTML5 2d-drawing context
  * @returns {void}
  */
-s4a.viz.map.Shared._drawLabels = function (pContext, pPath, pGeoJson, pFontSize) {
+s4a.viz.map.shared._drawLabels = function (pContext, pPath, pGeoJson, pFontSize) {
 
     pFontSize = pFontSize !== undefined ? pFontSize : s4a.viz.map.FontSizes.small;
 
@@ -260,7 +259,7 @@ s4a.viz.map.Shared._drawLabels = function (pContext, pPath, pGeoJson, pFontSize)
  * @param {Number} pLineWidth
  * @returns {void}
  */
-s4a.viz.map.Shared._drawGeoJson = function (pContext, pPath, pGeoJson, pLineColor, pFillColor, pLineWidth) {
+s4a.viz.map.shared._drawGeoJson = function (pContext, pPath, pGeoJson, pLineColor, pFillColor, pLineWidth) {
     pContext.strokeStyle = pLineColor || "transparent";
     pContext.lineWidth = pLineWidth;
     pContext.fillStyle = pFillColor || "transparent";
@@ -280,11 +279,11 @@ s4a.viz.map.Shared._drawGeoJson = function (pContext, pPath, pGeoJson, pLineColo
  * @param {Object} pStatUnitTopoJson
  * @returns {void}
  */
-s4a.viz.map.Shared._drawMunicipality = function (pContext, pPath, pStatUnitTopoJson) {
+s4a.viz.map.shared._drawMunicipality = function (pContext, pPath, pStatUnitTopoJson) {
     var mKommune = topojson.mesh(pStatUnitTopoJson, pStatUnitTopoJson.objects.kommune, function (a, b) {
         return a.id !== b.id;
     });
-    s4a.viz.map.Shared._drawGeoJson(pContext, pPath, mKommune, "#000000", null, 0.5);
+    s4a.viz.map.shared._drawGeoJson(pContext, pPath, mKommune, "#000000", null, 0.5);
 };
 
 /**
@@ -292,11 +291,11 @@ s4a.viz.map.Shared._drawMunicipality = function (pContext, pPath, pStatUnitTopoJ
  * @param {Object} pStatUnitTopoJson
  * @returns {void}
  */
-s4a.viz.map.Shared._drawCounty = function (pContext, pPath, pStatUnitTopoJson) {
+s4a.viz.map.shared._drawCounty = function (pContext, pPath, pStatUnitTopoJson) {
     var mCounty = topojson.mesh(pStatUnitTopoJson, pStatUnitTopoJson.objects.fylke, function (a, b) {
         return a.id !== b.id;
     });
-    s4a.viz.map.Shared._drawGeoJson(pContext, pPath, mCounty, "#000000", null, 1);
+    s4a.viz.map.shared._drawGeoJson(pContext, pPath, mCounty, "#000000", null, 1);
 };
 
 /**
@@ -304,7 +303,7 @@ s4a.viz.map.Shared._drawCounty = function (pContext, pPath, pStatUnitTopoJson) {
  * @param {Object} pStatUnitTopoJson
  * @returns {void}
  */
-s4a.viz.map.Shared._drawLand = function (pContext, pPath, pLandTopoJson) {
+s4a.viz.map.shared._drawLand = function (pContext, pPath, pLandTopoJson) {
     var mLand = topojson.feature(pLandTopoJson, pLandTopoJson.objects.sea);
-    s4a.viz.map.Shared._drawGeoJson(pContext, pPath, mLand, "#999999", "#eeeeee", 0.2);
+    s4a.viz.map.shared._drawGeoJson(pContext, pPath, mLand, "#999999", "#eeeeee", 0.2);
 };

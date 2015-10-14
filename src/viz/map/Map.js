@@ -3,6 +3,13 @@
 s4a.viz.map = s4a.viz.map || {} ;
 
 /**
+ * Map visualization objects
+ * @class
+ * @namespace s4a.viz.map
+ */
+s4a.viz.map = {};
+
+/**
  * The transparency to apply to statistical areas, bubbles and their respective
  * legends
  * @type {Number}
@@ -10,11 +17,31 @@ s4a.viz.map = s4a.viz.map || {} ;
 s4a.viz.map.StatAreaAlpha = 0.75;
 
 /**
+ * Create a choropleth map layer for use in ol3
+ * @param {s4a.viz.ViewCoordinator} mapData
+ * @param {s4a.viz.DiagramData} mapConfig
+ * @returns {ol.layer}
+ */
+s4a.viz.map.ChoroplethMapLayer = function (mapData, mapConfig) {
+    console.log('Not implemented');
+};
+
+/**
+ * Create a bubble map layer for use in ol3
+ * @param {s4a.viz.ViewCoordinator} mapData
+ * @param {s4a.viz.DiagramData} mapConfig
+ * @returns {ol.layer}
+ */
+s4a.viz.map.BubbleMapLayer = function (mapData, mapConfig) {
+    console.log('Not implemented');
+};
+
+/**
  * Draw a choropleth map inside the specified canvas
  * @param {Object} pDomNode
  * @param {Number} pWidth The width of the diagram
  * @param {Number} pHeight The height of the diagram
- * @param {AASDiag.DiagramData} pDiagramData JSON
+ * @param {s4a.viz.DiagramData} pDiagramData JSON
  * @returns {void}
  */
 s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
@@ -41,13 +68,13 @@ s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
                 return Number(pValue);
             }) || null,
             // Set a default color scale
-            mColor = pDiagramData.colors !== null && (pDiagramData.colors.length >= 1) ? s4a.viz.map.Colors[pDiagramData.colors[0]][mDomain.length] :
-            s4a.viz.map.Colors["Reds"][mDomain.length],
+            mColor = pDiagramData.colors !== null && (pDiagramData.colors.length >= 1) ? s4a.viz.color[pDiagramData.colors[0]][mDomain.length] :
+            s4a.viz.color["Reds"][mDomain.length],
             // Set a default secondary color scale
-            mColor2 = pDiagramData.colors !== null && (pDiagramData.colors.length >= 2) ? s4a.viz.map.Colors[pDiagramData.colors[1]][mDomain.length] :
-            s4a.viz.map.Colors["Blues"][mDomain.length],
+            mColor2 = pDiagramData.colors !== null && (pDiagramData.colors.length >= 2) ? s4a.viz.color[pDiagramData.colors[1]][mDomain.length] :
+            s4a.viz.color["Blues"][mDomain.length],
             // Set a default size range (for bubble diagrams etc)
-            mSizes = s4a.viz.map.Sizes.medium,
+            mSizes = s4a.viz.Sizes.medium,
             // Construct a color scale
             mColorScale = d3.scale.threshold()
             .domain(mDomain)
@@ -114,7 +141,7 @@ s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
                         }),
                         // Get the complete bounds of all features and calculate scale and translation
                         //var mBounds = mPath.bounds(zoomArea),
-                        mBounds = s4a.viz.map.Util.getFeatureCollectionBounds(mPath, mStatGeometries),
+                        mBounds = s4a.viz.map.util.getFeatureCollectionBounds(mPath, mStatGeometries),
                         // Calculate the scale factor
                         s = 0.95 / Math.max((mBounds[1][0] - mBounds[0][0]) / pWidth, (mBounds[1][1] - mBounds[0][1]) / pHeight),
                         // Calculate the translation offset from zero
@@ -133,36 +160,36 @@ s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
                 mContext.fillRect(0, 0, pWidth, pHeight);
 
                 // Draw basemap features I
-                s4a.viz.map.Shared._drawLand(mContext, mPath, pBaseMap);
+                s4a.viz.map.shared._drawLand(mContext, mPath, pBaseMap);
 
                 // Conditionally draw choropleth polygons
                 if (pDiagramData.mapType === "choroplethMap" ||
                         pDiagramData.mapType === "bubbleChoroplethMap") {
-                    s4a.viz.map.Shared._drawPolygons(mStatGeometries, mDataMap, mColorScale, mPath, mContext);
+                    s4a.viz.map.shared._drawPolygons(mStatGeometries, mDataMap, mColorScale, mPath, mContext);
                 }
 
                 // Draw basemap features II
-                s4a.viz.map.Shared._drawMunicipality(mContext, mPath, pStatAreas);
-                s4a.viz.map.Shared._drawCounty(mContext, mPath, pStatAreas);
+                s4a.viz.map.shared._drawMunicipality(mContext, mPath, pStatAreas);
+                s4a.viz.map.shared._drawCounty(mContext, mPath, pStatAreas);
 
                 // Conditionally draw bubbles
                 if (pDiagramData.mapType === "bubbleMap") {
-                    s4a.viz.map.Shared._drawBubbles(mStatGeometries, mDataMap, mSizeScale, mColorScale, mPath, mContext);
+                    s4a.viz.map.shared._drawBubbles(mStatGeometries, mDataMap, mSizeScale, mColorScale, mPath, mContext);
                 }
                 // Conditionally draw additional bubbles (series 2)
                 else if (pDiagramData.mapType === "bubbleChoroplethMap") {
-                    s4a.viz.map.Shared._drawBubbles(mStatGeometries, mDataMap2, mSizeScale, mColorScale2, mPath, mContext);
+                    s4a.viz.map.shared._drawBubbles(mStatGeometries, mDataMap2, mSizeScale, mColorScale2, mPath, mContext);
                 }
                 // Conditionally draw pie charts
                 else if (pDiagramData.mapType === "pieChartMap") {
-                    s4a.viz.map.Shared._drawPieCharts(mStatGeometries, mDataMapMulti, mColor, mPath, mContext);
+                    s4a.viz.map.shared._drawPieCharts(mStatGeometries, mDataMapMulti, mColor, mPath, mContext);
                 }
 
                 // Draw labels
-                s4a.viz.map.Shared._drawLabels(mContext, mPath, mStatGeometries, (pDiagramData.fontSize - 2));
+                s4a.viz.map.shared._drawLabels(mContext, mPath, mStatGeometries, (pDiagramData.fontSize - 2));
 
                 // Draw legend  
-                s4a.viz.map.Shared._drawRectSymMapLegend(mContext, mColorScale, pDiagramData.title, Number(pDiagramData.fontSize));
+                s4a.viz.map.shared._drawRectSymMapLegend(mContext, mColorScale, pDiagramData.title, Number(pDiagramData.fontSize));
 
                 return mContext;
             });

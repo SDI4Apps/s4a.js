@@ -1,7 +1,7 @@
 /**
  * Enumeration of size-scales
  * @readonly
- * @enum {array}
+ * @enum {number}
  */
 s4a.viz.Sizes = {
     /**

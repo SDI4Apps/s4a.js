@@ -7,7 +7,7 @@
  * @readonly
  * @enum {Object}
  */
-s4a.viz.Colors = {
+s4a.viz.color = {
     /**
      * Yellow to green
      * @type Object

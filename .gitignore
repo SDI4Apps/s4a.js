@@ -1,5 +1,5 @@
 /node_modules/
 /nbproject/
-/dist/*
+/dist/
 /doc/*
 .sublime-grunt.cache

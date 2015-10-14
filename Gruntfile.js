@@ -13,12 +13,13 @@ module.exports = function (grunt) {
         // Task configuration.
         concat: {
             options: {
-                banner: '<%= banner %>',
-                stripBanners: true
+                banner: '<%= banner %>'
             },
             dist: {
                 src: ['src/<%= pkg.name %>.js',
                     'src/viz/viz.js',
+                    'src/viz/VizTypes.js',
+                    'src/viz/VizObj.js',
                     'src/viz/ViewCoordinator.js',
                     'src/viz/Colors.js',
                     'src/viz/Sizes.js',
@@ -40,7 +41,11 @@ module.exports = function (grunt) {
         },
         uglify: {
             options: {
-                banner: '<%= banner %>'
+                banner: '<%= banner %>',
+                preserveComments: false,
+                mangle: {
+                    except: ['jQuery']
+                }
             },
             dist: {
                 src: '<%= concat.dist.dest %>',
@@ -89,7 +94,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-jsdoc');
+
     // Default task.
-    grunt.registerTask('default', ['jshint', 'concat', 'nodeunit', 'uglify']);
-    grunt.registerTask('build-with-docs', ['concat', 'uglify', 'jsdoc']);
+    grunt.registerTask('default', ['jshint', 'concat', 'nodeunit', 'uglify', 'update-docs']);
+    grunt.registerTask('update-docs', ['concat', 'jsdoc']);
 };

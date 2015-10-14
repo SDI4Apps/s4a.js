@@ -1,32 +1,30 @@
 /**
- * Define namespace utilities
- * @namespace AASDiag.Util
- * @memberOf AASDiag
- * @type {Object}
+ * Namespace for map related utilities
+ * @namespace
  */
-s4a.viz.map.Util = s4a.viz.map.Util || {};
+s4a.viz.map.util = {};
 
 /**
  * Return a unique URL to ensure that scripts/styles are reloaded every time
  * @param {String} pUrl An URL
  * @returns {String} URL with unique suffix
  */
-s4a.viz.map.Util.secureReload = function (pUrl) {
+s4a.viz.map.util.secureReload = function (pUrl) {
     var mConcatChar = pUrl.indexOf('?' !== -1) ? '?' : '&';
     return pUrl + mConcatChar + "rnd=" + (Math.random() * 100).toString();
 };
 
 /**
- * Returns the number of characters in the longest formatted number in an array
- * @param {Array} pArray An array of numbers
- * @returns {Number} The number of characters in formatted number
+ * Returns the number of characters in the longest formatted number in an array of numbers
+ * @param {number[]} numberArray An array of numbers to be measured
+ * @returns {number} The number of characters in the longest number
  */
-s4a.viz.map.Util.getLengthOfLongest = function (pArray) {
+s4a.viz.map.util.getLengthOfLongest = function (numberArray) {
     var mLength = 0;
-    if (pArray !== null && pArray.length > 1) {
+    if (numberArray !== null && numberArray.length > 1) {
         var tmpLength;
-        for (var i = (pArray.length - 1); i > 0; i--) {
-            var mLabel = jQuery.number(pArray[i - 1]) + " - " + jQuery.number(pArray[i]);
+        for (var i = (numberArray.length - 1); i > 0; i--) {
+            var mLabel = jQuery.number(numberArray[i - 1]) + " - " + jQuery.number(numberArray[i]);
             tmpLength = mLabel.length;
             if (tmpLength > mLength) {
                 mLength = tmpLength;
@@ -41,7 +39,7 @@ s4a.viz.map.Util.getLengthOfLongest = function (pArray) {
  * @param {Array} pArray
  * @returns {String}
  */
-s4a.viz.map.Util.getLongestStringInArray = function (pArray) {
+s4a.viz.map.util.getLongestStringInArray = function (pArray) {
     var mArray = pArray.slice();
     return mArray.sort(function (a, b) {
         return b.toString().length - a.toString().length;
@@ -55,7 +53,7 @@ s4a.viz.map.Util.getLongestStringInArray = function (pArray) {
  * @param {Number} pDataArray An array of numbers
  * @returns {Number}
  */
-s4a.viz.map.Util.getTotal = function (pDataArray) {
+s4a.viz.map.util.getTotal = function (pDataArray) {
     var pTotal = 0;
     for (var j = 0; j < pDataArray.length; j++) {
         pTotal += (typeof pDataArray[j] === 'number') ? pDataArray[j] : 0;
@@ -69,14 +67,14 @@ s4a.viz.map.Util.getTotal = function (pDataArray) {
  * @param {Object} pObject
  * @returns {AASDiag.DiagramData}
  */
-s4a.viz.map.Util.fixJsonData = function (pObject) {
-    var mDiagramData = new s4a.viz.map.DiagramData();
+s4a.viz.map.util.fixJsonData = function (pObject) {
+    var mDiagramData = new s4a.viz.DiagramData();
     mDiagramData.title = pObject.title[0] || null;
     mDiagramData.mapType = pObject.type !== undefined ? pObject.type : mDiagramData.mapType;
     mDiagramData.mapUnitType = pObject.mapUnitType;
     mDiagramData.mapUnitIDs = pObject.categoryLabels.string;
     mDiagramData.seriesLabels = pObject.title.string;
-    mDiagramData.seriesData = s4a.viz.map.Util.fixSeriesJsonData(pObject.seriesData);
+    mDiagramData.seriesData = s4a.viz.map.util.fixSeriesJsonData(pObject.seriesData);
     mDiagramData.domains = pObject.intervals.float;
     mDiagramData.showLabels = pObject.showLabels || false;
     mDiagramData.showSeries = pObject.showSeries || [0];
@@ -96,7 +94,7 @@ s4a.viz.map.Util.fixJsonData = function (pObject) {
  * @param {Object} pSeriesData
  * @returns {Array} Array of arrays containing series data
  */
-s4a.viz.map.Util.fixSeriesJsonData = function (pSeriesData) {
+s4a.viz.map.util.fixSeriesJsonData = function (pSeriesData) {
     var mSeriesData = [];
     for (var i = 0; i < pSeriesData.ArrayOfDecimal.length; i++) {
         mSeriesData.push(pSeriesData.ArrayOfDecimal[i].decimal);
@@ -109,7 +107,7 @@ s4a.viz.map.Util.fixSeriesJsonData = function (pSeriesData) {
  * @param {type} pFeatures An array of geojson features
  * @returns {Array} The combined bounds of the features [[xmin,ymin], [xmax,ymax]]
  */
-s4a.viz.map.Util.getFeatureCollectionBounds = function (pPath, pFeatures) {
+s4a.viz.map.util.getFeatureCollectionBounds = function (pPath, pFeatures) {
     var mBounds = [[null, null], [null, null]];
     for (var i = 0, j = pFeatures.length; i < j; i++) {
         var mCBounds = pPath.bounds(pFeatures[i]);
@@ -129,7 +127,7 @@ s4a.viz.map.Util.getFeatureCollectionBounds = function (pPath, pFeatures) {
     return mBounds;
 };
 
-s4a.viz.map.Util.valuesToSlices = function (pSeries) {
+s4a.viz.map.util.valuesToSlices = function (pSeries) {
     if (pSeries !== undefined && typeof pSeries === "object" && Array.isArray(pSeries) === true) {
         var mSum = 0;
         for (var i = 0, j = pSeries.length; i < j; i++) {

@@ -1,19 +1,98 @@
-/*! s4a - v0.1.0 - 2015-10-14
+/*! s4a - v0.1.0 - 2015-10-15
 * https://github.com/SDI4Apps/s4a.js
-* Copyright (c) 2015 SDI4Apps Partnership; Licensed MIT */
-var s4a = {
-    version: 0.1
-};
-s4a.viz = (function () {
+* Copyright (c) 2015 SDI4Apps Partnership; Licensed Apache2 */
+/**
+ * <p>SDI4Apps client-side library for rapid application development based on the
+ * SDI4Apps platform OpenAPI</p>
+ * <p>Functions to draw statistical maps for use with OpenLayers based applications.</p>
+ * 
+ * @namespace
+ * @requires d3.v3
+ * @requires jQuery-1.10.2
+ * @requires jQuery-xml2json
+ * @requires jQuery-number-2.1.3
+ * @requires topojson
+ * @requires simple-statistics
+ * @requires queue.v1
+ * @requires topojson.v1
+ */
 
-    return {
-        'vizTypes': {
-            'diagram': 1,
-            'map': 2
-        }
+var s4a = {
+    /**
+     * Version number of the s4a.js library
+     * @type Number
+     */
+    version: '0.1.0'
+};
+/* global s4a */
+
+/**
+ * Namespace for all objects related to visualization of map and tabular data
+ * @namespace
+ */
+s4a.viz = {};
+/* global s4a */
+
+/**
+ * Enumeration 
+ * @enum {number}
+ * @readonly
+ */
+s4a.viz.VizTypes = {
+    /**
+     * Diagram
+     */
+    'diagram': 1,
+    /**
+     * Map
+     */
+    'map': 2
+};
+/* global s4a */
+
+/**
+ * <p>This is an abstract top-level object that coordinates data and visualizations
+ * that take part in a coordinated view</p> 
+ * 
+ * <p>Any visualization object must implement an interface that contains the methods
+ * update and filter</p>
+ * 
+ * <p>The object receives as part of the constructor a ViewCoordinator object
+ * that implicitly contains data</p>
+ * 
+ * <p>The object receives as part of the constructor a DOMElement identified by its
+ * ID, typically i DIV in which it is to be drawn</p>
+ * @abstract
+ * @constructor
+ * @param {s4a.viz.ViewCoordinator} viewCoordinator
+ * @param {DOMElement} domElement
+ * @returns {s4a.viz.VizObj}
+ */
+s4a.viz.VizObj = function (viewCoordinator, domElement) {
+
+    var _self = this,
+            _viewCoordinator = viewCoordinator;
+    _viewCoordinator.subscribe(_self);
+
+    /**
+     * Update the visualization
+     * @abstract
+     */
+    this.update = function () {
+        throw new Error('Must be implemented by sub-class');
     };
 
-})();
+    /**
+     * Apply a filter to the visualization
+     * @abstract
+     */
+    this.filter = function (filter) {
+        throw new Error('Must be implemented by sub-class');
+    };
+    
+};
+/* global s4a */
+
 /**
  * A top level object that coordinates data and visualizations 
  * @param {Object} pData
@@ -94,7 +173,16 @@ s4a.viz.ViewCoordinator = function (pData) {
     };
 
 };
-s4a.viz.Colors = {
+/**
+ * Color scales
+ * This product includes color specifications and designs developed by
+ * Cynthia Brewer (http://colorbrewer.org/). JavaScript specs as packaged
+ * in the D3 library (d3js.org).
+ * Please see license at http://colorbrewer.org/export/LICENSE.txt
+ * @readonly
+ * @enum {Object}
+ */
+s4a.viz.color = {
     /**
      * Yellow to green
      * @type Object
@@ -435,6 +523,11 @@ s4a.viz.Colors = {
         11: ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5"],
         12: ["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
     }};
+/**
+ * Enumeration of size-scales
+ * @readonly
+ * @enum {number}
+ */
 s4a.viz.Sizes = {
     /**
      * From 5px to 19px
@@ -480,6 +573,37 @@ s4a.viz.FontSizes = {
      */
     "large": 18
 };
+/**
+ * Object that defines the content, type and layout of a map
+ * 
+ * @class
+ * @constructor
+ * @property {String} [title=null] The title of the diagram
+ * @property {String} [mapType="choroplethMap"] One of: "choroplethMap", "bubbleMap",
+ *              "pieChartMap" or "bubbleChoroplethMap"
+ * @property {String} mapUnitType The type of map unit (i.e. "land", "fylke", "kommune", "grunnkrets")
+ * @property {Array} mapUnitIDs An array of map unit IDs. This array should be of the same length
+ *              as the array seriesData.
+ * @property {Array} seriesLabels An array of strings containing the name of each data series
+ *              if the map contains more than one series. This array shoud be of the same length
+ *              as the arrays stored in each item of the array seriesData
+ * @property {Array} seriesData An array of arrays with one key for each mapUnitID in the array
+ *              mapUnitIDs, each sub-array should have as many entries as the array seriesLabels
+ * @property {Array} domains The classification of the data series, e.g. the array [1,3,5,7,9]
+ *              represents the classes 1-3, 3-5, 5-7 and 7-9.
+ * @property {Array} [colors=["Reds"]] An array of named color scales as defined in AASDiag.Colors.
+ *              Legal values include "Blues", "Greens", "Oranges", "Reds"
+ * @property {Boolean} [showLabels=false] True to show labels
+ * @property {Array} [showSeries=[0]] An array containing the zero-based index of
+ *              the series to display if the supplied data contains more than one
+ *              data series. the mapType "bubbleChoroplethMap" supports
+ *              two data series and the mapType "pieChartMap" supports any number of
+ *              data series.
+ * @property {Number} [mapWidth="auto"] The width of the map in pixels or auto to use
+ *              width of containing DOM element
+ * @property {Number} [mapHeight="auto"] The width of the map in pixels or auto to use
+ *              height of containing DOM element
+ */
 s4a.viz.DiagramData = function() {
 var mDiagramData = {title: null,
         mapType: "choroplethMap",
@@ -496,8 +620,14 @@ var mDiagramData = {title: null,
         fontSize: 12};
         return mDiagramData;
 };
+/* global s4a */
 
-s4a.viz.map = s4a.viz.map || {} ;
+/**
+ * Map visualization objects
+ * @class
+ * @namespace s4a.viz.map
+ */
+s4a.viz.map = {};
 
 /**
  * The transparency to apply to statistical areas, bubbles and their respective
@@ -507,11 +637,31 @@ s4a.viz.map = s4a.viz.map || {} ;
 s4a.viz.map.StatAreaAlpha = 0.75;
 
 /**
+ * Create a choropleth map layer for use in ol3
+ * @param {s4a.viz.ViewCoordinator} mapData
+ * @param {s4a.viz.DiagramData} mapConfig
+ * @returns {ol.layer}
+ */
+s4a.viz.map.ChoroplethMapLayer = function (mapData, mapConfig) {
+    console.log('Not implemented');
+};
+
+/**
+ * Create a bubble map layer for use in ol3
+ * @param {s4a.viz.ViewCoordinator} mapData
+ * @param {s4a.viz.DiagramData} mapConfig
+ * @returns {ol.layer}
+ */
+s4a.viz.map.BubbleMapLayer = function (mapData, mapConfig) {
+    console.log('Not implemented');
+};
+
+/**
  * Draw a choropleth map inside the specified canvas
  * @param {Object} pDomNode
  * @param {Number} pWidth The width of the diagram
  * @param {Number} pHeight The height of the diagram
- * @param {AASDiag.DiagramData} pDiagramData JSON
+ * @param {s4a.viz.DiagramData} pDiagramData JSON
  * @returns {void}
  */
 s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
@@ -538,13 +688,13 @@ s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
                 return Number(pValue);
             }) || null,
             // Set a default color scale
-            mColor = pDiagramData.colors !== null && (pDiagramData.colors.length >= 1) ? s4a.viz.map.Colors[pDiagramData.colors[0]][mDomain.length] :
-            s4a.viz.map.Colors["Reds"][mDomain.length],
+            mColor = pDiagramData.colors !== null && (pDiagramData.colors.length >= 1) ? s4a.viz.color[pDiagramData.colors[0]][mDomain.length] :
+            s4a.viz.color["Reds"][mDomain.length],
             // Set a default secondary color scale
-            mColor2 = pDiagramData.colors !== null && (pDiagramData.colors.length >= 2) ? s4a.viz.map.Colors[pDiagramData.colors[1]][mDomain.length] :
-            s4a.viz.map.Colors["Blues"][mDomain.length],
+            mColor2 = pDiagramData.colors !== null && (pDiagramData.colors.length >= 2) ? s4a.viz.color[pDiagramData.colors[1]][mDomain.length] :
+            s4a.viz.color["Blues"][mDomain.length],
             // Set a default size range (for bubble diagrams etc)
-            mSizes = s4a.viz.map.Sizes.medium,
+            mSizes = s4a.viz.Sizes.medium,
             // Construct a color scale
             mColorScale = d3.scale.threshold()
             .domain(mDomain)
@@ -611,7 +761,7 @@ s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
                         }),
                         // Get the complete bounds of all features and calculate scale and translation
                         //var mBounds = mPath.bounds(zoomArea),
-                        mBounds = s4a.viz.map.Util.getFeatureCollectionBounds(mPath, mStatGeometries),
+                        mBounds = s4a.viz.map.util.getFeatureCollectionBounds(mPath, mStatGeometries),
                         // Calculate the scale factor
                         s = 0.95 / Math.max((mBounds[1][0] - mBounds[0][0]) / pWidth, (mBounds[1][1] - mBounds[0][1]) / pHeight),
                         // Calculate the translation offset from zero
@@ -630,63 +780,68 @@ s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
                 mContext.fillRect(0, 0, pWidth, pHeight);
 
                 // Draw basemap features I
-                s4a.viz.map.Shared._drawLand(mContext, mPath, pBaseMap);
+                s4a.viz.map.shared._drawLand(mContext, mPath, pBaseMap);
 
                 // Conditionally draw choropleth polygons
                 if (pDiagramData.mapType === "choroplethMap" ||
                         pDiagramData.mapType === "bubbleChoroplethMap") {
-                    s4a.viz.map.Shared._drawPolygons(mStatGeometries, mDataMap, mColorScale, mPath, mContext);
+                    s4a.viz.map.shared._drawPolygons(mStatGeometries, mDataMap, mColorScale, mPath, mContext);
                 }
 
                 // Draw basemap features II
-                s4a.viz.map.Shared._drawMunicipality(mContext, mPath, pStatAreas);
-                s4a.viz.map.Shared._drawCounty(mContext, mPath, pStatAreas);
+                s4a.viz.map.shared._drawMunicipality(mContext, mPath, pStatAreas);
+                s4a.viz.map.shared._drawCounty(mContext, mPath, pStatAreas);
 
                 // Conditionally draw bubbles
                 if (pDiagramData.mapType === "bubbleMap") {
-                    s4a.viz.map.Shared._drawBubbles(mStatGeometries, mDataMap, mSizeScale, mColorScale, mPath, mContext);
+                    s4a.viz.map.shared._drawBubbles(mStatGeometries, mDataMap, mSizeScale, mColorScale, mPath, mContext);
                 }
                 // Conditionally draw additional bubbles (series 2)
                 else if (pDiagramData.mapType === "bubbleChoroplethMap") {
-                    s4a.viz.map.Shared._drawBubbles(mStatGeometries, mDataMap2, mSizeScale, mColorScale2, mPath, mContext);
+                    s4a.viz.map.shared._drawBubbles(mStatGeometries, mDataMap2, mSizeScale, mColorScale2, mPath, mContext);
                 }
                 // Conditionally draw pie charts
                 else if (pDiagramData.mapType === "pieChartMap") {
-                    s4a.viz.map.Shared._drawPieCharts(mStatGeometries, mDataMapMulti, mColor, mPath, mContext);
+                    s4a.viz.map.shared._drawPieCharts(mStatGeometries, mDataMapMulti, mColor, mPath, mContext);
                 }
 
                 // Draw labels
-                s4a.viz.map.Shared._drawLabels(mContext, mPath, mStatGeometries, (pDiagramData.fontSize - 2));
+                s4a.viz.map.shared._drawLabels(mContext, mPath, mStatGeometries, (pDiagramData.fontSize - 2));
 
                 // Draw legend  
-                s4a.viz.map.Shared._drawRectSymMapLegend(mContext, mColorScale, pDiagramData.title, Number(pDiagramData.fontSize));
+                s4a.viz.map.shared._drawRectSymMapLegend(mContext, mColorScale, pDiagramData.title, Number(pDiagramData.fontSize));
 
                 return mContext;
             });
 };
-s4a.viz.map.Util = s4a.viz.map.Util || {};
+
+/**
+ * Namespace for map related utilities
+ * @namespace
+ */
+s4a.viz.map.util = {};
 
 /**
  * Return a unique URL to ensure that scripts/styles are reloaded every time
  * @param {String} pUrl An URL
  * @returns {String} URL with unique suffix
  */
-s4a.viz.map.Util.secureReload = function (pUrl) {
+s4a.viz.map.util.secureReload = function (pUrl) {
     var mConcatChar = pUrl.indexOf('?' !== -1) ? '?' : '&';
     return pUrl + mConcatChar + "rnd=" + (Math.random() * 100).toString();
 };
 
 /**
- * Returns the number of characters in the longest formatted number in an array
- * @param {Array} pArray An array of numbers
- * @returns {Number} The number of characters in formatted number
+ * Returns the number of characters in the longest formatted number in an array of numbers
+ * @param {number[]} numberArray An array of numbers to be measured
+ * @returns {number} The number of characters in the longest number
  */
-s4a.viz.map.Util.getLengthOfLongest = function (pArray) {
+s4a.viz.map.util.getLengthOfLongest = function (numberArray) {
     var mLength = 0;
-    if (pArray !== null && pArray.length > 1) {
+    if (numberArray !== null && numberArray.length > 1) {
         var tmpLength;
-        for (var i = (pArray.length - 1); i > 0; i--) {
-            var mLabel = jQuery.number(pArray[i - 1]) + " - " + jQuery.number(pArray[i]);
+        for (var i = (numberArray.length - 1); i > 0; i--) {
+            var mLabel = jQuery.number(numberArray[i - 1]) + " - " + jQuery.number(numberArray[i]);
             tmpLength = mLabel.length;
             if (tmpLength > mLength) {
                 mLength = tmpLength;
@@ -701,7 +856,7 @@ s4a.viz.map.Util.getLengthOfLongest = function (pArray) {
  * @param {Array} pArray
  * @returns {String}
  */
-s4a.viz.map.Util.getLongestStringInArray = function (pArray) {
+s4a.viz.map.util.getLongestStringInArray = function (pArray) {
     var mArray = pArray.slice();
     return mArray.sort(function (a, b) {
         return b.toString().length - a.toString().length;
@@ -715,7 +870,7 @@ s4a.viz.map.Util.getLongestStringInArray = function (pArray) {
  * @param {Number} pDataArray An array of numbers
  * @returns {Number}
  */
-s4a.viz.map.Util.getTotal = function (pDataArray) {
+s4a.viz.map.util.getTotal = function (pDataArray) {
     var pTotal = 0;
     for (var j = 0; j < pDataArray.length; j++) {
         pTotal += (typeof pDataArray[j] === 'number') ? pDataArray[j] : 0;
@@ -729,14 +884,14 @@ s4a.viz.map.Util.getTotal = function (pDataArray) {
  * @param {Object} pObject
  * @returns {AASDiag.DiagramData}
  */
-s4a.viz.map.Util.fixJsonData = function (pObject) {
-    var mDiagramData = new s4a.viz.map.DiagramData();
+s4a.viz.map.util.fixJsonData = function (pObject) {
+    var mDiagramData = new s4a.viz.DiagramData();
     mDiagramData.title = pObject.title[0] || null;
     mDiagramData.mapType = pObject.type !== undefined ? pObject.type : mDiagramData.mapType;
     mDiagramData.mapUnitType = pObject.mapUnitType;
     mDiagramData.mapUnitIDs = pObject.categoryLabels.string;
     mDiagramData.seriesLabels = pObject.title.string;
-    mDiagramData.seriesData = s4a.viz.map.Util.fixSeriesJsonData(pObject.seriesData);
+    mDiagramData.seriesData = s4a.viz.map.util.fixSeriesJsonData(pObject.seriesData);
     mDiagramData.domains = pObject.intervals.float;
     mDiagramData.showLabels = pObject.showLabels || false;
     mDiagramData.showSeries = pObject.showSeries || [0];
@@ -756,7 +911,7 @@ s4a.viz.map.Util.fixJsonData = function (pObject) {
  * @param {Object} pSeriesData
  * @returns {Array} Array of arrays containing series data
  */
-s4a.viz.map.Util.fixSeriesJsonData = function (pSeriesData) {
+s4a.viz.map.util.fixSeriesJsonData = function (pSeriesData) {
     var mSeriesData = [];
     for (var i = 0; i < pSeriesData.ArrayOfDecimal.length; i++) {
         mSeriesData.push(pSeriesData.ArrayOfDecimal[i].decimal);
@@ -769,7 +924,7 @@ s4a.viz.map.Util.fixSeriesJsonData = function (pSeriesData) {
  * @param {type} pFeatures An array of geojson features
  * @returns {Array} The combined bounds of the features [[xmin,ymin], [xmax,ymax]]
  */
-s4a.viz.map.Util.getFeatureCollectionBounds = function (pPath, pFeatures) {
+s4a.viz.map.util.getFeatureCollectionBounds = function (pPath, pFeatures) {
     var mBounds = [[null, null], [null, null]];
     for (var i = 0, j = pFeatures.length; i < j; i++) {
         var mCBounds = pPath.bounds(pFeatures[i]);
@@ -789,7 +944,7 @@ s4a.viz.map.Util.getFeatureCollectionBounds = function (pPath, pFeatures) {
     return mBounds;
 };
 
-s4a.viz.map.Util.valuesToSlices = function (pSeries) {
+s4a.viz.map.util.valuesToSlices = function (pSeries) {
     if (pSeries !== undefined && typeof pSeries === "object" && Array.isArray(pSeries) === true) {
         var mSum = 0;
         for (var i = 0, j = pSeries.length; i < j; i++) {
@@ -805,7 +960,12 @@ s4a.viz.map.Util.valuesToSlices = function (pSeries) {
     }
 
 };
-s4a.viz.map.Shared = s4a.viz.map.Shared || {};
+/**
+ * Define namespace utilities
+ * @namespace
+ * @type {Object}
+ */
+s4a.viz.map.shared = {};
 
 /**
  * Draws the diagram title
@@ -816,7 +976,7 @@ s4a.viz.map.Shared = s4a.viz.map.Shared || {};
  * @param {Number} pCurrentLinePosition
  * @returns {Number}
  */
-s4a.viz.map.Shared._drawDiagramTitle = function (pContext, pFontSize, pTitle, pLeftMargin, pCurrentLinePosition) {
+s4a.viz.map.shared._drawDiagramTitle = function (pContext, pFontSize, pTitle, pLeftMargin, pCurrentLinePosition) {
     pContext.font = "bolder " + pFontSize + "px Arial";
     pContext.textAlign = "start"; // Right align the labels
     pContext.fillStyle = "#000000";
@@ -832,7 +992,7 @@ s4a.viz.map.Shared._drawDiagramTitle = function (pContext, pFontSize, pTitle, pL
  * @param {String} pTitle The title to print on top of the legend
  * @returns {void}
  */
-s4a.viz.map.Shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, pFontSize) {
+s4a.viz.map.shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, pFontSize) {
 
     pFontSize = pFontSize !== undefined ? pFontSize : s4a.viz.map.FontSizes.normal;
 
@@ -844,12 +1004,12 @@ s4a.viz.map.Shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, p
 
     var mYPos = mTopMargin + pFontSize;
     // Get the length of the longest legend label entry
-    var mLongestLabel = s4a.viz.map.Util.getLongestStringInArray(pColor.domain());
+    var mLongestLabel = s4a.viz.map.util.getLongestStringInArray(pColor.domain());
     pContext.font = pFontSize + "px Arial";
     var mRightAlignInset = pContext.measureText(mLongestLabel).width * 2;
 
     if (pTitle !== undefined && pTitle !== null && pTitle !== '') {
-        mYPos = s4a.viz.map.Shared._drawDiagramTitle(pContext, pFontSize, pTitle, mLeftMargin, mYPos);
+        mYPos = s4a.viz.map.shared._drawDiagramTitle(pContext, pFontSize, pTitle, mLeftMargin, mYPos);
     }
 
     pContext.font = pFontSize + "px Arial";
@@ -895,7 +1055,7 @@ s4a.viz.map.Shared._drawRectSymMapLegend = function (pContext, pColor, pTitle, p
  * @param {Object} pContext A Canvas 2d-context
  * @returns {void}
  */
-s4a.viz.map.Shared._drawPolygons = function (pGeoJson, pDataMap, pScale, pPath, pContext) {
+s4a.viz.map.shared._drawPolygons = function (pGeoJson, pDataMap, pScale, pPath, pContext) {
     pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
     var mRange = pScale.domain();
     var mMax = Math.max.apply(null, mRange);
@@ -925,11 +1085,11 @@ s4a.viz.map.Shared._drawPolygons = function (pGeoJson, pDataMap, pScale, pPath, 
  * @param {Object} pContext A Canvas 2d-context
  * @returns {void}
  */
-s4a.viz.map.Shared._drawPieCharts = function (pGeoJson, pDataMapMulti, pColor, pPath, pContext) {
+s4a.viz.map.shared._drawPieCharts = function (pGeoJson, pDataMapMulti, pColor, pPath, pContext) {
     pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
     pGeoJson.forEach(function (mFeature) {
         var mSize = 25;
-        var mSlices = s4a.viz.map.Util.valuesToSlices(pDataMapMulti[mFeature.id]);
+        var mSlices = s4a.viz.map.util.valuesToSlices(pDataMapMulti[mFeature.id]);
         var mStartAngle = 1.5 * Math.PI;
         var mPoint = pPath.centroid(mFeature);
         for (var i = 0, j = mSlices.length; i < j; i++) {
@@ -959,7 +1119,7 @@ s4a.viz.map.Shared._drawPieCharts = function (pGeoJson, pDataMapMulti, pColor, p
  * @param {String} pTitle The title to print on top of the legend
  * @returns {void}
  */
-s4a.viz.map.Shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle) {
+s4a.viz.map.shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle) {
 
     var mFontSize = 12;
     var mLeftMargin = 10;
@@ -967,7 +1127,7 @@ s4a.viz.map.Shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle)
     var mLineHeight = mFontSize * 1.5;
     var mCurrentLinePosition = mTopMargin + mFontSize;
     // Get the length of the longest legend label entry
-    var mRightAlignInset = s4a.viz.map.Util.getLengthOfLongest(pColor.domain()) * (mFontSize / 1.5);
+    var mRightAlignInset = s4a.viz.map.util.getLengthOfLongest(pColor.domain()) * (mFontSize / 1.5);
     // Insert logic for legend height here
     pContext.font = mFontSize + "px Arial Bold";
     pContext.textAlign = "start"; // Right align the labels
@@ -1013,7 +1173,7 @@ s4a.viz.map.Shared._drawCircleSymMapLegend = function (pContext, pColor, pTitle)
  * @param {Object} pContext A Canvas 2d-context
  * @returns {void}
  */
-s4a.viz.map.Shared._drawBubbles = function (pGeoJson, pDataMap, pSizeScale, pColorScale, pPath, pContext) {
+s4a.viz.map.shared._drawBubbles = function (pGeoJson, pDataMap, pSizeScale, pColorScale, pPath, pContext) {
     pContext.globalAlpha = s4a.viz.map.StatAreaAlpha;
     pGeoJson.forEach(function (pFeature) {
         var mSize = pSizeScale(pDataMap[pFeature.id]);
@@ -1039,7 +1199,7 @@ s4a.viz.map.Shared._drawBubbles = function (pGeoJson, pDataMap, pSizeScale, pCol
  * @param {Object} pContext HTML5 2d-drawing context
  * @returns {void}
  */
-s4a.viz.map.Shared._drawLabels = function (pContext, pPath, pGeoJson, pFontSize) {
+s4a.viz.map.shared._drawLabels = function (pContext, pPath, pGeoJson, pFontSize) {
 
     pFontSize = pFontSize !== undefined ? pFontSize : s4a.viz.map.FontSizes.small;
 
@@ -1061,7 +1221,7 @@ s4a.viz.map.Shared._drawLabels = function (pContext, pPath, pGeoJson, pFontSize)
  * @param {Number} pLineWidth
  * @returns {void}
  */
-s4a.viz.map.Shared._drawGeoJson = function (pContext, pPath, pGeoJson, pLineColor, pFillColor, pLineWidth) {
+s4a.viz.map.shared._drawGeoJson = function (pContext, pPath, pGeoJson, pLineColor, pFillColor, pLineWidth) {
     pContext.strokeStyle = pLineColor || "transparent";
     pContext.lineWidth = pLineWidth;
     pContext.fillStyle = pFillColor || "transparent";
@@ -1081,11 +1241,11 @@ s4a.viz.map.Shared._drawGeoJson = function (pContext, pPath, pGeoJson, pLineColo
  * @param {Object} pStatUnitTopoJson
  * @returns {void}
  */
-s4a.viz.map.Shared._drawMunicipality = function (pContext, pPath, pStatUnitTopoJson) {
+s4a.viz.map.shared._drawMunicipality = function (pContext, pPath, pStatUnitTopoJson) {
     var mKommune = topojson.mesh(pStatUnitTopoJson, pStatUnitTopoJson.objects.kommune, function (a, b) {
         return a.id !== b.id;
     });
-    s4a.viz.map.Shared._drawGeoJson(pContext, pPath, mKommune, "#000000", null, 0.5);
+    s4a.viz.map.shared._drawGeoJson(pContext, pPath, mKommune, "#000000", null, 0.5);
 };
 
 /**
@@ -1093,11 +1253,11 @@ s4a.viz.map.Shared._drawMunicipality = function (pContext, pPath, pStatUnitTopoJ
  * @param {Object} pStatUnitTopoJson
  * @returns {void}
  */
-s4a.viz.map.Shared._drawCounty = function (pContext, pPath, pStatUnitTopoJson) {
+s4a.viz.map.shared._drawCounty = function (pContext, pPath, pStatUnitTopoJson) {
     var mCounty = topojson.mesh(pStatUnitTopoJson, pStatUnitTopoJson.objects.fylke, function (a, b) {
         return a.id !== b.id;
     });
-    s4a.viz.map.Shared._drawGeoJson(pContext, pPath, mCounty, "#000000", null, 1);
+    s4a.viz.map.shared._drawGeoJson(pContext, pPath, mCounty, "#000000", null, 1);
 };
 
 /**
@@ -1105,7 +1265,7 @@ s4a.viz.map.Shared._drawCounty = function (pContext, pPath, pStatUnitTopoJson) {
  * @param {Object} pStatUnitTopoJson
  * @returns {void}
  */
-s4a.viz.map.Shared._drawLand = function (pContext, pPath, pLandTopoJson) {
+s4a.viz.map.shared._drawLand = function (pContext, pPath, pLandTopoJson) {
     var mLand = topojson.feature(pLandTopoJson, pLandTopoJson.objects.sea);
-    s4a.viz.map.Shared._drawGeoJson(pContext, pPath, mLand, "#999999", "#eeeeee", 0.2);
+    s4a.viz.map.shared._drawGeoJson(pContext, pPath, mLand, "#999999", "#eeeeee", 0.2);
 };

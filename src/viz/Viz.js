@@ -1,12 +1,7 @@
 /* global s4a */
 
-s4a.viz = (function () {
-
-    return {
-        'vizTypes': {
-            'diagram': 1,
-            'map': 2
-        }
-    };
-
-})();
+/**
+ * Namespace for all objects related to visualization of map and tabular data
+ * @namespace
+ */
+s4a.viz = {};

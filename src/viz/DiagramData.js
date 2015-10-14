@@ -1,5 +1,6 @@
 /**
  * Object that defines the content, type and layout of a map
+ * 
  * @class
  * @constructor
  * @property {String} [title=null] The title of the diagram

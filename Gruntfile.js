@@ -1,5 +1,4 @@
 'use strict';
-
 module.exports = function (grunt) {
 
     // Project configuration.
@@ -14,26 +13,40 @@ module.exports = function (grunt) {
         // Task configuration.
         concat: {
             options: {
-                banner: '<%= banner %>',
-                stripBanners: true
+                banner: '<%= banner %>'
             },
             dist: {
                 src: ['src/<%= pkg.name %>.js',
                     'src/viz/viz.js',
+                    'src/viz/VizTypes.js',
+                    'src/viz/VizObj.js',
                     'src/viz/ViewCoordinator.js',
                     'src/viz/Colors.js',
-                    'src/viz/map/Util.js',
-                    'src/viz/map/Shared.js',
-                    'src/viz/map/Sizes.js',
-                    'src/viz/map/DiagramData.js',
+                    'src/viz/Sizes.js',
+                    'src/viz/DiagramData.js',
                     'src/viz/map/Map.js',
+                    'src/viz/map/Util.js',
+                    'src/viz/map/Shared.js'
                 ],
                 dest: 'dist/<%= pkg.name %>.js'
             },
         },
+        jsdoc: {
+            dist: {
+                src: ['dist/*.js', 'README.md'],
+                options: {
+                    destination: 'docs',
+                    debug: true
+                }
+            }
+        },
         uglify: {
             options: {
-                banner: '<%= banner %>'
+                banner: '<%= banner %>',
+                preserveComments: false,
+                mangle: {
+                    except: ['jQuery']
+                }
             },
             dist: {
                 src: '<%= concat.dist.dest %>',
@@ -75,7 +88,6 @@ module.exports = function (grunt) {
             },
         },
     });
-
     // These plugins provide necessary tasks.
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -83,9 +95,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-jsdoc');
-    
-    // Default task.
-    grunt.registerTask('default', ['jshint', 'nodeunit', 'concat', 'uglify']);
-    grunt.registerTask('second', ['concat', 'uglify']);
 
+    // Default task.
+    grunt.registerTask('default', ['jshint', 'concat', 'nodeunit', 'uglify', 'update-docs']);
+    grunt.registerTask('update-docs', ['concat', 'jsdoc']);
 };

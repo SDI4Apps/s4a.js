@@ -1,9 +1,9 @@
 /**
  * Enumeration of size-scales
  * @readonly
- * @enum {array}
+ * @enum {number}
  */
-AASDiag.Sizes = {
+s4a.viz.Sizes = {
     /**
      * From 5px to 19px
      * @type Array
@@ -26,7 +26,7 @@ AASDiag.Sizes = {
  * @readonly
  * @enum {number}
  */
-AASDiag.FontSizes = {
+s4a.viz.FontSizes = {
     /**
      * Small font size
      * @type Number

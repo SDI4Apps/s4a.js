@@ -7,7 +7,7 @@
  * @readonly
  * @enum {Object}
  */
-AASDiag.Colors = {
+s4a.viz.color = {
     /**
      * Yellow to green
      * @type Object

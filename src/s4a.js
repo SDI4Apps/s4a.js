@@ -1,12 +1,9 @@
 /**
- * SDI4Apps client-side library for rapid application development based on the
- * SDI4Apps platform OpenAPI
+ * <p>SDI4Apps client-side library for rapid application development based on the
+ * SDI4Apps platform OpenAPI</p>
+ * <p>Functions to draw statistical maps for use with OpenLayers based applications.</p>
  * 
- * Functions to draw statistical maps for the Adaptive 3.0 geo-statistics module
- * requires jQuery and D3js. Uses HTML5 Canvas and JavaScript to generate client-
- * side graphics based on WebServices and GeoJson/TopoJson files.
- * 
- * @namespace s4a.js
+ * @namespace
  * @requires d3.v3
  * @requires jQuery-1.10.2
  * @requires jQuery-xml2json
@@ -18,5 +15,9 @@
  */
 
 var s4a = {
-    version: 0.1
+    /**
+     * Version number of the s4a.js library
+     * @type Number
+     */
+    version: '0.1.0'
 };

@@ -1,4 +1,29 @@
 {
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 791042d... Refactoring
+    "curly": true,
+    "eqeqeq": true,
+    "immed": true,
+    "latedef": true,
+    "newcap": true,
+    "noarg": true,
+    "sub": true,
+    "undef": true,
+    "boss": true,
+    "eqnull": true,
+    "predef": ["exports"],
+    "globals": {
+        "jQuery": true,
+        "d3": true,
+        "topojson": true,
+        "console": true,
+        "queue": true,
+        "s4a": true
+    }
+<<<<<<< HEAD
+=======
   "curly": true,
   "eqeqeq": true,
   "immed": true,
@@ -10,4 +35,7 @@
   "boss": true,
   "eqnull": true,
   "predef": ["exports"]
+>>>>>>> 288946b... Added map vizualisation objects
+=======
+>>>>>>> 791042d... Refactoring
 }

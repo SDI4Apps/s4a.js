@@ -1,6 +1,13 @@
 /* global s4a */
 
 /**
+ * The transparency to apply to statistical areas, bubbles and their respective
+ * legends
+ * @type {Number}
+ */
+AASDiag.StatAreaAlpha = 0.75;
+
+/**
  * Draw a choropleth map inside the specified canvas
  * @param {Object} pDomNode
  * @param {Number} pWidth The width of the diagram

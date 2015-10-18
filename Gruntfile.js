@@ -33,13 +33,11 @@ module.exports = function (grunt) {
         },
         jsdoc: {
             dist: {
-                src: ['dist/*.js', 'README.md'],
+                src: ['dist/*.js'],
                 options: {
-                    destination: 'docs',
-                    debug: true
+                    destination: 'doc'
                 }
-            }
-        },
+            }},
         uglify: {
             options: {
                 banner: '<%= banner %>',
@@ -86,8 +84,9 @@ module.exports = function (grunt) {
                 files: '<%= jshint.test.src %>',
                 tasks: ['jshint:test', 'nodeunit']
             },
-        },
+        }
     });
+    
     // These plugins provide necessary tasks.
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -95,8 +94,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-jsdoc');
-
     // Default task.
-    grunt.registerTask('default', ['jshint', 'concat', 'nodeunit', 'uglify', 'update-docs']);
-    grunt.registerTask('update-docs', ['concat', 'jsdoc']);
+    grunt.registerTask('default', ['jshint', 'concat', 'nodeunit', 'uglify']);
+    grunt.registerTask('build-with-docs', ['concat', 'uglify', 'jsdoc']);
 };

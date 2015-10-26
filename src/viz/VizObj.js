@@ -28,7 +28,7 @@ s4a.viz.VizObj = function (viewCoordinator, domElement) {
      * Update the visualization
      * @abstract
      */
-    this.update = function () {
+    _self.update = function () {
         throw new Error('Must be implemented by sub-class');
     };
 
@@ -36,8 +36,11 @@ s4a.viz.VizObj = function (viewCoordinator, domElement) {
      * Apply a filter to the visualization
      * @abstract
      */
-    this.filter = function (filter) {
+    _self.filter = function (filter) {
         throw new Error('Must be implemented by sub-class');
     };
-    
+
+    _self.get = function() {
+        throw new Error('Must be implemented by sub-class');
+    };
 };

@@ -16,34 +16,28 @@ s4a.viz.ViewCoordinator = function (pData) {
      * Subscribes an object to publish events from the ViewCoordinator
      * @returns {s4a.viz.ViewCoordinator}
      */
-    this.publish = function () {
+    _self.publish = function () {
         for (var i = 0; i < _listeners.length; i++) {
             var listener = _listeners[i];
-            if (typeof listener.update !== 'undefined') {
-                _listeners[i].update(this._data);
+            if (listener.update) {
+                listener.update(_self._data);
                 console.info('Published ' + i);
             } else {
                 console.debug('Subscribed object ' + i + ' does not implement the update interface');
             }
         }
-        return this;
+        return _self;
     };
-
-    var _setData = function (pData) {
-        console.info('Updated data');
-        _data = pData;
-        _self.publish();
-    };
-
 
     /**
      * Update the data object
      * @param {Object} t
      * @returns {s4a.viz.ViewCoordinator}
      */
-    this.test = function (t) {
-        _setData(t);
-        return this;
+    _self.setData = function (pData) {
+        _data = pData;
+        _self.publish();
+        return _self;
     };
 
     /**
@@ -51,11 +45,11 @@ s4a.viz.ViewCoordinator = function (pData) {
      * @param {Object} pObj
      * @returns {s4a.viz.ViewCoordinator}
      */
-    this.subscribe = function (pObj) {
+    _self.subscribe = function (pObj) {
         if (_listeners.indexOf(pObj) < 0) {
             _listeners.push(pObj);
         }
-        return this;
+        return _self;
     };
 
     /**
@@ -63,7 +57,7 @@ s4a.viz.ViewCoordinator = function (pData) {
      * @param {Object} pObj
      * @returns {s4a.viz.ViewCoordinator}
      */
-    this.unsubscribe = function (pObj) {
+    _self.unsubscribe = function (pObj) {
         var _modListeners = [];
         for (var i = 0; i < _listeners.length; i++) {
             if (_listeners[i] !== pObj) {
@@ -71,12 +65,12 @@ s4a.viz.ViewCoordinator = function (pData) {
             }
         }
         _listeners = _modListeners;
-        return this;
+        return _self;
     };
 
-    this.applyFilter = function () {
+    _self.applyFilter = function () {
         _self.publish();
-        return this;
+        return _self;
     };
 
 };

@@ -11,11 +11,19 @@
     "eqnull": true,
     "predef": ["exports"],
     "globals": {
+        "window": true,
+        "setTimeout": true,
+        "clearTimeout": true,
+        "setInterval": true,
+        "clearInterval": true,
+
         "jQuery": true,
         "d3": true,
         "topojson": true,
         "console": true,
         "queue": true,
-        "s4a": true
+        "s4a": true,
+        "$": true,
+        "ol": true
     }
 }

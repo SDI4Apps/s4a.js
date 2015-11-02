@@ -29,19 +29,24 @@
  * @property {Number} [mapHeight="auto"] The width of the map in pixels or auto to use
  *              height of containing DOM element
  */
-s4a.viz.DiagramData = function() {
-var mDiagramData = {title: null,
-        mapType: "choroplethMap",
+s4a.viz.DiagramData = function(mDiagramData) {
+    mDiagramData = mDiagramData || {};
+
+    var defaults = {
+        title: null,
+        mapType: 'choroplethMap',
         mapUnitType: null,
         mapUnitIDs: null,
         seriesLabels: null,
         seriesData: null,
         domains: null,
-        colors: ["RdPu"],
+        colors: ['RdPu'],
         showLabels: false,
         showSeries: [0],
-        mapWidth: "auto",
-        mapHeight: "auto",
-        fontSize: 12};
-        return mDiagramData;
+        mapWidth: 'auto',
+        mapHeight: 'auto',
+        fontSize: 12
+    };
+
+    return $.extend(defaults, mDiagramData);
 };

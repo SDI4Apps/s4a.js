@@ -16,7 +16,11 @@ module.exports = function (grunt) {
                 banner: '<%= banner %>'
             },
             dist: {
-                src: ['src/<%= pkg.name %>.js',
+                nonull: true,
+                src: [
+                    'src/<%= pkg.name %>.js',
+                    'src/config/Config.js',
+                    'src/map/Map.js',
                     'src/viz/viz.js',
                     'src/viz/VizTypes.js',
                     'src/viz/VizObj.js',
@@ -24,6 +28,8 @@ module.exports = function (grunt) {
                     'src/viz/Colors.js',
                     'src/viz/Sizes.js',
                     'src/viz/DiagramData.js',
+                    'src/viz/pie.js',
+                    'src/viz/diagram/Diagram.js',
                     'src/viz/map/Map.js',
                     'src/viz/map/Util.js',
                     'src/viz/map/Shared.js'
@@ -67,10 +73,7 @@ module.exports = function (grunt) {
                     jshintrc: 'src/.jshintrc'
                 },
                 src: ['src/**/*.js']
-            },
-            test: {
-                src: ['test/**/*.js']
-            },
+            }
         },
         watch: {
             gruntfile: {
@@ -80,11 +83,7 @@ module.exports = function (grunt) {
             lib: {
                 files: '<%= jshint.lib.src %>',
                 tasks: ['jshint:src', 'nodeunit']
-            },
-            test: {
-                files: '<%= jshint.test.src %>',
-                tasks: ['jshint:test', 'nodeunit']
-            },
+            }
         },
     });
     // These plugins provide necessary tasks.

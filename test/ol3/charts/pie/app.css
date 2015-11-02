@@ -1,0 +1,60 @@
+.map {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    width: 100%;
+    left: 0px;
+}
+
+svg {
+    position: relative;
+}
+path {
+    fill: #000;
+    /*fill-opacity: .8;*/
+    stroke: #fff;
+    stroke-width: 1.5px;
+}
+canvas {
+    z-index: -10;
+}
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0px;
+    height: 0px;
+}
+path:hover {
+    fill: brown;
+    fill-opacity: .7;
+}
+
+path.slice{
+    stroke-width:2px;
+}
+
+text {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.legend rect {
+    fill: white;
+    stroke: #fff;
+    stroke-width: .5px;
+}
+
+.legend {
+    z-index: 400;
+}
+
+/*
+.legend {
+    font-size: 12px;
+  }
+  rect {
+    stroke-width: 2;
+  }
+  */

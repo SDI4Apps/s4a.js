@@ -9,7 +9,7 @@
  */
 s4a.viz.layout.Anchor = function(targetElement) {
 
-    if (targetElement === s4a.map) {
+    if (targetElement.getDomElement) {
         targetElement = targetElement.getDomElement();
     }
 

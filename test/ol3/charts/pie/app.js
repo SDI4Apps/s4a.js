@@ -49,7 +49,7 @@ function init() {
         cfg = s4a.config.loadConfig({
             center: center
         }),
-        map = s4a.map.createMap('map', cfg),
+        map = s4a.map.Map('map', cfg),
         layout = s4a.viz.layout.Anchor(map);
 
     data.seriesData.forEach(function(item, i) {

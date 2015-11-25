@@ -1,44 +1,44 @@
-s4a.map = (function() {
+/* global s4a */
+s4a.map = {};
 
-    var _key, olMap;
+/**
+ * Create a map
+ * 
+ * @constructor
+ * @param {DOMElement|String} nodeId The element or id of an element in
+ * your page that will contain the map.
+ * @param {s4a.config} default map config
+ */
+s4a.map.Map = function(nodeId, cfg) {
+    var _key;
 
-    /**
-     * Create a map
-     * @param {DOMElement|String} nodeId The element or id of an element in
-     * your page that will contain the map.
-     * @param {s4a.config} default map config
-     */
-    function createMap(nodeId, cfg) {
-        cfg = cfg || s4a.config.loadConfig();
+    cfg = cfg || s4a.config.loadConfig();
 
-        var center = [cfg.center.x, cfg.center.y],
-            mercator = 'EPSG:3857';
+    var center = [cfg.center.x, cfg.center.y],
+        mercator = 'EPSG:3857';
 
-        if (cfg.center.epsg !== mercator) {
-            center = ol.proj.transform(center, cfg.center.epsg, mercator);
-        }
-
-        olMap = new ol.Map({
-            layers: [
-                new ol.layer.Group({
-                    'title': 'Base layer',
-                    layers: cfg.baselayers
-                }),
-                new ol.layer.Group({
-                    title: 'Overlays',
-                    layers: cfg.layers
-                })
-            ],
-            renderer: 'canvas',
-            target: nodeId,
-            view: new ol.View({
-                center: center,
-                zoom: cfg.center.zoom
-            })
-        });
-
-        return this;
+    if (cfg.center.epsg !== mercator) {
+        center = ol.proj.transform(center, cfg.center.epsg, mercator);
     }
+
+    var olMap = new ol.Map({
+        layers: [
+            new ol.layer.Group({
+                'title': 'Base layer',
+                layers: cfg.baselayers
+            }),
+            new ol.layer.Group({
+                title: 'Overlays',
+                layers: cfg.layers
+            })
+        ],
+        renderer: 'canvas',
+        target: nodeId,
+        view: new ol.View({
+            center: center,
+            zoom: cfg.center.zoom
+        })
+    });
 
     /**
      * Add a unique identifier that describes the application scope
@@ -82,9 +82,8 @@ s4a.map = (function() {
 
     return {
         addKey: addKey,
-        createMap: createMap,
         createMapLayer: createMapLayer,
         getDomElement:getDomElement,
         getOlMap: getOlMap
     };
-})();
+};

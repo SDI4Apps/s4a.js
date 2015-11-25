@@ -72,6 +72,10 @@ s4a.map = (function() {
         });
     }
 
+    function getDomElement() {
+        return $(olMap.getViewport());
+    }
+
     function getOlMap() {
         return olMap;
     }
@@ -80,6 +84,7 @@ s4a.map = (function() {
         addKey: addKey,
         createMap: createMap,
         createMapLayer: createMapLayer,
+        getDomElement:getDomElement,
         getOlMap: getOlMap
     };
 })();

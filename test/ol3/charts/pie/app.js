@@ -27,6 +27,18 @@ function getLocation(i) {
     return locations[Math.floor(Math.random() * locations.length)];
 }
 
+function getPosition(i) {
+    var positions = ['UL', 'UC', 'UR', 'CL', 'CC', 'CR', 'LL', 'LC', 'LR'];
+
+    positions = ['UL', 'UC', 'UR', 'UL', 'UC', 'UR', 'UL', 'UC', 'UR'];
+    
+    if (i != undefined && i < positions.length) {
+        return positions[i];
+    }
+
+    return positions[Math.floor(Math.random() * positions.length)]; 
+}
+
 function init() {
     var center = {
             x: 10.56710,
@@ -37,12 +49,13 @@ function init() {
         cfg = s4a.config.loadConfig({
             center: center
         }),
-        map = s4a.map.createMap('map', cfg);
+        map = s4a.map.createMap('map', cfg),
+        layout = s4a.viz.layout.Anchor(map);
 
     data.seriesData.forEach(function(item, i) {
         var _data = [];
 
-        if (i > 5) return;
+        if (i > 9) return;
 
         item.forEach(function(d, i) {
             _data.push({
@@ -55,13 +68,21 @@ function init() {
             d._value = +d._value;
         });
 
+        var vc = s4a.viz.ViewCoordinator();
 
-        var vizObj = {
+        var pie = s4a.viz.Pie(vc);
+
+        layout.add(pie, getPosition(i));
+
+        vc.setData({
             data: _data,
             location: getLocation(i)
-        };
+        });
 
-        s4a.viz.pie.createChart(vizObj, map);
+
+        //vc.setData(_data);
+
+        layout.redraw();
     });
 };
 

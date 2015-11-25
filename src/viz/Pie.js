@@ -1,36 +1,15 @@
-s4a.viz.pie = (function() {
+s4a.viz.Pie = function(viewCoordinator) {
+    var _self = {},
+        currentPositionPx = [],
+        currentData, feature, scale, radius;
+
     /**
      * Create new pie chart
-     * @param {} data object
-     * @param {s4a.map} map object
+     * @param {} mDiagramData object
+     * @param {integer} optional width of svg
+     * @param {integer} optional height of svg
      */
-    function createChart(mDiagramData, map) {
-
-        var getPosition = function (feature, featurePadding) {
-            var center = projectPoint(
-                feature.location.x,
-                feature.location.y
-            );
-
-            return [center[0] - featurePadding, center[1] - featurePadding];
-        };
-
-         var resize = function(feature) {
-            var svg = feature.svg,
-                g = svg.selectAll('g'),
-                newWidth = mDiagramData.width * (svg.attr('scale') || scale),
-                newWidthHalf = (newWidth / 2);
-
-            var center = getPosition(feature, newWidthHalf);
-
-            svg.attr('width', newWidth)
-                .attr('height', newWidth)
-                .style('left', center[0] + 'px')
-                .style('top', center[1] + 'px');
-
-            g.attr('transform', 'translate(' + newWidthHalf + ',' + newWidthHalf + ')');
-        };
-
+    function createChart(mDiagramData, width, height) {
         var onClick = function () {
             var currentScale = parseInt(svg.attr('scale'), 10) || scale,
                 newScale = currentScale === 1 ? scale : 1;
@@ -83,26 +62,13 @@ s4a.viz.pie = (function() {
                 // applying new scale
                 setTimeout(function() {
                     svg.attr('scale', newScale);
-                    resize(feature);
+                    _self.redraw(currentPositionPx);
                 }, 200);
             }
         };
 
-        // Reposition the SVG to cover the features.
-        var reset = function(features) {
-            features.forEach(function(feature) {
-                resize(feature);
-            });
-        };
+        var data = mDiagramData.data || [];
 
-        var projectPoint = function(x, y) {
-            var point = ol.proj.transform([x, y], 'EPSG:4326', 'EPSG:3857');
-            return olMap.getPixelFromCoordinate(point);
-        };
-
-        var features = [],
-            data = mDiagramData.data || [],
-            olMap = map.getOlMap();
 
         // default styles
         var defaults = {
@@ -113,10 +79,11 @@ s4a.viz.pie = (function() {
             width: 300
         };
 
+
         mDiagramData = $.extend(defaults, mDiagramData);
 
-        var radius = mDiagramData.radius,
-            scale = mDiagramData.scale;
+        radius = mDiagramData.radius;
+        scale = mDiagramData.scale;
 
         var color = d3.scale.ordinal()
             .range(mDiagramData.colors);
@@ -159,23 +126,61 @@ s4a.viz.pie = (function() {
             return d3.interpolateString(a, 'scale(' + scale + ')');
         });
 
-        var feature = {
+        feature = {
             location: mDiagramData.location,
             svg: svg
         };
 
-        features.push(feature);
-
         g.on('click', onClick);
 
-        olMap.on('postcompose', function(event) {
-            reset(features);
-        });
-
         
+        currentData = mDiagramData;
     }
 
-    return {
-        createChart: createChart
+    _self.redraw = function(getOrigin) {
+        var svg = feature.svg,
+            g = svg.selectAll('g'),
+            newWidth = currentData.width * (svg.attr('scale') || scale),
+            newWidthHalf = (newWidth / 2);
+
+        var pixel = getOrigin(10, newWidth);
+
+        svg.attr('width', newWidth)
+            .attr('height', newWidth)
+            .style('left', pixel[0] + 'px')
+            .style('top', pixel[1] + 'px');
+
+        g.attr('transform', 'translate(' + newWidthHalf + ',' + newWidthHalf + ')');
+
+        currentPositionPx = pixel;
     };
-})();
+
+
+    // Methods inherited from top level vizObj
+
+    /**
+     * Callback from ViewCoordinator. 
+     * Update data object for the visualization
+     * @param {Object} pData
+     */
+    _self.update = function(pData) {
+        createChart(pData);
+    };
+
+    /**
+     * Apply a filter to the visualization
+     * @abstract
+     */
+    _self.filter = function() {
+        throw new Error('Must be implemented by sub-class');
+    };
+
+    _self.get = function() {
+        throw new Error('Must be implemented by sub-class');
+    };
+
+
+    viewCoordinator.subscribe(_self);
+
+    return _self;
+};

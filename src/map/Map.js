@@ -10,7 +10,9 @@ s4a.map = {};
  * @param {s4a.config} default map config
  */
 s4a.map.Map = function(nodeId, cfg) {
-    var _key;
+    var vizLayers = [],
+        _self = {},
+        _key;
 
     cfg = cfg || s4a.config.loadConfig();
 
@@ -40,24 +42,32 @@ s4a.map.Map = function(nodeId, cfg) {
         })
     });
 
+
+    // update all added vizLayers  when user interacts with
+    // the map (zoom/pan)
+    olMap.on('postcompose', function(event) {
+        _self.redraw();
+    });
+
+    _self.add = function(vizLayer) {
+        vizLayer.setMap(_self);
+        vizLayers.push(vizLayer);
+    };
+
     /**
      * Add a unique identifier that describes the application scope
      * @param {string} key
      */
-    function addKey(key) {
+    _self.addKey = function(key) {
         _key = key;
-    }
-
-    function addLayer (layer) {
-        olMap.addLayer(layer);
-    }
+    };
 
     /**
      * Create a sd4 map layer
      * @param {String} Layer name must exist on server an be avilable
      * in the current application scope (@see s4a.map.addKey).
      */
-    function createMapLayer(nameOfLayer, extraParams) {
+    _self.createMapLayer = function(nameOfLayer, extraParams) {
         var params = {
             key: _key,
             LAYERS: nameOfLayer
@@ -70,20 +80,49 @@ s4a.map.Map = function(nodeId, cfg) {
                 params: $.extend(params, extraParams)
             })
         });
-    }
-
-    function getDomElement() {
-        return $(olMap.getViewport());
-    }
-
-    function getOlMap() {
-        return olMap;
-    }
-
-    return {
-        addKey: addKey,
-        createMapLayer: createMapLayer,
-        getDomElement:getDomElement,
-        getOlMap: getOlMap
     };
+
+    _self.getDomElement = function() {
+        return $(olMap.getViewport());
+    };
+
+    _self.getOlMap = function() {
+        return olMap;
+    };
+
+    /**
+     * Transform coordinate from EPSG:4326 to EPSG:3857 and return
+     * pixel coordinate at given position
+     * @param {number} lon
+     * @param {number} lat
+     */
+    _self.projectPoint = function(x, y) {
+        var point = ol.proj.transform([x, y], 'EPSG:4326', 'EPSG:3857');
+        return olMap.getPixelFromCoordinate(point);
+    };
+
+    _self.redraw = function() {
+        jQuery.each(vizLayers, function(position, vizLayer) {
+            if (vizLayer.redraw) {
+                vizLayer.redraw(olMap);
+            }
+            else {
+                console.debug('s4a.map.Map:', 'Object does not implement the redraw interface:', vizLayer);
+            }
+        });
+    };
+
+    _self.removeAt = function(index) {
+        vizLayers = vizLayers.filter(function(value, i) {
+            return i !== index;
+        });
+    };
+
+    _self.removeObjects = function(vizLayer) {
+        vizLayers = vizLayers.filter(function(value) {
+            return value !== vizLayer;
+        });
+    };
+
+    return _self;
 };

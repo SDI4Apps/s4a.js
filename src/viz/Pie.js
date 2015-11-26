@@ -137,20 +137,31 @@ s4a.viz.Pie = function(viewCoordinator) {
         currentData = mDiagramData;
     }
 
+
+    /**
+     * Set the visibility of the pie visualization (`true` or `false`).
+     * @param {boolean} visible The visibility of the layer.
+     */
+    _self.setVisible = function(visible) {
+        if (feature && feature.svg) { 
+            feature.svg.attr('display', visible ? null : 'none');
+        }
+    };
+
     _self.redraw = function(getOrigin) {
         var svg = feature.svg,
             g = svg.selectAll('g'),
-            newWidth = currentData.width * (svg.attr('scale') || scale),
-            newWidthHalf = (newWidth / 2);
+            featureWidth = currentData.width * (svg.attr('scale') || scale),
+            featureWidthHalf = (featureWidth / 2);
 
-        var pixel = getOrigin(10, newWidth);
+        var pixel = getOrigin(feature, featureWidth);
 
-        svg.attr('width', newWidth)
-            .attr('height', newWidth)
+        svg.attr('width', featureWidth)
+            .attr('height', featureWidth)
             .style('left', pixel[0] + 'px')
             .style('top', pixel[1] + 'px');
 
-        g.attr('transform', 'translate(' + newWidthHalf + ',' + newWidthHalf + ')');
+        g.attr('transform', 'translate(' + featureWidthHalf + ',' + featureWidthHalf + ')');
 
         currentPositionPx = pixel;
     };

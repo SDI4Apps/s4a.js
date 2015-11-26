@@ -21,6 +21,7 @@ module.exports = function (grunt) {
                     'src/<%= pkg.name %>.js',
                     'src/config/Config.js',
                     'src/map/Map.js',
+                    'src/map/VizLayer.js',
                     'src/viz/viz.js',
                     'src/viz/VizTypes.js',
                     'src/viz/VizObj.js',

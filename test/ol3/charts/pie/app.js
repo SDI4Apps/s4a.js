@@ -1,31 +1,3 @@
-function getLocation(i) {
-    // random places along the norwegian coast
-    var locations = [{
-        y: 59.94486,
-        x: 10.74487
-    }, {
-        y: 58.82520,
-        x: 9.40336
-    }, {
-        y: 58.10915,
-        x: 7.71918
-    }, {
-        y: 58.13342,
-        x: 6.62903
-    }, {
-        y: 58.55824,
-        x: 5.95984
-    }, {
-        y: 59.86223,
-        x: 5.29493
-    }];
-
-    if (i != undefined && i < locations.length) {
-        return locations[i];
-    }
-
-    return locations[Math.floor(Math.random() * locations.length)];
-}
 
 function getPosition(i) {
     var positions = ['UL', 'UC', 'UR', 'CL', 'CC', 'CR', 'LL', 'LC', 'LR'];
@@ -49,8 +21,8 @@ function init() {
         cfg = s4a.config.loadConfig({
             center: center
         }),
-        map = s4a.map.Map('map', cfg),
-        layout = s4a.viz.layout.Anchor(map);
+        map = new s4a.map.Map('map', cfg),
+        layout = new s4a.viz.layout.Anchor(map);
 
     data.seriesData.forEach(function(item, i) {
         var _data = [];
@@ -68,22 +40,18 @@ function init() {
             d._value = +d._value;
         });
 
-        var vc = s4a.viz.ViewCoordinator();
-
-        var pie = s4a.viz.Pie(vc);
+        var vc = new s4a.viz.ViewCoordinator();
+        var pie = new s4a.viz.Pie(vc);
 
         layout.add(pie, getPosition(i));
 
         vc.setData({
-            data: _data,
-            location: getLocation(i)
+            data: _data
         });
-
-
-        //vc.setData(_data);
 
         layout.redraw();
     });
+
 };
 
 document.addEventListener('DOMContentLoaded', function() {

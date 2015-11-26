@@ -35,18 +35,16 @@ s4a.viz.layout.Anchor = function(targetElement) {
         redraw();
     });
 
-    function getPosition(position, total, idx, padding, featurePadding) {
+    function getPosition(position, total, idx, feature, featureWidth) {
         var width = targetElement.width(),
             height = targetElement.height(),
+            padding = 10,
             upper = padding,
-            center1 = width / 2 - featurePadding,
-            center2 = height / 2 - featurePadding,
-            lower = height - featurePadding * 2 - padding,
-            left = padding + idx * featurePadding + idx * padding,
-            right = width - padding - featurePadding * 2;
-
-        padding = padding || 10;
-        featurePadding = featurePadding || 20;
+            center1 = width / 2 - featureWidth,
+            center2 = height / 2 - featureWidth,
+            lower = height - featureWidth * 2 - padding,
+            left = padding + idx * featureWidth + idx * padding,
+            right = width - padding - featureWidth * 2;
 
         switch (position) {
             case 'UL':
@@ -84,8 +82,8 @@ s4a.viz.layout.Anchor = function(targetElement) {
         updateAllVizObjects(function (vizObj, position, total, idx) {
             if (vizObj.redraw) {
                 vizObj.redraw(
-                    function (padding, featurePadding) {
-                        return getPosition(position, total, idx, padding, featurePadding);
+                    function (feature, featureWidth) {
+                        return getPosition(position, total, idx, feature, featureWidth);
                     }
                 );
             }

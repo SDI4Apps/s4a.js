@@ -7,15 +7,40 @@
  */
 s4a.map.VizLayer = function() {
     var vizObjects = [],
-        _self = {},
-        isVisible = true;
+        _self = this,
+        isVisible = true,
+        nsVizDiv = 's4a-map';
 
     /**
      * Add a vizualiation object to the layer
      * @param {s4a.viz.VizObj} key
      */
     _self.add = function(vizObject) {
-        vizObjects.push(vizObject);     
+        appendSvg(vizObject.getSvg());
+        vizObjects.push(vizObject);
+    };
+
+    /**
+     * Append an svg element to the current layout 
+     * {d3.svg} dvg
+     * @private
+     */
+    var appendSvg = function (svg) {
+        var mapdiv = d3.select('div.ol-viewport'),
+            div = mapdiv.select('div.' + nsVizDiv);
+
+        // all vizObjects will be appended to the same div
+        if (div.empty()) {
+            div = mapdiv.append('div').classed(nsVizDiv, true);
+        }
+
+        // append expects a function as input
+        div.append(function() {
+            return svg.node();
+        });
+
+        // set fixed position
+        svg.style('position', 'fixed');
     };
 
     /**
@@ -41,32 +66,35 @@ s4a.map.VizLayer = function() {
     /**
      * Set the visibility of the layer (`true` or `false`).
      * @param {boolean} visible The visibility of the layer.
+     * @private
      */
-    _self.getPosition = function(feature, featureWidth) {
-        var center = _self.map.projectPoint(
-                feature.location.x,
-                feature.location.y
-            ),
-            featureWidthHalf = (featureWidth / 2);
-
-        return [
-            center[0] - featureWidthHalf,
-            center[1] - featureWidthHalf
-        ];
+    _self.getPosition = function(geometry) {
+        return _self.map.projectPoint(
+                geometry.x,
+                geometry.y
+            );
     };
 
     _self.redraw = function() {
         if (_self.map) {
             jQuery.each(vizObjects, function(i, vizObject) {
-                if (vizObject.redraw) {
-                    vizObject.redraw(
-                        function (feature, featureWidth) {
-                            return _self.getPosition(feature, featureWidth);
-                        }
-                    );
-                }
-                else {
-                    console.debug('s4a.viz.layout.Anchor:', 'Object does not implement the redraw interface:', vizObject);
+                var geometry = vizObject.getGeometry(),
+                    svg = vizObject.getSvg();
+
+                //Calcuate size
+                //TODO: SKIP?
+                //vizObject.redraw();
+
+                if (geometry && svg) {
+                    var g = svg.selectAll('g'),
+                        offset = svg.attr('width') / 2,
+                        origin = _self.getPosition(geometry);
+
+                    origin[0] -= offset;
+                    origin[1] -= offset;
+
+                    svg.style('left', origin[0] + 'px')
+                        .style('top', origin[1] + 'px');
                 }
             });
         }
@@ -87,6 +115,7 @@ s4a.map.VizLayer = function() {
     /**
      * Bind a map to the layer.
      * @param {s4a.map.Map} map
+     * @private
      */
     _self.setMap = function(map) {
         _self.map = map;

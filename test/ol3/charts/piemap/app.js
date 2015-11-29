@@ -65,7 +65,9 @@ function init() {
 
         vc.setData({
             data: _data,
-            location: getLocation(i)
+            location: getLocation(i),
+            collapsible: true,
+            collapsed: true
         });
     });
 

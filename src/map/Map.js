@@ -11,7 +11,7 @@ s4a.map = {};
  */
 s4a.map.Map = function(nodeId, cfg) {
     var vizLayers = [],
-        _self = {},
+        _self = this,
         _key;
 
     cfg = cfg || s4a.config.loadConfig();
@@ -104,7 +104,7 @@ s4a.map.Map = function(nodeId, cfg) {
     _self.redraw = function() {
         jQuery.each(vizLayers, function(position, vizLayer) {
             if (vizLayer.redraw) {
-                vizLayer.redraw(olMap);
+                vizLayer.redraw();
             }
             else {
                 console.debug('s4a.map.Map:', 'Object does not implement the redraw interface:', vizLayer);

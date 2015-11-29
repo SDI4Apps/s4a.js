@@ -11,6 +11,7 @@
     "eqnull": true,
     "predef": ["exports"],
     "globals": {
+        "document": true,
         "window": true,
         "setTimeout": true,
         "clearTimeout": true,

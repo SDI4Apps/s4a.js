@@ -9,6 +9,8 @@
  */
 s4a.viz.layout.Anchor = function(targetElement) {
 
+    var _self = this;
+
     if (targetElement.getDomElement) {
         targetElement = targetElement.getDomElement();
     }
@@ -18,84 +20,76 @@ s4a.viz.layout.Anchor = function(targetElement) {
     // value = list of vizualization objects at the given position
     var vizObjects = {};
 
-    var projectPoint = function (argument) {
-        return null;
-    };
+    var nsVizDiv = 's4a-anchor';
 
-    function add(vizObject, position) {
+
+    $( window ).resize(function() {
+        _self.redraw();
+    });
+
+
+    /**
+     * Add a vizualiation object to the layout
+     * @param {s4a.viz.VizObj} key
+     * @param {string} position
+     */
+    _self.add = function(vizObject, position) {
+        if (position && position.toLowerCase) {
+            position = position.toLowerCase();
+        }
+
         if (!vizObjects.hasOwnProperty(position)) {
             vizObjects[position] = [];
         }
 
+        appendSvg(vizObject.getSvg(), position);
         vizObjects[position].push(vizObject);
-    }
+    };
 
+    /**
+     * Append an svg element to the current layout 
+     * {d3.svg} dvg
+     * @private
+     */
+    var appendSvg = function (svg, position) {
+        var mapdiv = d3.select('div.ol-viewport');
 
-    $( window ).resize(function() {
-        redraw();
-    });
-
-    function getPosition(position, total, idx, feature, featureWidth) {
-        var width = targetElement.width(),
-            height = targetElement.height(),
-            padding = 10,
-            upper = padding,
-            center1 = width / 2 - featureWidth,
-            center2 = height / 2 - featureWidth,
-            lower = height - featureWidth * 2 - padding,
-            left = padding + idx * featureWidth + idx * padding,
-            right = width - padding - featureWidth * 2;
-
-        switch (position) {
-            case 'UL':
-                return [left, upper];
-            case 'UC':
-                return [center1, upper];
-            case 'UR':
-                return [right, upper];
-            case 'CL':
-                return [left, center2];
-            case 'CC':
-                return [center1, center2];
-            case 'CR':
-                return [right, center2];
-            case 'LL':
-                return [left, lower];
-            case 'LC':
-                return [center1, lower];
-            case 'LR':
-                return [right, lower];
-            default:
-                console.warn('s4a.viz.layout.Anchor:', 'Given position is incorrect:', position);
+        // append to a  div based on their position
+        var div = mapdiv.select('div.' + nsVizDiv + '.s4a-' + position);
+        if (div.empty()) {
+            div = mapdiv.append('div')
+                .classed(nsVizDiv, true)
+                .classed('s4a-' + position, true);
         }
-    }
 
-    function updateAllVizObjects(fn) {
+        // append expects a function as input
+        div.append(function() {
+            return svg.node();
+        });
+    };
+
+    var updateAllVizObjects = function(fn) {
         jQuery.each(vizObjects, function(position, vizObjectsAtPosition) {
             vizObjectsAtPosition.forEach(function(vizObj, idx) {
                 fn(vizObj, position, vizObjectsAtPosition.length, idx);
             });
         });
-    }
+    };
 
-    function redraw() {
-        updateAllVizObjects(function (vizObj, position, total, idx) {
-            if (vizObj.redraw) {
-                vizObj.redraw(
-                    function (feature, featureWidth) {
-                        return getPosition(position, total, idx, feature, featureWidth);
-                    }
-                );
+    // TODO: Might remove
+    _self.redraw = function() {
+        updateAllVizObjects(function (vizObject, position, total, idx) {
+            if (vizObject.redraw) {
+                //Calcuate size
+                //TODO: SKIP?
+                //vizObject.redraw();
             }
             else {
-                console.debug('s4a.viz.layout.Anchor:', 'Object does not implement the redraw interface:', vizObj);
-            }
+                console.debug('s4a.viz.layout.Anchor:', 
+                    'Object does not implement the redraw interface:', vizObject);
+                }
         });
-    }
-
-    return {
-        add: add,
-
-        redraw: redraw
     };
+
+    return _self;
 };

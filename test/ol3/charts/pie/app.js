@@ -2,7 +2,7 @@
 function getPosition(i) {
     var positions = ['UL', 'UC', 'UR', 'CL', 'CC', 'CR', 'LL', 'LC', 'LR'];
 
-    positions = ['UL', 'UC', 'UR', 'UL', 'UC', 'UR', 'UL', 'UC', 'UR'];
+    //positions = ['UL', 'UC', 'UR', 'UL', 'UR', 'UR', 'UL', 'UR', 'UR'];
     
     if (i != undefined && i < positions.length) {
         return positions[i];
@@ -23,6 +23,15 @@ function init() {
         }),
         map = new s4a.map.Map('map', cfg),
         layout = new s4a.viz.layout.Anchor(map);
+
+
+    var seriesData = {};
+
+
+    var seriesConfig = {
+
+    };
+
 
     data.seriesData.forEach(function(item, i) {
         var _data = [];
@@ -46,12 +55,13 @@ function init() {
         layout.add(pie, getPosition(i));
 
         vc.setData({
-            data: _data
+            data: _data,
+            collapsible: true,
+            collapsed: true
         });
-
-        layout.redraw();
     });
 
+    layout.redraw();
 };
 
 document.addEventListener('DOMContentLoaded', function() {

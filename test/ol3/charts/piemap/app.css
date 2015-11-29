@@ -6,9 +6,6 @@
     left: 0px;
 }
 
-svg {
-    position: relative;
-}
 path {
     fill: #000;
     /*fill-opacity: .8;*/
@@ -17,13 +14,6 @@ path {
 }
 canvas {
     z-index: -10;
-}
-#overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0px;
-    height: 0px;
 }
 path:hover {
     fill: brown;

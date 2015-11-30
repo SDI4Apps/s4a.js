@@ -1,0 +1,57 @@
+.s4a-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0px;
+    height: 0px;
+}
+
+.s4a-anchor {
+    display: table;
+    height: 0;
+    position: absolute;
+    width: 0;
+}
+.s4a-ul {
+    top: 0;
+    left: 0;
+}
+
+.s4a-uc {
+    top: 0;
+    left: 50%;
+}
+
+.s4a-ur {
+    top: 0;
+    right: 0;
+}
+
+.s4a-cl {
+    left: 0;
+    top: 50%;
+}
+.s4a-cc {
+    top: 50%;
+    left: 50%;
+}
+
+.s4a-cr {
+    right: 0;
+    top: 50%;
+}
+
+.s4a-ll {
+    left: 0;
+    bottom: 0;
+}
+
+.s4a-lc {
+    left: 50%;
+    bottom: 0;
+}
+
+.s4a-lr {
+    right: 0;
+    bottom: 0;
+}

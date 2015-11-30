@@ -9,8 +9,8 @@
 s4a.viz.ViewCoordinator = function (pData) {
 
     var _data = pData,
-            _listeners = [],
-            _self = this;
+        _listeners = [],
+        _self = {};
 
     /**
      * Subscribes an object to publish events from the ViewCoordinator
@@ -20,10 +20,10 @@ s4a.viz.ViewCoordinator = function (pData) {
         for (var i = 0; i < _listeners.length; i++) {
             var listener = _listeners[i];
             if (listener.update) {
-                listener.update(_self._data);
+                listener.update(_data);
                 console.info('Published ' + i);
             } else {
-                console.debug('Subscribed object ' + i + ' does not implement the update interface');
+                console.debug('Subscribed object ' + i + ' does not implement the update interface', listener);
             }
         }
         return _self;
@@ -72,5 +72,8 @@ s4a.viz.ViewCoordinator = function (pData) {
         _self.publish();
         return _self;
     };
+
+
+    return _self;
 
 };

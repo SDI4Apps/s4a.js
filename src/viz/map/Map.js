@@ -1,7 +1,3 @@
-/* global s4a */
-
-s4a.viz.map = s4a.viz.map || {} ;
-
 /**
  * Map visualization objects
  * @class
@@ -45,7 +41,6 @@ s4a.viz.map.BubbleMapLayer = function (mapData, mapConfig) {
  * @returns {void}
  */
 s4a.viz.map.getMap = function (pDomNode, pDiagramData) {
-
     // Determine default values for width/height if not present
     var pWidth = (pDiagramData.mapWidth === "auto") ? jQuery(pDomNode).width() : pDiagramData.mapWidth;
     var pHeight = (pDiagramData.mapHeight === "auto") ? jQuery(pDomNode).height() : pDiagramData.mapHeight;

@@ -78,12 +78,13 @@ s4a.viz.Pie = function(viewCoordinator) {
                 svg.style('z-index', 1);
             }
 
-            // Wait until resize animation is complete before 
-            // applying new scale
-            setTimeout(function() {
-                currentScale = currentScale === 1 ? currentData.scale : 1;
-                _self.redraw();
-            }, 1);
+            currentScale = currentScale === 1 ? currentData.scale : 1;
+
+            //adjust the size of the SVG
+            _self.redraw();
+
+            // notify that the SVG need repositioning 
+            $(_self).trigger('resize');
         };
 
         var data = currentData.data || [];

@@ -103,12 +103,7 @@ s4a.map.Map = function(nodeId, cfg) {
 
     _self.redraw = function() {
         jQuery.each(vizLayers, function(position, vizLayer) {
-            if (vizLayer.redraw) {
-                vizLayer.redraw();
-            }
-            else {
-                console.debug('s4a.map.Map:', 'Object does not implement the redraw interface:', vizLayer);
-            }
+            vizLayer.redraw();
         });
     };
 

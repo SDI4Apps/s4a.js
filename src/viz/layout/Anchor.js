@@ -22,12 +22,6 @@ s4a.viz.layout.Anchor = function(targetElement) {
 
     var nsVizDiv = 's4a-anchor';
 
-
-    $( window ).resize(function() {
-        _self.redraw();
-    });
-
-
     /**
      * Add a vizualiation object to the layout
      * @param {s4a.viz.VizObj} key
@@ -75,20 +69,13 @@ s4a.viz.layout.Anchor = function(targetElement) {
             });
         });
     };
-
-    // TODO: Might remove
+    
+    /**
+     * Overriden function from parent
+     * Placing objects are handled through css
+     */
     _self.redraw = function() {
-        updateAllVizObjects(function (vizObject, position, total, idx) {
-            if (vizObject.redraw) {
-                //Calcuate size
-                //TODO: SKIP?
-                //vizObject.redraw();
-            }
-            else {
-                console.debug('s4a.viz.layout.Anchor:', 
-                    'Object does not implement the redraw interface:', vizObject);
-                }
-        });
+
     };
 
     return _self;

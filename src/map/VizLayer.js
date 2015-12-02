@@ -17,6 +17,10 @@ s4a.map.VizLayer = function() {
      */
     _self.add = function(vizObject) {
         appendSvg(vizObject.getSvg());
+
+        // Trigger repositioning when object has been resized
+        $(vizObject).on('resize', _self.resize);
+
         vizObjects.push(vizObject);
     };
 
@@ -49,18 +53,6 @@ s4a.map.VizLayer = function() {
      */
     _self.getVisible = function() {
         return isVisible;
-    };
-
-    /**
-     * Set the visibility of the layer (`true` or `false`).
-     * @param {boolean} visible The visibility of the layer.
-     */
-    _self.setVisible = function(visible) {
-        isVisible = visible;
-
-        vizObjects.forEach(function(vizObject) {
-            vizObject.setVisible(visible);
-        });
     };
 
     /**
@@ -101,12 +93,18 @@ s4a.map.VizLayer = function() {
     };
 
     _self.removeAt = function(index) {
+        //cleanup
+        $(vizObjects[index]).unbind('resize', _self.resize);
+
         vizObjects = vizObjects.filter(function(value, i) {
             return i !== index;
         });
     };
 
     _self.removeObjects = function(vizObject) {
+        //cleanup
+        $(vizObject).unbind('resize', _self.resize);
+
         vizObjects = vizObjects.filter(function(value) {
             return value !== vizObject;
         });
@@ -119,6 +117,18 @@ s4a.map.VizLayer = function() {
      */
     _self.setMap = function(map) {
         _self.map = map;
+    };
+
+    /**
+     * Set the visibility of the layer (`true` or `false`).
+     * @param {boolean} visible The visibility of the layer.
+     */
+    _self.setVisible = function(visible) {
+        isVisible = visible;
+
+        vizObjects.forEach(function(vizObject) {
+            vizObject.setVisible(visible);
+        });
     };
 
     return _self;

@@ -2,18 +2,19 @@
 
 /**
  * VizLayer
- * 
+ *
  * @constructor
  */
 s4a.map.VizLayer = function() {
-    var vizObjects = [],
-        _self = this,
-        isVisible = true,
-        nsVizDiv = 's4a-map';
+    var _self = this;
+    var isVisible = true;
+    var nsVizDiv = 's4a-map';
+    var vizObjects = [];
 
     /**
      * Add a vizualiation object to the layer
-     * @param {s4a.viz.VizObj} key
+     *
+     * @param {s4a.viz.VizObj} vizObject
      */
     _self.add = function(vizObject) {
         appendSvg(vizObject.getSvg());
@@ -25,13 +26,14 @@ s4a.map.VizLayer = function() {
     };
 
     /**
-     * Append an svg element to the current layout 
-     * {d3.svg} dvg
+     * Append an svg element to the current layout
+     *
+     * @param {d3.svg} svg
      * @private
      */
-    var appendSvg = function (svg) {
-        var mapdiv = d3.select('div.ol-viewport'),
-            div = mapdiv.select('div.' + nsVizDiv);
+    var appendSvg = function(svg) {
+        var mapdiv = d3.select('div.ol-viewport');
+        var div = mapdiv.select('div.' + nsVizDiv);
 
         // all vizObjects will be appended to the same div
         if (div.empty()) {
@@ -49,6 +51,7 @@ s4a.map.VizLayer = function() {
 
     /**
      * Return the visibility of the layer (`true` or `false`).
+     *
      * @return {boolean} The visibility of the layer.
      */
     _self.getVisible = function() {
@@ -56,8 +59,9 @@ s4a.map.VizLayer = function() {
     };
 
     /**
-     * Set the visibility of the layer (`true` or `false`).
-     * @param {boolean} visible The visibility of the layer.
+     * Get pixel coordinate
+     *
+     * @param {geometry} geometry position in EPSG:3857
      * @private
      */
     _self.getPosition = function(geometry) {
@@ -67,20 +71,20 @@ s4a.map.VizLayer = function() {
             );
     };
 
+    /**
+     * Reposition and redraw all vizObjects
+     *
+     */
     _self.redraw = function() {
         if (_self.map) {
             jQuery.each(vizObjects, function(i, vizObject) {
-                var geometry = vizObject.getGeometry(),
-                    svg = vizObject.getSvg();
-
-                //Calcuate size
-                //TODO: SKIP?
-                //vizObject.redraw();
+                var geometry = vizObject.getGeometry();
+                var svg = vizObject.getSvg();
 
                 if (geometry && svg) {
-                    var g = svg.selectAll('g'),
-                        offset = svg.attr('width') / 2,
-                        origin = _self.getPosition(geometry);
+                    var g = svg.selectAll('g');
+                    var offset = svg.attr('width') / 2;
+                    var origin = _self.getPosition(geometry);
 
                     origin[0] -= offset;
                     origin[1] -= offset;
@@ -112,6 +116,7 @@ s4a.map.VizLayer = function() {
 
     /**
      * Bind a map to the layer.
+     *
      * @param {s4a.map.Map} map
      * @private
      */
@@ -121,6 +126,7 @@ s4a.map.VizLayer = function() {
 
     /**
      * Set the visibility of the layer (`true` or `false`).
+     *
      * @param {boolean} visible The visibility of the layer.
      */
     _self.setVisible = function(visible) {

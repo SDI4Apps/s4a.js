@@ -78,6 +78,21 @@ module.exports = function (grunt) {
                 src: ['src/**/*.js']
             }
         },
+        jscs: {
+            src: 'src/**/*.js',
+            options: {
+                preset: 'google.json',
+                config: '.jscsrc',
+                // If you use ES6 http://jscs.info/overview.html#esnext
+                esnext: true,
+                // If you need output with rule names
+                // http://jscs.info/overview.html#verbose
+                verbose: true,
+                // Autofix code style violations when possible.
+                fix: true,
+                requireCurlyBraces: [ "if" ]
+            }
+        },
         watch: {
             gruntfile: {
                 files: '<%= jshint.gruntfile.src %>',
@@ -94,10 +109,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-nodeunit');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-jscs');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-jsdoc');
 
     // Default task.
-    grunt.registerTask('default', ['jshint', 'concat', 'nodeunit', 'uglify', 'update-docs']);
+    grunt.registerTask('default', ['jshint', 'jscs', 'concat', 'nodeunit', 'uglify', 'update-docs']);
     grunt.registerTask('update-docs', ['concat', 'jsdoc']);
 };

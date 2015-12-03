@@ -2,7 +2,8 @@ s4a.config = (function() {
 
     /**
      * Load config
-     * @param {} cfg Override any defaults
+     *
+     * @param {Object} cfg Override any defaults
      */
     function _loadConfig(cfg) {
         cfg = cfg || {};

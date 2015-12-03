@@ -1,9 +1,10 @@
 s4a.viz.Pie = function(viewCoordinator) {
-    var _self = this,
-        currentData, currentScale;
+    var currentData, currentScale;
+    var _self = this;
 
     /**
      * Set of default styles
+     *
      * @private
      */
     var defaults = {
@@ -17,20 +18,22 @@ s4a.viz.Pie = function(viewCoordinator) {
     };
 
     /**
-     * Internal reference to Pie svg element. 
+     * Internal reference to Pie svg element.
      * Use getSvg to retrieve it
+     *
      * @private
      */
     var svg = d3.select(document.createElementNS(d3.ns.prefix.svg, 'svg'));
 
     /**
      * Create new pie chart
-     * @param {integer} optional width of svg
-     * @param {integer} optional height of svg
+     *
+     * @param {integer} width optional width of svg
+     * @param {integer} height optional height of svg
      * @private
      */
     function updateChart(width, height) {
-        var onClick = function () {
+        var onClick = function() {
             var newScale = currentScale === 1 ? currentData.scale : 1;
 
             svg.selectAll('path')
@@ -83,7 +86,7 @@ s4a.viz.Pie = function(viewCoordinator) {
             //adjust the size of the SVG
             _self.redraw();
 
-            // notify that the SVG need repositioning 
+            // notify that the SVG need repositioning
             $(_self).trigger('resize');
         };
 
@@ -119,7 +122,7 @@ s4a.viz.Pie = function(viewCoordinator) {
 
         // delete all current objects
         if (svg) {
-            svg.selectAll("*").remove();
+            svg.selectAll('*').remove();
         }
 
         var g = svg.selectAll('.arc')
@@ -146,6 +149,7 @@ s4a.viz.Pie = function(viewCoordinator) {
 
     /**
      * Get the geometry bound to the vizObject
+     *
      * @returns {Object} set of lonlat or null
      */
     _self.getGeometry = function() {
@@ -154,6 +158,7 @@ s4a.viz.Pie = function(viewCoordinator) {
 
     /**
      * Get the svg representation of the vizObject
+     *
      * @returns {d3.svg} set of lonlat or null
      */
     _self.getSvg = function() {
@@ -162,10 +167,11 @@ s4a.viz.Pie = function(viewCoordinator) {
 
     /**
      * Set the visibility of the pie visualization (`true` or `false`).
+     *
      * @param {boolean} visible The visibility of the layer.
      */
     _self.setVisible = function(visible) {
-        if (svg) { 
+        if (svg) {
             svg.attr('display', visible ? null : 'none');
         }
     };
@@ -179,9 +185,9 @@ s4a.viz.Pie = function(viewCoordinator) {
                 updateChart();
             }
 
-            var g = svg.selectAll('g'),
-                featureWidth = currentData.width * currentScale,
-                featureWidthHalf = featureWidth / 2;
+            var g = svg.selectAll('g');
+            var featureWidth = currentData.width * currentScale;
+            var featureWidthHalf = featureWidth / 2;
 
             svg.attr('width', featureWidth)
                 .attr('height', featureWidth);
@@ -193,8 +199,9 @@ s4a.viz.Pie = function(viewCoordinator) {
     // Methods inherited from top level vizObj
 
     /**
-     * Callback from ViewCoordinator. 
+     * Callback from ViewCoordinator.
      * Update data object for the visualization
+     *
      * @param {Object} pData
      */
     _self.update = function(pData) {
@@ -205,6 +212,7 @@ s4a.viz.Pie = function(viewCoordinator) {
 
     /**
      * Apply a filter to the visualization
+     *
      * @abstract
      */
     _self.filter = function() {
@@ -214,7 +222,6 @@ s4a.viz.Pie = function(viewCoordinator) {
     _self.get = function() {
         throw new Error('Must be implemented by sub-class');
     };
-
 
     viewCoordinator.subscribe(_self);
 

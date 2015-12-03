@@ -2,7 +2,7 @@
  * <p>SDI4Apps client-side library for rapid application development based on the
  * SDI4Apps platform OpenAPI</p>
  * <p>Functions to draw statistical maps for use with OpenLayers based applications.</p>
- * 
+ *
  * @namespace
  * @requires d3.v3
  * @requires jQuery-1.10.2

@@ -3,21 +3,21 @@ s4a.map = {};
 
 /**
  * Create a map
- * 
+ *
  * @constructor
  * @param {DOMElement|String} nodeId The element or id of an element in
  * your page that will contain the map.
- * @param {s4a.config} default map config
+ * @param {s4a.config} cfg default map config
  */
 s4a.map.Map = function(nodeId, cfg) {
-    var vizLayers = [],
-        _self = this,
-        _key;
+    var _key;
+    var _self = this;
+    var vizLayers = [];
 
     cfg = cfg || s4a.config.loadConfig();
 
-    var center = [cfg.center.x, cfg.center.y],
-        mercator = 'EPSG:3857';
+    var center = [cfg.center.x, cfg.center.y];
+    var mercator = 'EPSG:3857';
 
     if (cfg.center.epsg !== mercator) {
         center = ol.proj.transform(center, cfg.center.epsg, mercator);
@@ -42,7 +42,6 @@ s4a.map.Map = function(nodeId, cfg) {
         })
     });
 
-
     // update all added vizLayers  when user interacts with
     // the map (zoom/pan)
     olMap.on('postcompose', function(event) {
@@ -56,6 +55,7 @@ s4a.map.Map = function(nodeId, cfg) {
 
     /**
      * Add a unique identifier that describes the application scope
+     *
      * @param {string} key
      */
     _self.addKey = function(key) {
@@ -64,7 +64,9 @@ s4a.map.Map = function(nodeId, cfg) {
 
     /**
      * Create a sd4 map layer
-     * @param {String} Layer name must exist on server an be avilable
+     *
+     * @param {String} nameOfLayer Layer name must exist on server an be avilable
+     * @param {Object} extraParams optional URL parameters
      * in the current application scope (@see s4a.map.addKey).
      */
     _self.createMapLayer = function(nameOfLayer, extraParams) {
@@ -93,8 +95,9 @@ s4a.map.Map = function(nodeId, cfg) {
     /**
      * Transform coordinate from EPSG:4326 to EPSG:3857 and return
      * pixel coordinate at given position
-     * @param {number} lon
-     * @param {number} lat
+     *
+     * @param {number} x
+     * @param {number} y
      */
     _self.projectPoint = function(x, y) {
         var point = ol.proj.transform([x, y], 'EPSG:4326', 'EPSG:3857');

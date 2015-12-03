@@ -2,10 +2,10 @@
 
 /**
  * <p>This is an abstract top-level object that take care of layout for a group
- * of elements</p> 
- * 
+ * of elements</p>
+ *
  * @constructor
- * @param {DOMElement} domElement
+ * @param {DOMElement} targetElement
  */
 s4a.viz.layout.Anchor = function(targetElement) {
 
@@ -24,7 +24,8 @@ s4a.viz.layout.Anchor = function(targetElement) {
 
     /**
      * Add a vizualiation object to the layout
-     * @param {s4a.viz.VizObj} key
+     *
+     * @param {s4a.viz.VizObj} vizObject
      * @param {string} position
      */
     _self.add = function(vizObject, position) {
@@ -41,11 +42,13 @@ s4a.viz.layout.Anchor = function(targetElement) {
     };
 
     /**
-     * Append an svg element to the current layout 
-     * {d3.svg} dvg
+     * Append an svg element to the current layout
+     *
+     * @param {d3.svg} svg
+     * @param {string} position
      * @private
      */
-    var appendSvg = function (svg, position) {
+    var appendSvg = function(svg, position) {
         var mapdiv = d3.select('div.ol-viewport');
 
         // append to a  div based on their position
@@ -69,7 +72,7 @@ s4a.viz.layout.Anchor = function(targetElement) {
             });
         });
     };
-    
+
     /**
      * Overriden function from parent
      * Placing objects are handled through css

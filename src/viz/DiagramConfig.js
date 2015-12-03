@@ -29,8 +29,8 @@
  * @property {Number} [mapHeight="auto"] The width of the map in pixels or auto to use
  *              height of containing DOM element
  */
-s4a.viz.DiagramData = function(mDiagramData) {
-    mDiagramData = mDiagramData || {};
+s4a.viz.DiagramConfig = function(mDiagramConfig) {
+    mDiagramConfig = mDiagramConfig || {};
 
     var defaults = {
         title: null,
@@ -48,5 +48,5 @@ s4a.viz.DiagramData = function(mDiagramData) {
         fontSize: 12
     };
 
-    return $.extend(defaults, mDiagramData);
+    return $.extend(defaults, mDiagramConfig);
 };

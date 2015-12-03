@@ -1,29 +1,32 @@
 /* global s4a */
 
 /**
- * A top level object that coordinates data and visualizations 
+ * A top level object that coordinates data and visualizations
+ *
  * @param {Object} pData
  * @constructor
  * @returns {s4a.viz.ViewCoordinator}
  */
-s4a.viz.ViewCoordinator = function (pData) {
+s4a.viz.ViewCoordinator = function(pData) {
 
-    var _data = pData,
-        _listeners = [],
-        _self = {};
+    var _data = pData;
+    var _listeners = [];
+    var _self = {};
 
     /**
      * Subscribes an object to publish events from the ViewCoordinator
+     *
      * @returns {s4a.viz.ViewCoordinator}
      */
-    _self.publish = function () {
+    _self.publish = function() {
         for (var i = 0; i < _listeners.length; i++) {
             var listener = _listeners[i];
             if (listener.update) {
                 listener.update(_data);
                 console.info('Published ' + i);
             } else {
-                console.debug('Subscribed object ' + i + ' does not implement the update interface', listener);
+                console.debug('Subscribed object ' + i + ' does not implement the update interface',
+                    listener);
             }
         }
         return _self;
@@ -31,10 +34,11 @@ s4a.viz.ViewCoordinator = function (pData) {
 
     /**
      * Update the data object
-     * @param {Object} t
+     *
+     * @param {Object} pData
      * @returns {s4a.viz.ViewCoordinator}
      */
-    _self.setData = function (pData) {
+    _self.setData = function(pData) {
         _data = pData;
         _self.publish();
         return _self;
@@ -42,10 +46,11 @@ s4a.viz.ViewCoordinator = function (pData) {
 
     /**
      * Subscribe an object to the ViewCoordinator
+     *
      * @param {Object} pObj
      * @returns {s4a.viz.ViewCoordinator}
      */
-    _self.subscribe = function (pObj) {
+    _self.subscribe = function(pObj) {
         if (_listeners.indexOf(pObj) < 0) {
             _listeners.push(pObj);
         }
@@ -54,10 +59,11 @@ s4a.viz.ViewCoordinator = function (pData) {
 
     /**
      * Unsubscribe an object from the ViewCoordinator
+     *
      * @param {Object} pObj
      * @returns {s4a.viz.ViewCoordinator}
      */
-    _self.unsubscribe = function (pObj) {
+    _self.unsubscribe = function(pObj) {
         var _modListeners = [];
         for (var i = 0; i < _listeners.length; i++) {
             if (_listeners[i] !== pObj) {
@@ -68,11 +74,10 @@ s4a.viz.ViewCoordinator = function (pData) {
         return _self;
     };
 
-    _self.applyFilter = function () {
+    _self.applyFilter = function() {
         _self.publish();
         return _self;
     };
-
 
     return _self;
 

@@ -8,9 +8,9 @@
  */
 s4a.viz.VizTypes = {
     /**
-     * Diagram
+     * Chart
      */
-    'diagram': 1,
+    'chart': 1,
 
     /**
      * Map

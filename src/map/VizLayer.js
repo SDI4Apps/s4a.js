@@ -20,7 +20,7 @@ s4a.map.VizLayer = function() {
         appendSvg(vizObject.getSvg());
 
         // Trigger repositioning when object has been resized
-        $(vizObject).on('resize', _self.resize);
+        $(vizObject).on('resize', _self.redraw);
 
         vizObjects.push(vizObject);
     };
@@ -66,8 +66,8 @@ s4a.map.VizLayer = function() {
      */
     _self.getPosition = function(geometry) {
         return _self.map.projectPoint(
-                geometry.x,
-                geometry.y
+                geometry[0],
+                geometry[1]
             );
     };
 
@@ -82,9 +82,22 @@ s4a.map.VizLayer = function() {
                 var svg = vizObject.getSvg();
 
                 if (geometry && svg) {
+                    var origin;
                     var g = svg.selectAll('g');
                     var offset = svg.attr('width') / 2;
-                    var origin = _self.getPosition(geometry);
+                    switch (geometry.type) {
+                        case 'point':
+                            origin = _self.getPosition(geometry.coordinates);
+                            break;
+                        default:
+                            console.warn('s4a.map.VizLayer',
+                                    'Unsupported geometry type',
+                                    geometry.type);
+                    }
+
+                    if (!origin) {
+                        return;
+                    }
 
                     origin[0] -= offset;
                     origin[1] -= offset;
@@ -98,7 +111,7 @@ s4a.map.VizLayer = function() {
 
     _self.removeAt = function(index) {
         //cleanup
-        $(vizObjects[index]).unbind('resize', _self.resize);
+        $(vizObjects[index]).unbind('resize', _self.redraw);
 
         vizObjects = vizObjects.filter(function(value, i) {
             return i !== index;
@@ -107,7 +120,7 @@ s4a.map.VizLayer = function() {
 
     _self.removeObjects = function(vizObject) {
         //cleanup
-        $(vizObject).unbind('resize', _self.resize);
+        $(vizObject).unbind('resize', _self.redraw);
 
         vizObjects = vizObjects.filter(function(value) {
             return value !== vizObject;

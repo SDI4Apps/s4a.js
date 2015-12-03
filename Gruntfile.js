@@ -31,7 +31,7 @@ module.exports = function (grunt) {
                     'src/viz/layout/Grid.js',
                     'src/viz/Colors.js',
                     'src/viz/Sizes.js',
-                    'src/viz/DiagramData.js',
+                    'src/viz/ChartData.js',
                     'src/viz/pie.js',
                     'src/viz/map/Map.js',
                     'src/viz/map/Util.js',

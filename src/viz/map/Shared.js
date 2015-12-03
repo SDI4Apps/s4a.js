@@ -6,7 +6,7 @@
 s4a.viz.map.shared = {};
 
 /**
- * Draws the diagram title
+ * Draws the chart title
  *
  * @param {Object} pContext
  * @param {Number} pFontSize
@@ -15,7 +15,7 @@ s4a.viz.map.shared = {};
  * @param {Number} pCurrentLinePosition
  * @returns {Number}
  */
-s4a.viz.map.shared._drawDiagramTitle =
+s4a.viz.map.shared._drawChartTitle =
         function(pContext, pFontSize, pTitle, pLeftMargin, pCurrentLinePosition) {
             pContext.font = 'bolder ' + pFontSize + 'px Arial';
             pContext.textAlign = 'start'; // Right align the labels
@@ -50,7 +50,7 @@ s4a.viz.map.shared._drawRectSymMapLegend = function(pContext, pColor, pTitle, pF
     var mRightAlignInset = pContext.measureText(mLongestLabel).width * 2;
 
     if (pTitle !== undefined && pTitle !== null && pTitle !== '') {
-        mYPos = s4a.viz.map.shared._drawDiagramTitle(pContext, pFontSize, pTitle, mLeftMargin, mYPos);
+        mYPos = s4a.viz.map.shared._drawChartTitle(pContext, pFontSize, pTitle, mLeftMargin, mYPos);
     }
 
     pContext.font = pFontSize + 'px Arial';

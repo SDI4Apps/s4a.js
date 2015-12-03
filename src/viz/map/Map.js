@@ -17,7 +17,7 @@ s4a.viz.map.StatAreaAlpha = 0.75;
  * Create a choropleth map layer for use in ol3
  *
  * @param {s4a.viz.ViewCoordinator} mapData
- * @param {s4a.viz.DiagramData} mapConfig
+ * @param {s4a.viz.ChartData} mapConfig
  */
 s4a.viz.map.ChoroplethMapLayer = function(mapData, mapConfig) {
     console.log('Not implemented');
@@ -27,7 +27,7 @@ s4a.viz.map.ChoroplethMapLayer = function(mapData, mapConfig) {
  * Create a bubble map layer for use in ol3
  *
  * @param {s4a.viz.ViewCoordinator} mapData
- * @param {s4a.viz.DiagramData} mapConfig
+ * @param {s4a.viz.ChartData} mapConfig
  */
 s4a.viz.map.BubbleMapLayer = function(mapData, mapConfig) {
     console.log('Not implemented');
@@ -37,17 +37,17 @@ s4a.viz.map.BubbleMapLayer = function(mapData, mapConfig) {
  * Draw a choropleth map inside the specified canvas
  *
  * @param {Object} pDomNode
- * @param {s4a.viz.DiagramData} pDiagramData JSON
+ * @param {s4a.viz.ChartData} pChartData JSON
  */
-s4a.viz.map.getMap = function(pDomNode, pDiagramData) {
+s4a.viz.map.getMap = function(pDomNode, pChartData) {
     var mProjection, mPath, mStatGeometries, mBounds, s, t,
         mContext, mDomain, mColor, mColor2, mSizes, mColorScale,
         mColorScale2, mSizeScale, mDataMap, mDataMapMulti, mSeriesValues,
         mDataMap2, mSeriesValues2;
 
     // Determine default values for width/height if not present
-    var pWidth = (pDiagramData.mapWidth === 'auto') ? jQuery(pDomNode).width() : pDiagramData.mapWidth;
-    var pHeight = (pDiagramData.mapHeight === 'auto') ? jQuery(pDomNode).height() : pDiagramData.mapHeight;
+    var pWidth = (pChartData.mapWidth === 'auto') ? jQuery(pDomNode).width() : pChartData.mapWidth;
+    var pHeight = (pChartData.mapHeight === 'auto') ? jQuery(pDomNode).height() : pChartData.mapHeight;
 
     // Check if an existing canvas exists
     var mCanvas = jQuery(pDomNode + ' canvas');
@@ -65,21 +65,21 @@ s4a.viz.map.getMap = function(pDomNode, pDiagramData) {
         .getContext('2d');
 
     // Set the number of domains - default to jenks natural breaks
-    mDomain = pDiagramData.domains.map(function(pValue) {
+    mDomain = pChartData.domains.map(function(pValue) {
         return Number(pValue);
     }) || null;
 
     // Set a default color scale
-    mColor = pDiagramData.colors !== null && (pDiagramData.colors.length >= 1) ?
-            s4a.viz.color[pDiagramData.colors[0]][mDomain.length] :
+    mColor = pChartData.colors !== null && (pChartData.colors.length >= 1) ?
+            s4a.viz.color[pChartData.colors[0]][mDomain.length] :
             s4a.viz.color.Reds[mDomain.length];
 
     // Set a default secondary color scale
-    mColor2 = pDiagramData.colors !== null && (pDiagramData.colors.length >= 2) ?
-            s4a.viz.color[pDiagramData.colors[1]][mDomain.length] :
+    mColor2 = pChartData.colors !== null && (pChartData.colors.length >= 2) ?
+            s4a.viz.color[pChartData.colors[1]][mDomain.length] :
             s4a.viz.color.Blues[mDomain.length];
 
-    // Set a default size range (for bubble diagrams etc)
+    // Set a default size range (for bubble charts etc)
     mSizes = s4a.viz.Sizes.medium;
 
     // Construct a color scale
@@ -112,28 +112,28 @@ s4a.viz.map.getMap = function(pDomNode, pDiagramData) {
     // Initialize a series values object for secondary data  series
     mSeriesValues2 = [];
 
-    for (var i = 0, j = pDiagramData.mapUnitIDs.length; i < j; i++) {
+    for (var i = 0, j = pChartData.mapUnitIDs.length; i < j; i++) {
 
-        mDataMapMulti[pDiagramData.mapUnitIDs[i]] = Number(pDiagramData.seriesData[i]);
-        mDataMap[pDiagramData.mapUnitIDs[i]] =
-                Number(pDiagramData.seriesData[i][pDiagramData.showSeries[0]]);
-        mSeriesValues.push(Number(pDiagramData.seriesData[i][pDiagramData.showSeries[0]]));
+        mDataMapMulti[pChartData.mapUnitIDs[i]] = Number(pChartData.seriesData[i]);
+        mDataMap[pChartData.mapUnitIDs[i]] =
+                Number(pChartData.seriesData[i][pChartData.showSeries[0]]);
+        mSeriesValues.push(Number(pChartData.seriesData[i][pChartData.showSeries[0]]));
     }
 
-    if (pDiagramData.showSeries.length === 2) {
-        for (i = 0, j = pDiagramData.mapUnitIDs.length; i < j; i++) {
-            mDataMap2[pDiagramData.mapUnitIDs[i]] =
-                Number(pDiagramData.seriesData[i][pDiagramData.showSeries[1]]);
-            mSeriesValues2.push(Number(pDiagramData.seriesData[i][pDiagramData.showSeries[1]]));
+    if (pChartData.showSeries.length === 2) {
+        for (i = 0, j = pChartData.mapUnitIDs.length; i < j; i++) {
+            mDataMap2[pChartData.mapUnitIDs[i]] =
+                Number(pChartData.seriesData[i][pChartData.showSeries[1]]);
+            mSeriesValues2.push(Number(pChartData.seriesData[i][pChartData.showSeries[1]]));
         }
     }
 
-    if (pDiagramData.title === null || pDiagramData.title === undefined || pDiagramData.title === '') {
-        if (pDiagramData.showSeries.length > 1) {
-            pDiagramData.title = pDiagramData.seriesLabels[pDiagramData.showSeries[0]] + ' / ' +
-                pDiagramData.seriesLabels[pDiagramData.showSeries[2]];
+    if (pChartData.title === null || pChartData.title === undefined || pChartData.title === '') {
+        if (pChartData.showSeries.length > 1) {
+            pChartData.title = pChartData.seriesLabels[pChartData.showSeries[0]] + ' / ' +
+                pChartData.seriesLabels[pChartData.showSeries[2]];
         } else {
-            pDiagramData.title = pDiagramData.seriesLabels[pDiagramData.showSeries[0]];
+            pChartData.title = pChartData.seriesLabels[pChartData.showSeries[0]];
         }
     }
 
@@ -155,7 +155,7 @@ s4a.viz.map.getMap = function(pDomNode, pDiagramData) {
                 // Read all topojson features into a GeoJson object
                 mStatGeometries = topojson.feature(pStatAreas, pStatAreas.objects.kommune)
                 .features.filter(function(d) {
-                    return (pDiagramData.mapUnitIDs.indexOf(d.id.toString()) !== -1);
+                    return (pChartData.mapUnitIDs.indexOf(d.id.toString()) !== -1);
                 });
 
                 // Get the complete bounds of all features and calculate scale and translation
@@ -187,8 +187,8 @@ s4a.viz.map.getMap = function(pDomNode, pDiagramData) {
                 s4a.viz.map.shared._drawLand(mContext, mPath, pBaseMap);
 
                 // Conditionally draw choropleth polygons
-                if (pDiagramData.mapType === 'choroplethMap' ||
-                        pDiagramData.mapType === 'bubbleChoroplethMap') {
+                if (pChartData.mapType === 'choroplethMap' ||
+                        pChartData.mapType === 'bubbleChoroplethMap') {
                     s4a.viz.map.shared._drawPolygons(mStatGeometries, mDataMap, mColorScale, mPath, mContext);
                 }
 
@@ -197,27 +197,27 @@ s4a.viz.map.getMap = function(pDomNode, pDiagramData) {
                 s4a.viz.map.shared._drawCounty(mContext, mPath, pStatAreas);
 
                 // Conditionally draw bubbles
-                if (pDiagramData.mapType === 'bubbleMap') {
+                if (pChartData.mapType === 'bubbleMap') {
                     s4a.viz.map.shared._drawBubbles(mStatGeometries, mDataMap, mSizeScale, mColorScale,
                             mPath, mContext);
                 }
                 // Conditionally draw additional bubbles (series 2)
-                else if (pDiagramData.mapType === 'bubbleChoroplethMap') {
+                else if (pChartData.mapType === 'bubbleChoroplethMap') {
                     s4a.viz.map.shared._drawBubbles(mStatGeometries, mDataMap2, mSizeScale, mColorScale2,
                             mPath, mContext);
                 }
                 // Conditionally draw pie charts
-                else if (pDiagramData.mapType === 'pieChartMap') {
+                else if (pChartData.mapType === 'pieChartMap') {
                     s4a.viz.map.shared._drawPieCharts(mStatGeometries, mDataMapMulti, mColor, mPath,
                             mContext);
                 }
 
                 // Draw labels
-                s4a.viz.map.shared._drawLabels(mContext, mPath, mStatGeometries, (pDiagramData.fontSize - 2));
+                s4a.viz.map.shared._drawLabels(mContext, mPath, mStatGeometries, (pChartData.fontSize - 2));
 
                 // Draw legend
-                s4a.viz.map.shared._drawRectSymMapLegend(mContext, mColorScale, pDiagramData.title,
-                    Number(pDiagramData.fontSize));
+                s4a.viz.map.shared._drawRectSymMapLegend(mContext, mColorScale, pChartData.title,
+                    Number(pChartData.fontSize));
 
                 return mContext;
             });

@@ -67,31 +67,31 @@ s4a.viz.map.util.getTotal = function(pDataArray) {
 
 /**
  * Method to transform json returned by xml2json to the correct format for the
- * diagram data object
+ * chart data object
  *
  * @param {Object} pObject
- * @returns {AASDiag.DiagramData}
+ * @returns {AASDiag.ChartData}
  */
 s4a.viz.map.util.fixJsonData = function(pObject) {
-    var mDiagramData = new s4a.viz.DiagramData();
-    mDiagramData.title = pObject.title[0] || null;
-    mDiagramData.mapType = pObject.type !== undefined ? pObject.type : mDiagramData.mapType;
-    mDiagramData.mapUnitType = pObject.mapUnitType;
-    mDiagramData.mapUnitIDs = pObject.categoryLabels.string;
-    mDiagramData.seriesLabels = pObject.title.string;
-    mDiagramData.seriesData = s4a.viz.map.util.fixSeriesJsonData(pObject.seriesData);
-    mDiagramData.domains = pObject.intervals.float;
-    mDiagramData.showLabels = pObject.showLabels || false;
-    mDiagramData.showSeries = pObject.showSeries || [0];
+    var mChartData = new s4a.viz.ChartData();
+    mChartData.title = pObject.title[0] || null;
+    mChartData.mapType = pObject.type !== undefined ? pObject.type : mChartData.mapType;
+    mChartData.mapUnitType = pObject.mapUnitType;
+    mChartData.mapUnitIDs = pObject.categoryLabels.string;
+    mChartData.seriesLabels = pObject.title.string;
+    mChartData.seriesData = s4a.viz.map.util.fixSeriesJsonData(pObject.seriesData);
+    mChartData.domains = pObject.intervals.float;
+    mChartData.showLabels = pObject.showLabels || false;
+    mChartData.showSeries = pObject.showSeries || [0];
 
     //Special handling of colors
     if (pObject.palette !== undefined) {
-        mDiagramData.colors = pObject.palette !== undefined ? [pObject.palette] : mDiagramData.colors;
+        mChartData.colors = pObject.palette !== undefined ? [pObject.palette] : mChartData.colors;
     } else {
-        mDiagramData.colors = pObject.colors !== undefined ? [pObject.colors] : mDiagramData.colors;
+        mChartData.colors = pObject.colors !== undefined ? [pObject.colors] : mChartData.colors;
     }
 
-    return mDiagramData;
+    return mChartData;
 };
 
 /**

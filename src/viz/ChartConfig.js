@@ -3,7 +3,7 @@
  *
  * @class
  * @constructor
- * @property {String} [title=null] The title of the diagram
+ * @property {String} [title=null] The title of the chart
  * @property {String} [mapType="choroplethMap"] One of: "choroplethMap", "bubbleMap",
  *              "pieChartMap" or "bubbleChoroplethMap"
  * @property {String} mapUnitType The type of map unit (i.e. "land", "fylke", "kommune", "grunnkrets")
@@ -29,8 +29,8 @@
  * @property {Number} [mapHeight="auto"] The width of the map in pixels or auto to use
  *              height of containing DOM element
  */
-s4a.viz.DiagramData = function(mDiagramData) {
-    mDiagramData = mDiagramData || {};
+s4a.viz.ChartConfig = function(mChartConfig) {
+    mChartConfig = mChartConfig || {};
 
     var defaults = {
         title: null,
@@ -48,5 +48,5 @@ s4a.viz.DiagramData = function(mDiagramData) {
         fontSize: 12
     };
 
-    return $.extend(defaults, mDiagramData);
+    return $.extend(defaults, mChartConfig);
 };

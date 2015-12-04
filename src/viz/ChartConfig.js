@@ -34,6 +34,8 @@ s4a.viz.ChartConfig = function(mChartConfig) {
 
     var defaults = {
         title: null,
+        description: null,
+        intervals: [],
         mapType: 'choroplethMap',
         mapUnitType: null,
         mapUnitIDs: null,
@@ -45,7 +47,15 @@ s4a.viz.ChartConfig = function(mChartConfig) {
         showSeries: [0],
         mapWidth: 'auto',
         mapHeight: 'auto',
-        fontSize: 12
+        fontSize: 12,
+        collapsed: false,
+        collapsedWidth: 75,
+        collapsible: false,
+        donutWidth: 75,
+        radius: 150,
+        scale: 1,
+        width: 250,
+        height: null
     };
 
     return $.extend(defaults, mChartConfig);

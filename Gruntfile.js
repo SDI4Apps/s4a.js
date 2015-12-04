@@ -31,7 +31,7 @@ module.exports = function (grunt) {
                     'src/viz/layout/Grid.js',
                     'src/viz/Colors.js',
                     'src/viz/Sizes.js',
-                    'src/viz/ChartData.js',
+                    'src/viz/ChartConfig.js',
                     'src/viz/pie.js',
                     'src/viz/map/Map.js',
                     'src/viz/map/Util.js',
@@ -114,6 +114,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-jsdoc');
 
     // Default task.
-    grunt.registerTask('default', ['jshint', 'jscs', 'concat', 'nodeunit', 'uglify', 'update-docs']);
+    grunt.registerTask('default', ['jscs', 'jshint', 'concat', 'nodeunit', 'uglify', 'update-docs']);
     grunt.registerTask('update-docs', ['concat', 'jsdoc']);
 };

@@ -1,21 +1,14 @@
-s4a.viz.Pie = function(viewCoordinator) {
-    var currentData, currentScale;
+/**
+ * Pie visualization
+ *
+ * @param {s4a.viz.ViewCoordinator} viewCoordinator
+ * @param {s4a.viz.ChartConfig} mChartConfig
+ * @constructor
+ */
+s4a.viz.Pie = function(viewCoordinator, mChartConfig) {
+    var chartData, currentData, currentScale, scale, arc, bigArc;
     var _self = this;
-
-    /**
-     * Set of default styles
-     *
-     * @private
-     */
-    var defaults = {
-        collapsed: false,
-        collapsedWidth: 45,
-        collapsible: false,
-        donutWidth: 75,
-        radius: 150,
-        scale: 1,
-        width: 300
-    };
+    var transitionTime = 400;
 
     /**
      * Internal reference to Pie svg element.
@@ -25,6 +18,44 @@ s4a.viz.Pie = function(viewCoordinator) {
      */
     var svg = d3.select(document.createElementNS(d3.ns.prefix.svg, 'svg'));
 
+    function changeCollapsedState(collapsed) {
+        currentScale = collapsed ? scale : 1;
+
+        var featureWidth = mChartConfig.width * currentScale;
+        var featureHeight = mChartConfig.height * currentScale;
+        var g = svg.selectAll('g');
+
+        if (currentScale === 1) {
+            svg.attr('width', featureWidth)
+                .attr('height',featureHeight);
+
+            $(_self).trigger('resize');
+
+            g.attr('transform', 'translate(' + featureWidth / 2 + ',' + featureHeight / 2 + ')');
+
+            svg.selectAll('path')
+                .transition()
+                .duration(transitionTime)
+                .attr('d', currentScale === 1 ? bigArc : arc);
+        } else {
+            svg.selectAll('path')
+                .transition()
+                .duration(transitionTime)
+                .attr('d', currentScale === 1 ? bigArc : arc);
+
+            setTimeout(function() {
+                svg.attr('width', featureWidth)
+                    .attr('height',featureHeight);
+
+                $(_self).trigger('resize');
+
+                g.attr('transform', 'translate(' + featureWidth / 2 + ',' + featureHeight / 2 + ')');
+
+            }, transitionTime);
+
+        }
+    }
+
     /**
      * Create new pie chart
      *
@@ -33,91 +64,39 @@ s4a.viz.Pie = function(viewCoordinator) {
      * @private
      */
     function updateChart(width, height) {
-        var onClick = function() {
-            var newScale = currentScale === 1 ? currentData.scale : 1;
+        // pick the first series
+        currentData = chartData.series[0].values;
 
-            svg.selectAll('path')
-                .transition()
-                .duration(0)
-                .attrTween('transform', function(d, i, a) {
-                    return d3.interpolateString(a, 'scale(' + newScale + ')');
-                })
-                .attr('d', newScale === 1 ? bigArc : arc);
+        // and the first color
+        var colors = s4a.viz.color[mChartConfig.colors[0]][currentData.length];
 
-            if (newScale === 1) {
-                svg.attr('scale', newScale)
-                // show selected pies at top
-                .style('z-index', 100);
+        mChartConfig.height = mChartConfig.height || mChartConfig.width;
+        mChartConfig.collapsedHeight = mChartConfig.collapsedHeight || mChartConfig.collapsedWidth;
 
-                var legendRectSize = 18;
-                var legendSpacing = 4;
+        scale = mChartConfig.collapsed ? mChartConfig.collapsedWidth / mChartConfig.width : 1;
 
-                g.append('rect')
-                    .attr('class', 'legend')
-                    .attr('x', -50)
-                    .attr('y', function(d, i) {
-                        return -40 + i * 20;
-                    })
-                    .attr('width', 15)
-                    .attr('height', 10)
-                    .style('fill', function(d) {
-                        return color(d.data._label);
-                    });
+        currentScale = scale;
 
-                g.append('text')
-                    .attr('class', 'legend')
-                    .attr('x', -20)
-                    .attr('y', function(d, i) {
-                        return -40 + i * 20;
-                    })
-                    .text(function(d) {
-                        return d.data._label;
-                    });
-            } else {
-                g.selectAll('text').remove();
-                g.selectAll('rect').remove();
-
-                // show unselected pies at bottom
-                svg.style('z-index', 1);
-            }
-
-            currentScale = currentScale === 1 ? currentData.scale : 1;
-
-            //adjust the size of the SVG
-            _self.redraw();
-
-            // notify that the SVG need repositioning
-            $(_self).trigger('resize');
-        };
-
-        var data = currentData.data || [];
-
-        currentData = $.extend(defaults, currentData);
-        currentData.colors = currentData.colors || s4a.viz.color.Purples[data.length];
-
-        if (currentData.collapsed) {
-            currentData.scale = currentData.collapsedWidth / currentData.width;
-        }
-
-        currentScale = currentData.scale;
-
-        var radius = currentData.radius;
+        var radius = Math.min(mChartConfig.width, mChartConfig.height) / 2;
+        var collapsedRadius = Math.min(mChartConfig.collapsedWidth, mChartConfig.collapsedHeight) / 2;
 
         var color = d3.scale.ordinal()
-            .range(currentData.colors);
+            .range(colors);
 
-        var arc = d3.svg.arc()
-            .outerRadius(radius - 10)
-            .innerRadius(0);
+        arc = d3.svg.arc()
+            .outerRadius(collapsedRadius);
 
-        var bigArc = d3.svg.arc()
-            .outerRadius(radius - 10)
-            .innerRadius(radius - 75);
+        bigArc = d3.svg.arc()
+            .outerRadius(radius);
+
+        if (mChartConfig.innerWidth) {
+            bigArc.innerRadius(radius - mChartConfig.innerWidth);
+        }
 
         var pie = d3.layout.pie()
             .sort(null)
             .value(function(d) {
-                return d._value;
+                return d.valx;
             });
 
         // delete all current objects
@@ -126,7 +105,7 @@ s4a.viz.Pie = function(viewCoordinator) {
         }
 
         var g = svg.selectAll('.arc')
-            .data(pie(data))
+            .data(pie(currentData))
             .enter()
             .append('g')
             .attr('class', 'arc');
@@ -135,16 +114,20 @@ s4a.viz.Pie = function(viewCoordinator) {
         g.attr('transform', 'translate(' + -4000 + ',' + -4000 + ')');
 
         g.append('path')
-            .attr('d', arc)
+            .attr('d', mChartConfig.collapsed ? arc : bigArc)
             .style('fill', function(d) {
-                return color(d.data._label);
+                return color(d.data.label);
             });
 
-        svg.selectAll('path').transition().attrTween('transform', function(d, i, a) {
-            return d3.interpolateString(a, 'scale(' + currentScale + ')');
-        });
+        if (mChartConfig.collapsed) {
+            changeCollapsedState(true);
+        }
 
-        g.on('click', onClick);
+        if (mChartConfig.collapsible) {
+            g.on('click', function() {
+                changeCollapsedState(currentScale === 1);
+            });
+        }
     }
 
     /**
@@ -153,7 +136,7 @@ s4a.viz.Pie = function(viewCoordinator) {
      * @returns {Object} set of lonlat or null
      */
     _self.getGeometry = function() {
-        return currentData.location;
+        return chartData.geometry;
     };
 
     /**
@@ -180,20 +163,14 @@ s4a.viz.Pie = function(viewCoordinator) {
      * Redraw the vizObject
      */
     _self.redraw = function() {
-        if (currentData) {
-            if (!svg) {
-                updateChart();
-            }
+        var g = svg.selectAll('g');
+        var featureWidth = mChartConfig.width * currentScale;
+        var featureHeight = mChartConfig.height * currentScale;
 
-            var g = svg.selectAll('g');
-            var featureWidth = currentData.width * currentScale;
-            var featureWidthHalf = featureWidth / 2;
+        svg.attr('width', featureWidth)
+            .attr('height', featureHeight);
 
-            svg.attr('width', featureWidth)
-                .attr('height', featureWidth);
-
-            g.attr('transform', 'translate(' + featureWidthHalf + ',' + featureWidthHalf + ')');
-        }
+        g.attr('transform', 'translate(' + featureWidth / 2 + ',' + featureHeight / 2 + ')');
     };
 
     // Methods inherited from top level vizObj
@@ -202,10 +179,10 @@ s4a.viz.Pie = function(viewCoordinator) {
      * Callback from ViewCoordinator.
      * Update data object for the visualization
      *
-     * @param {Object} pData
+     * @param {Object} mChartData
      */
-    _self.update = function(pData) {
-        currentData = pData;
+    _self.update = function(mChartData) {
+        chartData = mChartData;
         updateChart();
         _self.redraw();
     };

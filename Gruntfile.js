@@ -20,30 +20,14 @@ module.exports = function (grunt) {
                 src: [
                     'src/<%= pkg.name %>.js',
                     'src/config/Config.js',
-                    'src/map/Map.js',
-                    'src/map/VizLayer.js',
-                    'src/viz/viz.js',
-                    'src/viz/VizTypes.js',
-                    'src/viz/VizObj.js',
-                    'src/viz/Legend.js',
-                    'src/viz/ViewCoordinator.js',
-                    'src/viz/layout/Layout.js',
-                    'src/viz/layout/Anchor.js',
-                    'src/viz/layout/Grid.js',
-                    'src/viz/Colors.js',
-                    'src/viz/Sizes.js',
-                    'src/viz/ChartConfig.js',
-                    'src/viz/pie.js',
-                    'src/viz/map/Map.js',
-                    'src/viz/map/Util.js',
-                    'src/viz/map/Shared.js'
+                    'src/**/*.js'
                 ],
                 dest: 'dist/<%= pkg.name %>.js'
             },
         },
         jsdoc: {
             dist: {
-                src: ['dist/*.js'],
+                src: ['dist/*.js', 'README.md'],
                 options: {
                     destination: 'doc'
                 }
@@ -62,9 +46,9 @@ module.exports = function (grunt) {
                 dest: 'dist/<%= pkg.name %>.min.js'
             },
         },
-        nodeunit: {
-            files: ['test/**/*_test.js']
-        },
+        // nodeunit: {
+        //     files: ['test/**/*_test.js']
+        // },
         jshint: {
             options: {
                 jshintrc: '.jshintrc'
@@ -115,6 +99,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-jsdoc');
 
     // Default task.
-    grunt.registerTask('default', ['jscs', 'jshint', 'concat', 'nodeunit', 'uglify', 'update-docs']);
+    grunt.registerTask('default', ['jscs', 'jshint', 'concat', 'uglify', 'update-docs']);
     grunt.registerTask('update-docs', ['concat', 'jsdoc']);
 };

@@ -15,6 +15,7 @@
   "bugs": {
     "url": "https://github.com/SDI4Apps/s4a.js/issues"
   },
+  "license": "Apache2",
   "licenses": [
     {
       "type": "Apache2",
@@ -38,5 +39,8 @@
     "grunt-jscs": "^2.3.0",
     "grunt-jsdoc": "^1.0.0"
   },
-  "keywords": []
+  "keywords": [],
+  "dependencies": {
+    "openlayers": "^3.12.1"
+  }
 }

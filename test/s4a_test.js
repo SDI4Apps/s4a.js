@@ -5,7 +5,7 @@ require('../dist/s4a.js');
 /*
  ======== A Handy Little Nodeunit Reference ========
  https://github.com/caolan/nodeunit
- 
+
  Test methods:
  test.expect(numAssertions)
  test.done()

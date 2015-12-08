@@ -25,6 +25,7 @@ module.exports = function (grunt) {
                     'src/viz/viz.js',
                     'src/viz/VizTypes.js',
                     'src/viz/VizObj.js',
+                    'src/viz/Legend.js',
                     'src/viz/ViewCoordinator.js',
                     'src/viz/layout/Layout.js',
                     'src/viz/layout/Anchor.js',

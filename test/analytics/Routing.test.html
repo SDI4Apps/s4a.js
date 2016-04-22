@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>s4a.js pgrouting module test</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="../../node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script>
+        <script src="../../node_modules/openlayers/dist/ol.js" type="text/javascript"></script>
+        <script src="../../dist/s4a.js" type="text/javascript"></script>
+        <link href="../../css/s4a.css" rel="stylesheet" type="text/css"/>
+        <link href="../../node_modules/openlayers/dist/ol.css" rel="stylesheet" type="text/css"/>
+        <script>
+
+            jQuery("document").ready(function () {
+
+                // Configure the service to work against a configured instance of the OpenAPI
+                s4a.openApiUrl('http://localhost:8080/openapi');
+
+                var SHORTESTROUTE = 'ShortestRoute';
+
+                var REACHABLEAREA = 'ReachableArea';
+
+                var OPTIMALROUTE = 'OptimalRoute';
+
+
+                var selectedFunction = SHORTESTROUTE;
+
+                jQuery("#btnShortestRoute").click(function () {
+                    selectedFunction = SHORTESTROUTE;
+
+                });
+
+                jQuery("#btnReachableArea").click(function () {
+                    selectedFunction = REACHABLEAREA;
+                });
+
+                jQuery("#btnOptimalRoute").click(function () {
+                    selectedFunction = OPTIMALROUTE;
+                });
+
+                var vectorSource = new ol.source.Vector({});
+
+                var vectorLayer = new ol.layer.Vector({
+                    source: vectorSource
+                });
+
+                var geoJsonSource = new ol.source.Vector({
+                    format: new ol.format.GeoJSON()
+                });
+
+                var routeLayer = new ol.layer.Vector({
+                    source: geoJsonSource
+                });
+
+                var myMap = new s4a.map.MapHelper('map');
+
+                var myAB = [];
+
+                myMap.getMap().addLayer(vectorLayer);
+
+                myMap.getMap().addLayer(routeLayer);
+
+                /**
+                 * This event handler is for routes
+                 * 
+                 * @param {Object} e
+                 */
+                var shortestRouteListener = function (e) {
+                    // Clear array if two elements long
+                    if (myAB.length >= 2) {
+                        myAB.length = 0;
+                        vectorSource.clear();
+                    }
+
+                    var cPt = myMap.transform(e.coordinate, true);
+
+
+                    s4a.analytics.Routing.getNearestNode(cPt[0], cPt[1]).then(function (res) {
+                        if (res.status === 'success' && res.count === 1) {
+                            // add icon to vector source
+                            // create icon at new map center
+                            var iconFeature = new ol.Feature({
+                                geometry: new ol.geom.Point(myMap.transform([res.data.lon, res.data.lat]))
+                            });
+
+                            var vectorFormat = new ol.format.GeoJSON();
+
+                            vectorSource.addFeature(iconFeature);
+                            myAB.push(res.data.id);
+
+                            if (myAB.length === 2) {
+                                console.log('Here is where the route should be calculated');
+                                console.log(myAB);
+
+                                s4a.analytics.Routing.getShortestRoute(myAB[0], myAB[1]).then(function (res) {
+                                    geoJsonSource.clear();
+                                    if (res.status === 'success' && res.count > 0) {
+                                        for (var i = 0; i < res.data.length; i++) {
+                                            var f = vectorFormat.readFeature({type: 'Feature', geometry: JSON.parse(res.data[i].geoJson)}, {
+                                                featureProjection: 'EPSG:3857'
+                                            });
+                                            geoJsonSource.addFeature(f);
+                                        }
+                                    }
+                                });
+                            }
+
+                        } else {
+                            console.log('No node within search tolerance');
+                        }
+                    });
+
+                };
+
+                /**
+                 * This event handler is for drawing areas
+                 * 
+                 * @param {type} e
+                 */
+                var reachableAreaListener = function (e) {
+                    var cPt = myMap.transform(e.coordinate, true);
+
+                    s4a.analytics.Routing.getNearestNode(cPt[0], cPt[1]).then(function (res) {
+                        if (res.status === 'success' && res.count === 1) {
+                            var nodeId = res.data.id;
+
+                            s4a.analytics.Routing.getReachableArea(nodeId, 60000).then(function (res) {
+                                var vectorFormat = new ol.format.GeoJSON();
+                                geoJsonSource.clear();
+                                var f = vectorFormat.readFeature(res.feature, {
+                                    featureProjection: 'EPSG:3857'
+                                });
+                                geoJsonSource.addFeature(f);
+                            });
+                        }
+                    });
+                };
+
+                myMap.listenSingleClick(function (e) {
+                    if (selectedFunction === SHORTESTROUTE) {
+                        shortestRouteListener(e);
+                    } else {
+                        reachableAreaListener(e);
+                    }
+                });
+
+            });
+        </script>
+        <style>
+            #map {
+                width: 800px;
+                height: 600px;
+            }
+        </style>
+    </head>
+    <body>
+        <button id="btnShortestRoute">Shortest route</button>
+        <button id="btnReachableArea">Reachable area</button>
+        <button id="btnOptimalRoute">Optimal route</button>
+        <hr>
+        <div id="map"></div>
+    </body>
+</html>

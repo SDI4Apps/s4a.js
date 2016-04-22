@@ -1,0 +1,4 @@
+/**
+ * @namespace s4a.viz
+ */
+s4a.viz = s4a.viz || {};

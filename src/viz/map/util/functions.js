@@ -1,3 +1,4 @@
+'use strict';
 s4a.viz.map.util = {};
 
 /**

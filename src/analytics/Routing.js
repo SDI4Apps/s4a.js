@@ -1,6 +1,8 @@
+
 s4a.extend('analytics');
 
-s4a.analytics.Routing = (function() {
+s4a.analytics.Routing = (function () {
+    'use strict';
 
     /**
      * This module includes functions to perform network route calculations
@@ -25,7 +27,7 @@ s4a.analytics.Routing = (function() {
      * @return {Promise} description
      * @public
      */
-    module.getShortestRoute = function(from, to) {
+    module.getShortestRoute = function (from, to) {
 
         var params = {
             action: 'GetShortestPath',
@@ -47,7 +49,7 @@ s4a.analytics.Routing = (function() {
      * @returns {Promise}
      * @public
      */
-    module.getNearestNode = function(lon, lat, radius) {
+    module.getNearestNode = function (lon, lat, radius) {
 
         if (radius === undefined) {
             radius = 100;
@@ -72,7 +74,7 @@ s4a.analytics.Routing = (function() {
      * @param {Array.<Number>} via - Array of intermediate node IDs
      * @return {Object.<RouteResponse>} - Returns a route object
      */
-    module.getOptimalRoute = function(from, to, via) {
+    module.getOptimalRoute = function (from, to, via) {
         //throw 'Not committed to code';
         return {};
     };
@@ -80,14 +82,19 @@ s4a.analytics.Routing = (function() {
     /**
      * Calulate the optimal route
      *
-     * @param {Number} from - ID of start node
+     * @param {Number} fromNode - Identifier of start node
      * @param {Number} distance - Distance to traverse along network in
-     * all directions from start node ID
+     * all directions from start node
      * @return {Object.<AreaResponse>} - Returns an area object
      */
-    module.getReachableArea = function(from, distance) {
-        //throw 'Not committed to code';
-        return {};
+    module.getReachableArea = function (fromNode, distance) {
+        var params = {
+            action: 'GetReachableArea',
+            fromNode: fromNode,
+            distance: distance
+        };
+
+        return s4a.doPost(_wsFragment, params);
     };
 
     return module;

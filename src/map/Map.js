@@ -1,3 +1,5 @@
+'use strict';
+
 /* global s4a */
 s4a.map = {};
 

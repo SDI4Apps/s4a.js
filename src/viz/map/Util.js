@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Namespace for map related utilities
  * @namespace

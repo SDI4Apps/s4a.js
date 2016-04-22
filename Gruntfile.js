@@ -96,8 +96,8 @@ module.exports = function(grunt) {
                 tasks: ['jshint:gruntfile']
             },
             lib: {
-                files: '<%= jshint.lib.src %>',
-                tasks: ['jshint:src', 'nodeunit']
+                files: '<%= jshint.src.src %>',
+                tasks: ['jshint:src', 'concat']
             }
         },
         jasmine: {

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * <p>SDI4Apps client-side library for rapid application development based on the
  * SDI4Apps platform OpenAPI</p>

@@ -1,3 +1,5 @@
+'use strict';
+ 
 /**
  * A layer switcher control for OpenLayers 3
  *
@@ -7,7 +9,7 @@
  * @constructor
  */
 s4a.map.LayerSwitcher = function() {
-
+ 
     /**
      * @property {Number} [test=1] - description
      */

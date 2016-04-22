@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Mixin interface that must be implemented by s4a map tools
  * @interface

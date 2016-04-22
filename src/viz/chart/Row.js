@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Create a new Row chart object
  *

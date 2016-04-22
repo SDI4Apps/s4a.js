@@ -1,3 +1,6 @@
+'use strict';
+s4a.extend('mobile');
+
 /**
  *
  *

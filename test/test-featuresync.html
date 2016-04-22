@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Test mobile module</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="../node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script>
+        <script src="./gh.stats.helper.js" type="text/javascript"></script>
+        <script src="../dist/s4a.js" type="text/javascript"></script>
+        <script>
+
+            function onLoad() {
+
+
+                var iterate = function(size, so, max) {
+
+                    var size = size / 2;
+                    var d = jQuery.Deferred();
+                    var count = 0;
+                    for (var i = 0; i < max; i++) {
+
+                        var startTime = new Date().getTime();
+
+                        jQuery.post('http://localhost:8084/featuresync/FeatureSync', {
+                            action: 'CheckOut',
+                            longitude: 10.77,
+                            latitude: 59.91,
+                            buffer: size
+                        }, function(res) {
+                            so.log(new Date().getTime() - startTime);
+                            count++;
+                            if (count === (max -1)) {
+                                d.resolve();
+                            }
+                        }, 'json');
+                    }
+
+                    return d;
+                }
+
+                var s = new gh.stats('Test 1 km2');
+
+                var t = iterate(1000, s, 100);
+
+                t.done(function() {
+                    s.print();
+                });
+
+                var s2 = new gh.stats('Test 5 km2');
+
+                var t2 = iterate(5000, s2, 50);
+
+                t2.done(function() {
+                    s2.print();
+                });
+
+                var s3 = new gh.stats('Test 10 km2');
+
+                var t3 = iterate(10000, s3, 25);
+
+                t3.done(function() {
+                    s3.print();
+                });
+
+            }
+
+        </script>
+    </head>
+    <body onload="onLoad()">
+    </body>
+</html>

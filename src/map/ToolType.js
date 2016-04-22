@@ -4,7 +4,7 @@
  * @enum {String}
  */
 s4a.map.ToolType = {
-    button: 'button',
-    tool: 'tool',
-    input: 'input'
+    BUTTON: 'button',
+    TOOL: 'tool',
+    INPUT: 'input'
 };

@@ -1,3 +1,5 @@
+s4a.extend('viz');
+
 /**
  * Object that defines the content, type and layout of a map
  *

@@ -77,7 +77,7 @@
 
     "jsDoc": {
         "checkAnnotations": {
-	     "preset": "closurecompiler",
+	     "preset": "jsdoc3",
 	     "extra": {
 	       "file": true,
 	       "overview": true,

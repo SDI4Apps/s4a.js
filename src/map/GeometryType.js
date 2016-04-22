@@ -1,3 +1,5 @@
+
+s4a.extend('map');
 /**
  * Geometry type enumeration
  *

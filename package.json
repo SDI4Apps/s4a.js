@@ -1,12 +1,12 @@
 {
   "name": "s4a",
   "description": "SDI4Apps Client Side Javascript Library",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "homepage": "https://github.com/SDI4Apps/s4a.js",
   "author": {
     "name": "SDI4Apps Partnership",
-    "email": "rb@avinet.no",
-    "url": "http://www.avinet.no"
+    "email": "contact@sdi4apps.eu",
+    "url": "http://www.sdi4apps.eu"
   },
   "repository": {
     "type": "git",
@@ -15,13 +15,7 @@
   "bugs": {
     "url": "https://github.com/SDI4Apps/s4a.js/issues"
   },
-  "license": "Apache2",
-  "licenses": [
-    {
-      "type": "Apache2",
-      "url": "https://github.com/SDI4Apps/s4a.js/blob/master/LICENSE"
-    }
-  ],
+  "license": "Apache-2.0",
   "main": "src/s4a",
   "engines": {
     "node": ">= 0.10.0"
@@ -30,14 +24,18 @@
     "test": "grunt nodeunit"
   },
   "devDependencies": {
+    "dc": "^1.7.5",
     "grunt": "~0.4.5",
     "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-jasmine": "^1.0.0",
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-contrib-uglify": "~0.2.0",
     "grunt-contrib-watch": "~0.4.0",
     "grunt-jscs": "^2.3.0",
-    "grunt-jsdoc": "^1.0.0"
+    "grunt-jsdoc": "^1.0.0",
+    "ink-docstrap": "^1.1.4",
+    "jquery.1": "^1.0.0"
   },
   "keywords": [],
   "dependencies": {

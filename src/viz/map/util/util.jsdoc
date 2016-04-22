@@ -1,0 +1,4 @@
+/**
+ * Namespace for map visualization related classes and methods
+ * @namespace s4a.viz.map.util
+ */

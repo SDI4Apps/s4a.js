@@ -17,7 +17,18 @@ var s4a = (function() {
 
     var mod = {};
 
+    /**
+     * Default OpenAPI instance
+     *
+     * @type String
+     */
     var _openApiUrl = 'http://portal.sdi4apps.eu/openapi';
+
+    /**
+     * Proxy script URL (optional)
+     *
+     * @type String
+     */
     var _proxyUrl = null;
 
     /**
@@ -25,41 +36,6 @@ var s4a = (function() {
      *
      */
     mod.version = '1.0';
-
-    /**
-     * Map related classes and modules
-     *
-     * @namespace s4a.map
-     */
-    mod.map = {};
-
-    /**
-     * Mobile related classes and modules
-     *
-     * @namespace s4a.mobile
-     */
-    mod.mobile = {};
-
-    /**
-     * Information retrieval related classes and modules
-     *
-     * @namespace s4a.ir
-     */
-    mod.ir = {};
-
-    /**
-     * Advanced visualization related classes and modules
-     *
-     * @namespace s4a.viz
-     */
-    mod.viz = {};
-
-    /**
-     * Analytics related classes and modules
-     *
-     * @namespace s4a.viz
-     */
-    mod.analytics = {};
 
     /**
      * Get or set a proxy script that will be used to access the platform
@@ -80,11 +56,52 @@ var s4a = (function() {
      * @param {String} openApiUrl URI for SDI4Apps platform instance
      * @return {String} URL of OpenAPI instance if set
      */
-    mod.openAPI = function(openApiUrl) {
+    mod.openApiUrl = function(openApiUrl) {
         if (openApiUrl !== undefined) {
             _openApiUrl = openApiUrl;
         }
         return _openApiUrl;
+    };
+
+    /**
+     * Extend s4a with a namespace string and return the namespace object
+     *
+     * @param {String} namespaceString - A namespace string where namespaces are separated by dots '.'
+     * @return {Object} - Namespace object
+     */
+    mod.extend = function(namespaceString) {
+
+        var parts = namespaceString.split('.');
+
+        var parent = s4a;
+
+        var pl;
+
+        var i;
+
+        pl = parts.length;
+        for (i = 0; i < pl; i++) {
+
+            if (typeof parent[parts[i]] === 'undefined') {
+                parent[parts[i]] = {};
+            }
+
+            parent = parent[parts[i]];
+        }
+
+        return parent;
+    };
+
+    /**
+     * Generic, re-usable Ajax function to perform all calls to server
+     *
+     * @param {String} wsFragment - The name of the web service including the leading slash
+     * @param {Object} params - An object of parameters to be passed to the web service
+     * @returns {Promise.<Object>} - A jQuery Promise object
+     */
+    mod.doPost = function(wsFragment, params) {
+        var wsUrl = s4a.openApiUrl() + wsFragment;
+        return jQuery.post(wsUrl, params, null, 'json');
     };
 
     return mod;

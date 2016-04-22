@@ -1,6 +1,0 @@
-/**
- * A layer switcher control for OpenLayers 3
- */
-s4a.map.LayerSwitcher = function() {
-
-};

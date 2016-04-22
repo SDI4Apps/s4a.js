@@ -1,15 +1,20 @@
 s4a.config = (function() {
 
     /**
-     * Load config
-     *
-     * @param {Object} cfg Override any defaults
+     * @exports s4a.config
      */
-    function _loadConfig(cfg) {
-        cfg = cfg || {};
+    var module = {};
 
-        // default config
-        var config = {
+    /**
+     * Load configuration
+     *
+     * @param {Object} configObject - Override any defaults
+     */
+    module.loadConfig = function(configObject) {
+
+        configObject = configObject || {};
+
+        var defaultConfig = {
             center: {
                 x: 6.45996,
                 y: 49.92294,
@@ -30,11 +35,9 @@ s4a.config = (function() {
             layers: []
         };
 
-        return $.extend(config, cfg);
-    }
-
-    return {
-        loadConfig: _loadConfig
+        return jQuery.extend(defaultConfig, configObject);
     };
+
+    return module;
 
 })();

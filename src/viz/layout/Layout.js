@@ -1,5 +1,5 @@
 /* global s4a */
-s4a.viz.layout = {};
+s4a.viz.layout = s4a.viz.layout || {};
 
 /**
  * <p>This abstract top-level object handles layout for a group

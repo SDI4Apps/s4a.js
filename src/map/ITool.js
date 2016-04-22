@@ -1,6 +1,7 @@
 /**
  * Mixin interface that must be implemented by s4a map tools
  * @interface
+ * @mixin
  */
 s4a.map.ITool = {
 
@@ -14,7 +15,7 @@ s4a.map.ITool = {
      * Type of tool
      * @type {s4a.map.ToolType}
      */
-    toolType: s4a.map.ToolType.button,
+    toolType: null,
 
     /**
      *

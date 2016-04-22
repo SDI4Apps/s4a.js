@@ -4,6 +4,9 @@ s4a.map = {};
 /**
  * Create a map
  *
+ * @classdesc
+ * This class provides the mechanism
+ *
  * @constructor
  * @param {DOMElement|String} nodeId The element or id of an element in
  * your page that will contain the map.

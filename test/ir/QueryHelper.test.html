@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>s4a.js - QueryHelper test</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <script src="../../node_modules/jquery.1/node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script>
+        <script src="../../node_modules/openlayers/dist/ol.js" type="text/javascript"></script>
+        <script src="../../dist/s4a.js" type="text/javascript"></script>
+
+        <link href="../../css/s4a.css" rel="stylesheet" type="text/css"/>
+        <link href="../../node_modules/openlayers/dist/ol.css" rel="stylesheet" type="text/css"/>
+        <script>
+            jQuery("document").ready(function () {
+
+                s4a.openApiUrl('http://localhost:8080/openapi');
+
+                var myQueryHelper = new s4a.ir.QueryHelper();
+
+                myQueryHelper
+                        .setQuery('Norway')
+                        .setMaxResults(3)
+                        .setExtent('0,40,20,80')
+                        .query()
+                        .then(function (res) {
+                            jQuery("#searchResults").html('Response 1: ' + JSON.stringify(res));
+                        });
+
+                var myQueryHelper2 = new s4a.ir.QueryHelper();
+                myQueryHelper2
+                        .setQuery('Norway')
+                        .setMaxResults(3)
+                        .query()
+                        .then(function (res2) {
+                            jQuery("#searchResults2").html('Reponse 2: ' + JSON.stringify(res2));
+                        });
+
+            });
+        </script>
+        <style>
+            #searchResults {
+                width: 400px;
+                height: 400px;
+                border: 1px solid red;
+                float: left;
+            }
+            #searchResults2 {
+                width: 400px;
+                height: 400px;
+                border: 1px solid blue;
+                float: left;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="searchResults"></div>
+        <div id="searchResults2"></div>
+    </body>
+</html>

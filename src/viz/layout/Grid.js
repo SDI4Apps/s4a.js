@@ -1,4 +1,5 @@
 /* global s4a */
+s4a.viz.layout = s4a.viz.layout || {};
 
 /**
  * <p>This is an abstract top-level object that take care of layout for a group
@@ -22,4 +23,5 @@ s4a.viz.layout.Grid = function(domElement) {
     return {
         getView: getView
     };
+
 };

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+        <title>Legend example</title>
+        <style>
+
+        </style>
+        <script src="../../deps/jquery-1.10.2/jquery-1.10.2.min.js" type="text/javascript"></script>
+        <script src="../../deps/d3.v3/d3.v3.min.js" type="text/javascript"></script>
+        <script src="../../dist/s4a.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            function init() {
+                var cc = new s4a.viz.ChartConfig({
+                    legendWidth: 200,
+                    fontSize: 12,
+                    domains: [0, 100, 200, 300, 400, 600, 800],
+                    seriesLabels: ['SDI4Apps', 'MAC', 'BOSC', 'Asplan Viak Internet', 'HSRS', 'Hyperborea'],
+                    colors: ['#ff0000', '#ffff00', '#ffffff', '#f8f8f8', '#ff00ff', '#00ffff'] // to be fixed
+                });
+                var leg = new s4a.viz.Legend(cc);
+                leg.updateLegend();
+                document.body.appendChild(leg.getSvg());
+            }
+        </script>
+    </head>
+    <body onload="init()">
+    </body>
+</html>

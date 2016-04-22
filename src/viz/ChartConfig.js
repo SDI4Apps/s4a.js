@@ -1,3 +1,5 @@
+s4a.extend('viz');
+
 /**
  * Object that defines the content, type and layout of a map
  *
@@ -31,7 +33,6 @@
  */
 s4a.viz.ChartConfig = function(mChartConfig) {
     mChartConfig = mChartConfig || {};
-
     var defaults = {
         title: null,
         description: null,
@@ -55,8 +56,8 @@ s4a.viz.ChartConfig = function(mChartConfig) {
         radius: 150,
         scale: 1,
         width: 250,
-        height: null
+        height: null,
+        legendWidth: 100
     };
-
     return $.extend(defaults, mChartConfig);
 };

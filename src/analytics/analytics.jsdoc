@@ -1,0 +1,6 @@
+/**
+ * Namespace for analytical methods including but not limited to
+ * network route calculations.
+ *
+ * @namespace s4a.analytics
+ */

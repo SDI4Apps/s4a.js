@@ -1,0 +1,95 @@
+s4a.extend('analytics');
+
+s4a.analytics.Routing = (function() {
+
+    /**
+     * This module includes functions to perform network route calculations
+     *
+     * @exports s4a.analytics.Routing
+     */
+    var module = {};
+
+    /**
+     * URL for routing web service
+     *
+     * @type {String}
+     * @private
+     */
+    var _wsFragment = '/routing';
+
+    /**
+     * Calculate the shortest path between two network nodes on a topological network
+     *
+     * @param {Number} from The ID of the from node
+     * @param {Number} to The ID of the to node
+     * @return {Promise} description
+     * @public
+     */
+    module.getShortestRoute = function(from, to) {
+
+        var params = {
+            action: 'GetShortestPath',
+            from: from,
+            to: to
+        };
+
+        return s4a.doPost(_wsFragment, params);
+
+    };
+
+    /**
+     * Get the nearest network node to the specifiec longitude/latitude coordinates
+     * within an optional buffer distance
+     *
+     * @param {Number} lon Longitude (x) coordinate
+     * @param {Number} lat Latitude (y) coordinate
+     * @param {Number} radius A radius in meters to search for matching network nodes
+     * @returns {Promise}
+     * @public
+     */
+    module.getNearestNode = function(lon, lat, radius) {
+
+        if (radius === undefined) {
+            radius = 100;
+        }
+
+        var params = {
+            action: 'GetNearestNode',
+            lon: lon,
+            lat: lat,
+            radius: radius
+        };
+
+        return s4a.doPost(_wsFragment, params);
+
+    };
+
+    /**
+     * Calulate the optimal route
+     *
+     * @param {Number} from - ID of start node
+     * @param {Number} to - ID of end node
+     * @param {Array.<Number>} via - Array of intermediate node IDs
+     * @return {Object.<RouteResponse>} - Returns a route object
+     */
+    module.getOptimalRoute = function(from, to, via) {
+        //throw 'Not committed to code';
+        return {};
+    };
+
+    /**
+     * Calulate the optimal route
+     *
+     * @param {Number} from - ID of start node
+     * @param {Number} distance - Distance to traverse along network in
+     * all directions from start node ID
+     * @return {Object.<AreaResponse>} - Returns an area object
+     */
+    module.getReachableArea = function(from, distance) {
+        //throw 'Not committed to code';
+        return {};
+    };
+
+    return module;
+
+}());

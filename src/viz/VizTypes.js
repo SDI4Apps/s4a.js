@@ -6,14 +6,14 @@
  * @enum {number}
  * @readonly
  */
-s4a.viz.VizTypes = {
+s4a.viz.VizType = {
     /**
      * Chart
      */
-    'chart': 1,
+    CHART: 1,
 
     /**
      * Map
      */
-    'map': 2
+    MAP: 2
 };

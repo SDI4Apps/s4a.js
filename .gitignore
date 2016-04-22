@@ -4,3 +4,4 @@
 /doc/*
 .sublime-grunt.cache
 *.sublime*
+/web.config

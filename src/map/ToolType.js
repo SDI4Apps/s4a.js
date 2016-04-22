@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Tool type enumeration
  *

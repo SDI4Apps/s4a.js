@@ -1,3 +1,4 @@
+'use strict';
 /* global s4a */
 s4a.viz.layout = s4a.viz.layout || {};
 

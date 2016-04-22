@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Legend for a visualization
  *

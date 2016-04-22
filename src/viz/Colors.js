@@ -1,3 +1,4 @@
+'use strict';
 /**
  * Color scales
  * This product includes color specifications and designs developed by

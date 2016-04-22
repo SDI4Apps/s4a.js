@@ -1,11 +1,13 @@
-s4a.ir = s4a.ir || {};
+
+s4a.extend('ir');
 
 /**
  * Query helper object
  *
  * @class
  */
-s4a.ir.QueryHelper = function() {
+s4a.ir.QueryHelper = function () {
+    'use strict';
 
     /**
      * A place holder for the current instance of the query helper
@@ -62,7 +64,7 @@ s4a.ir.QueryHelper = function() {
      *
      * @returns {s4a.ir.QueryHelper}
      */
-    this.clear = function() {
+    this.clear = function () {
         _query = null;
         _extent = null;
         _maxResults = null;
@@ -77,7 +79,7 @@ s4a.ir.QueryHelper = function() {
      * @param {String} queryTerm
      * @returns {s4a.ir.QueryHelper}
      */
-    this.setQuery = function(queryTerm) {
+    this.setQuery = function (queryTerm) {
         _query = queryTerm;
         return _self;
     };
@@ -89,7 +91,7 @@ s4a.ir.QueryHelper = function() {
      * @param {Number} buffer Distance in meters
      * @returns {s4a.ir.QueryHelper}
      */
-    this.setDistance = function(wktPoint, buffer) {
+    this.setDistance = function (wktPoint, buffer) {
         _wktPoint = wktPoint;
         _buffer = buffer;
         return _self;
@@ -101,7 +103,7 @@ s4a.ir.QueryHelper = function() {
      * @param {Number} maxResults
      * @returns {s4a.ir.QueryHelper}
      */
-    this.setMaxResults = function(maxResults) {
+    this.setMaxResults = function (maxResults) {
         _maxResults = maxResults;
         return _self;
     };
@@ -112,16 +114,16 @@ s4a.ir.QueryHelper = function() {
      * @param {String} extent - A comma separate list of minx, miny, maxx, maxy values
      * @returns {s4a.ir.QueryHelper}
      */
-    this.setExtent = function(extent) {
+    this.setExtent = function (extent) {
         _extent = extent;
         return _self;
     };
 
-    this.addFacet = function(facet, term) {
+    this.addFacet = function (facet, term) {
         return _self;
     };
 
-    this.filter = function(facet, value) {
+    this.filter = function (facet, value) {
         return _self;
     };
 
@@ -130,7 +132,7 @@ s4a.ir.QueryHelper = function() {
      *
      * @returns {Promise.<Object>}
      */
-    this.query = function() {
+    this.query = function () {
 
         var params = {};
 

@@ -1,3 +1,5 @@
+'use strict';
+
 s4a.extend('mobile');
 
 s4a.mobile.FeatureSync = (function() {

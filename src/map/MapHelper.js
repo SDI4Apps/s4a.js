@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * A helper class to quickly add maps to your HTML5 applications
  *

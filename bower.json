@@ -1,0 +1,28 @@
+{
+  "name": "s4a-js",
+  "description": "SDI4Apps Client Side Javascript Library",
+  "main": "src/s4a",
+  "authors": [
+    "SDI4Apps Consortium"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "spatial",
+    "gis",
+    "visualization",
+    "query",
+    "api",
+    "sdi4apps"
+  ],
+  "homepage": "https://github.com/SDI4Apps/s4a.js",
+  "moduleType": [
+    "globals"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

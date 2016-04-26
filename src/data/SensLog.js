@@ -11,32 +11,60 @@ s4a.data.SensLog = (function() {
     var SensLog = {};
 
     /**
+     * URI fragment relative to OpenAPI base for ControllerServlet
+     *
+     * @type String
+     */
+    var _controllerServletUriFragment = '/../SensLog/ControllerServlet';
+
+    /**
+     * URI fragment relative to OpenAPI base for FeederServlet
+     *
+     * @type String
+     */
+    var _feederUriFragment = '/../SensLog/FeederServlet';
+
+    /**
+     * URI fragment relative to OpenAPI base for DataService
+     *
+     * @type String
+     */
+    var _dataServiceUriFragment = '/../SensLog/DataService';
+
+    /**
+     * URI fragment relative to OpenAPI base for SensorService
+     *
+     * @type String
+     */
+    var _sensorServiceUriFragment = '/../SensLog/SensorService';
+
+    /**
      * Formats a JavaScript date into a SensLog date string
      *
-     * @param {Date} date - A JavaScript date
+     * @param {Date} jsDate - A JavaScript date
      * @returns {String} - SensLog formatted date string YYYY-MM-DDThh:mm:ss
      */
-    var _toSensLogDate = function(date) {
+    var _toSensLogDate = function(jsDate) {
 
-        var year = date.getFullYear();
-        var month = (date.getMonth() + 1).toString();
+        var year = jsDate.getFullYear();
+        var month = (jsDate.getMonth() + 1).toString();
         if (month.length === 1) {
             month = '0' + month;
         }
-        var day = date.getDate().toString();
+        var day = jsDate.getDate().toString();
         if (day.length === 1) {
             day = '0' + day;
         }
-        var hours = date.getHours().toString();
+        var hours = jsDate.getHours().toString();
         if (hours.length === 1) {
             hours = '0' + hours;
         }
 
-        var minutes = date.getMinutes().toString();
+        var minutes = jsDate.getMinutes().toString();
         if (minutes.length === 1) {
             minutes = '0' + minutes;
         }
-        var seconds = date.getSeconds().toString();
+        var seconds = jsDate.getSeconds().toString();
 
         if (seconds.length === 1) {
             seconds = '0' + seconds;
@@ -44,6 +72,14 @@ s4a.data.SensLog = (function() {
 
         return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
     };
+
+    /**
+     * Formats a JavaScript date into a SensLog date string
+     *
+     * @param {Date} jsDate - A JavaScript date
+     * @returns {String} - SensLog formatted date string YYYY-MM-DDThh:mm:ss
+     */
+    SensLog.toSensLogDate = _toSensLogDate;
 
     /**
      * Convert a SensLog date string to a JavaScript date
@@ -67,31 +103,39 @@ s4a.data.SensLog = (function() {
     };
 
     /**
+     * Convert a SensLog date string to a JavaScript date
+     *
+     * @param {String} sensLogDateString
+     * @returns {Date} - JavaScript date object
+     */
+    SensLog.toJsDate = _toJsDate;
+
+    /**
      * Converts a JavaScript date to an ISO date string
      *
-     * @param {Date} date
+     * @param {Date} jsDate
      * @returns {String} - ISO date YYYY-MM-DD hh:mm:ss
      */
-    var _toIsoDate = function(date) {
-        var year = date.getFullYear();
-        var month = (date.getMonth() + 1).toString();
+    var _toIsoDate = function(jsDate) {
+        var year = jsDate.getFullYear();
+        var month = (jsDate.getMonth() + 1).toString();
         if (month.length === 1) {
             month = '0' + month;
         }
-        var day = date.getDate().toString();
+        var day = jsDate.getDate().toString();
         if (day.length === 1) {
             day = '0' + day;
         }
-        var hours = date.getHours().toString();
+        var hours = jsDate.getHours().toString();
         if (hours.length === 1) {
             hours = '0' + hours;
         }
 
-        var minutes = date.getMinutes().toString();
+        var minutes = jsDate.getMinutes().toString();
         if (minutes.length === 1) {
             minutes = '0' + minutes;
         }
-        var seconds = date.getSeconds().toString();
+        var seconds = jsDate.getSeconds().toString();
 
         if (seconds.length === 1) {
             seconds = '0' + seconds;
@@ -102,13 +146,13 @@ s4a.data.SensLog = (function() {
 
     };
 
-    var _controllerServletUriFragment = '/../SensLog/ControllerServlet';
-
-    var _feederUriFragment = '/../SensLog/FeederServlet';
-
-    var _dataServiceUriFragment = '/../SensLog/DataService';
-
-    var _sensorServiceUriFragment = '/../SensLog/SensorService';
+    /**
+     * Converts a JavaScript date to an ISO date string
+     *
+     * @param {Date} jsDate
+     * @returns {String} - ISO date YYYY-MM-DD hh:mm:ss
+     */
+    SensLog.toIsoDate = _toIsoDate;
 
     /**
      * Send an auth request
@@ -250,7 +294,6 @@ s4a.data.SensLog = (function() {
     SensLog.getLastObservation = function(unitId, sensorId, username) {
         return SensLog.getSensors(unitId, username).then(function(res) {
             var tmpSensor = null;
-            console.log(res);
             for (var i = 0; i < res.length; i++) {
                 if (res[i].sensorId === sensorId) {
                     tmpSensor = res[i];
@@ -263,15 +306,12 @@ s4a.data.SensLog = (function() {
                 fromDate.setSeconds(fromDate.getSeconds() - 1);
                 toDate.setSeconds(toDate.getSeconds() + 1);
 
-                console.log(_toIsoDate(toDate));
-                console.log(_toIsoDate(fromDate));
                 return SensLog.getObservations(unitId,
                         sensorId,
                         username,
                         fromDate,
                         toDate)
                         .then(function(res) {
-                            console.log(res);
                             return res[res.length - 1];
                         });
             } else {

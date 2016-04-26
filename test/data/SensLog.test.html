@@ -19,29 +19,43 @@ and open the template in the editor.
             jQuery("document")
                     .ready(function () {
 
-                        var sl = s4a.data.SensLog;
+                        var SensLog = s4a.data.SensLog;
+                        var Routing = s4a.analytics.Routing;
 
                         jQuery("#btnGetSensors").click(function () {
 
-                            sl.login('sdi4apps', 'fourAppS').then(function (res) {
+                            SensLog.login('sdi4apps', 'fourAppS').then(function (res) {
                                 console.log('Login');
                                 console.log(res);
                             });
 
-                            sl.getObservations(3, 21, 'sdi4apps').then(function (res) {
+                            var td = new Date();
+                            var fd = new Date(td.getTime());
+                            fd.setSeconds(fd.getSeconds() - 10);
+
+                            console.log(td);
+                            console.log(fd);
+
+                            SensLog.getObservations(3, 21, 'sdi4apps', fd, td).then(function (res) {
                                 console.log('Last observations');
                                 console.log(res);
                             });
 
-                            sl.getLastPosition(3, 'sdi4apps').then(function (res) {
+                            SensLog.getLastPosition(3, 'sdi4apps').then(function (res) {
                                 console.log('Last positions');
                                 console.log(res);
                             });
 
-                            sl.getSensors(3, 'sdi4apps').then(function (res) {
+                            SensLog.getSensors(3, 'sdi4apps').then(function (res) {
                                 console.log('Sensors');
                                 console.log(res);
                             });
+
+                            SensLog.getLastObservation(3, 21, 'sdi4apps').then(function (res) {
+                                console.log('The last observation');
+                                console.log(res);
+                            });
+
                         });
 
                         jQuery("#btnStart").click(function () {
@@ -49,28 +63,28 @@ and open the template in the editor.
 
                             var myInterval = setInterval(function () {
 
-                                sl.insertPosition(6, 59, 3, new Date())
+                                SensLog.insertPosition(60, 6, 3, new Date())
                                         .then(function (res) {
                                             console.log('Inserted position');
                                             console.log(res);
                                         });
 
                                 // Thermometer, Celsius
-                                sl.insertObservation(5, 3, 21, new Date())
+                                SensLog.insertObservation(5, 3, 21, new Date())
                                         .then(function (res) {
                                             console.log('Inserted temperature observation');
                                             console.log(res);
                                         });
 
                                 // Rain gauge, mm percipitation
-                                sl.insertObservation(0, 3, 22, new Date())
+                                SensLog.insertObservation(0, 3, 22, new Date())
                                         .then(function (res) {
                                             console.log('Inserted rain observation');
                                             console.log(res);
                                         });
 
                                 // Speedometer, m/s
-                                sl.insertObservation(17, 3, 23, new Date())
+                                SensLog.insertObservation(17, 3, 23, new Date())
                                         .then(function (res) {
                                             console.log('Inserted speed observation');
                                             console.log(res);

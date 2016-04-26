@@ -11,12 +11,12 @@ s4a.data.SensLog = (function() {
     var SensLog = {};
 
     /**
-     * Formats a date for insertion into SensLog
+     * Formats a JavaScript date into a SensLog date string
      *
      * @param {Date} date - A JavaScript date
-     * @returns {String} - Formatted date string
+     * @returns {String} - SensLog formatted date string YYYY-MM-DDThh:mm:ss
      */
-    var _formatDate = function(date) {
+    var _toSensLogDate = function(date) {
 
         var year = date.getFullYear();
         var month = (date.getMonth() + 1).toString();
@@ -43,6 +43,63 @@ s4a.data.SensLog = (function() {
         }
 
         return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
+    };
+
+    /**
+     * Convert a SensLog date string to a JavaScript date
+     *
+     * @param {String} sensLogDateString
+     * @returns {Date} - JavaScript date object
+     */
+    var _toJsDate = function(sensLogDateString) {
+        var dateAndTime = sensLogDateString.split(' ');
+        var dateParts = dateAndTime[0].split('-');
+        // TODO: Only supports positive time-zone
+        var timeParts = dateAndTime[1].split('+');
+        var hourMinuteSecond = timeParts[0].split(':');
+        var date = new Date(+dateParts[0],
+                (+dateParts[1] - 1),
+                +dateParts[2],
+                +hourMinuteSecond[0],
+                +hourMinuteSecond[1],
+                hourMinuteSecond[2]);
+        return date;
+    };
+
+    /**
+     * Converts a JavaScript date to an ISO date string
+     *
+     * @param {Date} date
+     * @returns {String} - ISO date YYYY-MM-DD hh:mm:ss
+     */
+    var _toIsoDate = function(date) {
+        var year = date.getFullYear();
+        var month = (date.getMonth() + 1).toString();
+        if (month.length === 1) {
+            month = '0' + month;
+        }
+        var day = date.getDate().toString();
+        if (day.length === 1) {
+            day = '0' + day;
+        }
+        var hours = date.getHours().toString();
+        if (hours.length === 1) {
+            hours = '0' + hours;
+        }
+
+        var minutes = date.getMinutes().toString();
+        if (minutes.length === 1) {
+            minutes = '0' + minutes;
+        }
+        var seconds = date.getSeconds().toString();
+
+        if (seconds.length === 1) {
+            seconds = '0' + seconds;
+        }
+
+        // TODO: Supports only GMT+2
+        return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+
     };
 
     var _controllerServletUriFragment = '/../SensLog/ControllerServlet';
@@ -83,7 +140,7 @@ s4a.data.SensLog = (function() {
             lat: lat,
             lon: lon,
             unit_id: unitId,
-            date: _formatDate(date)
+            date: _toSensLogDate(date)
         }, 'text');
 
     };
@@ -103,7 +160,7 @@ s4a.data.SensLog = (function() {
             value: value,
             unit_id: unitId,
             sensor_id: sensorId,
-            date: _formatDate(date)
+            date: _toSensLogDate(date)
         }, 'text');
     };
 
@@ -145,8 +202,8 @@ s4a.data.SensLog = (function() {
      * @param {Number} unitId
      * @param {Number} sensorId
      * @param {String} username
-     * @param {String} from - ISO date/time YYYY-MM-DD hh:mm:ss
-     * @param {String} to - ISO date/time YYYY-MM-DD hh:mm:ss
+     * @param {Date} [from=undefined] - Observation start time
+     * @param {Date} [to=undefined] - Observation end-time
      * @returns {Promise.<Object>}
      */
     SensLog.getObservations = function(unitId, sensorId, username, from, to) {
@@ -157,6 +214,11 @@ s4a.data.SensLog = (function() {
             sensor_id: sensorId,
             user: username
         };
+
+        if (from !== undefined && to !== undefined) {
+            params.from = _toIsoDate(from);
+            params.to = _toIsoDate(to);
+        }
 
         return s4a.doGet(_sensorServiceUriFragment, params);
     };
@@ -177,7 +239,41 @@ s4a.data.SensLog = (function() {
         });
     };
 
+    /**
+     * Get last observation
+     *
+     * @param {Number} unitId
+     * @param {Number} sensorId
+     * @param {String} username
+     * @returns {Promise.<Object|null>}
+     */
+    SensLog.getLastObservation = function(unitId, sensorId, username) {
+        return SensLog.getSensors(unitId, username).then(function(res) {
+            var tmpSensor = null;
+            for (var i = 0; i < res.length; i++) {
+                if (res[i].sensorId === sensorId) {
+                    tmpSensor = res[i];
+                    break;
+                }
+            }
+            if (tmpSensor !== null) {
+                var toDate = _toJsDate(tmpSensor.lastObservationTime);
+                var fromDate = new Date(toDate.getTime());
+                fromDate.setSeconds(fromDate.getSeconds() - 2);
+                return SensLog.getObservations(unitId,
+                        sensorId,
+                        username,
+                        fromDate,
+                        toDate)
+                        .then(function(res) {
+                            return res[res.length - 1];
+                        });
+            } else {
+                return null;
+            }
+        });
+    };
+
     return SensLog;
 
 }());
-

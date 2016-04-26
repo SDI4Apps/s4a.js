@@ -16,13 +16,24 @@ and open the template in the editor.
         <link href="../../node_modules/openlayers/dist/ol.css" rel="stylesheet" type="text/css"/>
         <script>
 
+            var rnd2 = function (min, max, round) {
+                var range = max - min;
+                var rand = Math.random() * range;
+                var retval = min + rand;
+                if (round === true) {
+                    retval = Math.round(retval);
+                }
+                return retval;
+            };
+
             jQuery("document")
                     .ready(function () {
 
                         var SensLog = s4a.data.SensLog;
                         var Routing = s4a.analytics.Routing;
+                        var intervalMonitor = null;
 
-                        jQuery("#btnGetSensors").click(function () {
+                        jQuery("#btnGet").click(function () {
 
                             SensLog.login('sdi4apps', 'fourAppS').then(function (res) {
                                 console.log('Login');
@@ -59,44 +70,48 @@ and open the template in the editor.
                         });
 
                         jQuery("#btnStart").click(function () {
+                            console.log('Start emitting 100 signals');
                             var i = 0;
+                            var limit = 100;
 
-                            var myInterval = setInterval(function () {
+                            var lat = 60;
+                            var lon = 6;
 
-                                SensLog.insertPosition(60, 6, 3, new Date())
-                                        .then(function (res) {
-                                            console.log('Inserted position');
-                                            console.log(res);
-                                        });
+                            // Add coordinates for every five seconds
+                            intervalMonitor = setInterval(function () {
+
+                                lat = lat + rnd2(-0.001, 0.001);
+                                lon = lon + rnd2(-0.001, 0.001);
+
+                                var d = new Date();
+
+                                SensLog.insertPosition(lat, lon, 3, d);
 
                                 // Thermometer, Celsius
-                                SensLog.insertObservation(5, 3, 21, new Date())
-                                        .then(function (res) {
-                                            console.log('Inserted temperature observation');
-                                            console.log(res);
-                                        });
+                                SensLog.insertObservation(rnd2(5, 13), 3, 21, d);
 
                                 // Rain gauge, mm percipitation
-                                SensLog.insertObservation(0, 3, 22, new Date())
-                                        .then(function (res) {
-                                            console.log('Inserted rain observation');
-                                            console.log(res);
-                                        });
+                                SensLog.insertObservation(rnd2(0, 2, true), 3, 22, d);
 
                                 // Speedometer, m/s
-                                SensLog.insertObservation(17, 3, 23, new Date())
-                                        .then(function (res) {
-                                            console.log('Inserted speed observation');
-                                            console.log(res);
-                                        });
+                                SensLog.insertObservation(rnd2(0, 50, true), 3, 23, d);
+
                                 i++;
 
-                                if (i === 10) {
-                                    clearInterval(myInterval);
+                                if (i >= limit) {
+                                    clearInterval(intervalMonitor);
                                 }
 
-                            }, 1000);
+                                console.log('Emitting observation: ' + i);
 
+
+                            }, 5000);
+
+                        });
+
+                        jQuery("#btnStop").click(function () {
+                            console.log('Stop emitting');
+                            clearInterval(intervalMonitor);
                         });
 
                     });
@@ -104,7 +119,8 @@ and open the template in the editor.
     </head>
     <body>
         <div id="map"></div>
-        <button id="btnStart">Start</button>
-        <button id="btnGetSensors">Get sensors</button>
+        <button id="btnStart">Start emitting</button>
+        <button id="btnStop">Stop emitting</button>
+        <button id="btnGet">Get sensors</button>
     </body>
 </html>

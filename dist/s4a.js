@@ -18,7 +18,7 @@
  * @requires topojson.v1
  * @namespace s4a
  */
-var s4a = (function () {
+var s4a = (function() {
 
     var mod = {};
 
@@ -48,7 +48,7 @@ var s4a = (function () {
      * @param {String} proxyUrl URL of local proxy script for non-CORS access to platform
      * @return {String} URL of proxy script if set
      */
-    mod.proxy = function (proxyUrl) {
+    mod.proxy = function(proxyUrl) {
         if (proxyUrl !== undefined) {
             _proxyUrl = proxyUrl;
         }
@@ -61,7 +61,7 @@ var s4a = (function () {
      * @param {String} openApiUrl URI for SDI4Apps platform instance
      * @return {String} URL of OpenAPI instance if set
      */
-    mod.openApiUrl = function (openApiUrl) {
+    mod.openApiUrl = function(openApiUrl) {
         if (openApiUrl !== undefined) {
             _openApiUrl = openApiUrl;
         }
@@ -74,7 +74,7 @@ var s4a = (function () {
      * @param {String} namespaceString - A namespace string where namespaces are separated by dots '.'
      * @return {Object} - Namespace object
      */
-    mod.extend = function (namespaceString) {
+    mod.extend = function(namespaceString) {
 
         var parts = namespaceString.split('.');
 
@@ -103,9 +103,9 @@ var s4a = (function () {
      * @param {String} wsFragment - The name of the web service including the leading slash
      * @param {Object} params - An object of parameters to be passed to the web service
      * @returns {Promise.<Object>} - A jQuery Promise object
-     * @param {String} dataType - The expected response type 
+     * @param {String} dataType - The expected response type
      */
-    mod.doPost = function (wsFragment, params, dataType) {
+    mod.doPost = function(wsFragment, params, dataType) {
         if (dataType === undefined) {
             dataType = 'json';
         }
@@ -118,10 +118,10 @@ var s4a = (function () {
      *
      * @param {String} wsFragment - The name of the web service including the leading slash
      * @param {Object} params - An object of parameters to be passed to the web service
-     * @param {String} dataType - The expected response type 
+     * @param {String} dataType - The expected response type
      * @returns {Promise.<Object>} - A jQuery Promise object
      */
-    mod.doGet = function (wsFragment, params, dataType) {
+    mod.doGet = function(wsFragment, params, dataType) {
         if (dataType === undefined) {
             dataType = 'json';
         }
@@ -135,7 +135,7 @@ var s4a = (function () {
 
 s4a.extend('config');
 
-s4a.config = (function () {
+s4a.config = (function() {
     'use strict';
 
     /**
@@ -148,7 +148,7 @@ s4a.config = (function () {
      *
      * @param {Object} configObject - Override any defaults
      */
-    module.loadConfig = function (configObject) {
+    module.loadConfig = function(configObject) {
 
         configObject = configObject || {};
 
@@ -183,7 +183,7 @@ s4a.config = (function () {
 
 s4a.extend('analytics');
 
-s4a.analytics.Routing = (function () {
+s4a.analytics.Routing = (function() {
     'use strict';
 
     /**
@@ -209,7 +209,7 @@ s4a.analytics.Routing = (function () {
      * @return {Promise} description
      * @public
      */
-    module.getShortestRoute = function (from, to) {
+    module.getShortestRoute = function(from, to) {
 
         var params = {
             action: 'GetShortestPath',
@@ -231,7 +231,7 @@ s4a.analytics.Routing = (function () {
      * @returns {Promise}
      * @public
      */
-    module.getNearestNode = function (lon, lat, radius) {
+    module.getNearestNode = function(lon, lat, radius) {
 
         if (radius === undefined) {
             radius = 100;
@@ -256,7 +256,7 @@ s4a.analytics.Routing = (function () {
      * @param {Array.<Number>} via - Array of intermediate node IDs
      * @return {Object.<RouteResponse>} - Returns a route object
      */
-    module.getOptimalRoute = function (from, to, via) {
+    module.getOptimalRoute = function(from, to, via) {
         //throw 'Not committed to code';
         return {};
     };
@@ -269,7 +269,7 @@ s4a.analytics.Routing = (function () {
      * all directions from start node
      * @return {Object.<AreaResponse>} - Returns an area object
      */
-    module.getReachableArea = function (fromNode, distance) {
+    module.getReachableArea = function(fromNode, distance) {
         var params = {
             action: 'GetReachableArea',
             fromNode: fromNode,
@@ -287,21 +287,21 @@ s4a.analytics.Routing = (function () {
 
 s4a.extend('data');
 
-s4a.data.SensLog = (function () {
+s4a.data.SensLog = (function() {
     /**
      * Class with methods to interact with SensLog
-     * 
+     *
      * @exports SensLog
      */
     var SensLog = {};
 
     /**
      * Formats a date for insertion into SensLog
-     * 
+     *
      * @param {Date} date - A JavaScript date
      * @returns {String} - Formatted date string
      */
-    var _formatDate = function (date) {
+    var _formatDate = function(date) {
 
         var year = date.getFullYear();
         var month = (date.getMonth() + 1).toString();
@@ -340,12 +340,12 @@ s4a.data.SensLog = (function () {
 
     /**
      * Send an auth request
-     * 
+     *
      * @param {String} username
      * @param {String} password
      * @returns {Promise.<Object>}
      */
-    SensLog.login = function (username, password) {
+    SensLog.login = function(username, password) {
         return s4a.doPost(_controllerServletUriFragment, {
             username: username,
             password: password
@@ -354,17 +354,17 @@ s4a.data.SensLog = (function () {
 
     /**
      * Insert of sensor unit position
-     * 
+     *
      * @param {Number} lat
      * @param {Number} lon
      * @param {Number} unitId
      * @param {Date} date
      * @returns {Promise.<Object>}
      */
-    SensLog.insertPosition = function (lat, lon, unitId, date) {
+    SensLog.insertPosition = function(lat, lon, unitId, date) {
 
         return s4a.doGet(_feederUriFragment, {
-            Operation: "InsertPosition",
+            Operation: 'InsertPosition',
             lat: lat,
             lon: lon,
             unit_id: unitId,
@@ -375,16 +375,16 @@ s4a.data.SensLog = (function () {
 
     /**
      * Insert a sensor observation
-     * 
+     *
      * @param {Number} value
      * @param {Number} unitId
      * @param {Number} sensorId
      * @param {Date} date
      * @returns {Promise.<Object>}
      */
-    SensLog.insertObservation = function (value, unitId, sensorId, date) {
+    SensLog.insertObservation = function(value, unitId, sensorId, date) {
         return s4a.doGet(_feederUriFragment, {
-            Operation: "InsertObservation",
+            Operation: 'InsertObservation',
             value: value,
             unit_id: unitId,
             sensor_id: sensorId,
@@ -394,11 +394,11 @@ s4a.data.SensLog = (function () {
 
     /**
      * Get last position for devices belonging to user
-     * 
+     *
      * @param {String} username
      * @returns {Promise.<Object>}
      */
-    SensLog.getLastPositions = function (username) {
+    SensLog.getLastPositions = function(username) {
         return s4a.doGet(_dataServiceUriFragment, {
             Operation: 'GetLastPositions',
             user: username
@@ -407,13 +407,13 @@ s4a.data.SensLog = (function () {
 
     /**
      * Get last position for specific device belonging to user
-     * 
+     *
      * @param {Number} unitId
      * @param {String} username
      * @returns {Promise.<Object|null>}
      */
-    SensLog.getLastPosition = function (unitId, username) {
-        return SensLog.getLastPositions(username).then(function (res) {
+    SensLog.getLastPosition = function(unitId, username) {
+        return SensLog.getLastPositions(username).then(function(res) {
             for (var i = 0; i < res.length; i++) {
                 var pos = res[i];
                 if (pos.unit_id === unitId) {
@@ -426,7 +426,7 @@ s4a.data.SensLog = (function () {
 
     /**
      * Get observations for a sensor
-     * 
+     *
      * @param {Number} unitId
      * @param {Number} sensorId
      * @param {String} username
@@ -434,7 +434,7 @@ s4a.data.SensLog = (function () {
      * @param {String} to - ISO date/time YYYY-MM-DD hh:mm:ss
      * @returns {Promise.<Object>}
      */
-    SensLog.getObservations = function (unitId, sensorId, username, from, to) {
+    SensLog.getObservations = function(unitId, sensorId, username, from, to) {
 
         var params = {
             Operation: 'GetObservations',
@@ -448,12 +448,12 @@ s4a.data.SensLog = (function () {
 
     /**
      * Get sensors for a device
-     * 
+     *
      * @param {Number} unitId - Id of sensor
      * @param {String} username - User name of user owning sensor
      * @returns {Promise.<Object>}
      */
-    SensLog.getSensors = function (unitId, username) {
+    SensLog.getSensors = function(unitId, username) {
 
         return s4a.doGet(_sensorServiceUriFragment, {
             Operation: 'GetSensors',
@@ -468,9 +468,6 @@ s4a.data.SensLog = (function () {
 
 
 
-
-
-
 s4a.extend('ir');
 
 /**
@@ -478,7 +475,7 @@ s4a.extend('ir');
  *
  * @class
  */
-s4a.ir.QueryHelper = function () {
+s4a.ir.QueryHelper = function() {
     'use strict';
 
     /**
@@ -536,7 +533,7 @@ s4a.ir.QueryHelper = function () {
      *
      * @returns {s4a.ir.QueryHelper}
      */
-    this.clear = function () {
+    this.clear = function() {
         _query = null;
         _extent = null;
         _maxResults = null;
@@ -551,7 +548,7 @@ s4a.ir.QueryHelper = function () {
      * @param {String} queryTerm
      * @returns {s4a.ir.QueryHelper}
      */
-    this.setQuery = function (queryTerm) {
+    this.setQuery = function(queryTerm) {
         _query = queryTerm;
         return _self;
     };
@@ -563,7 +560,7 @@ s4a.ir.QueryHelper = function () {
      * @param {Number} buffer Distance in meters
      * @returns {s4a.ir.QueryHelper}
      */
-    this.setDistance = function (wktPoint, buffer) {
+    this.setDistance = function(wktPoint, buffer) {
         _wktPoint = wktPoint;
         _buffer = buffer;
         return _self;
@@ -575,7 +572,7 @@ s4a.ir.QueryHelper = function () {
      * @param {Number} maxResults
      * @returns {s4a.ir.QueryHelper}
      */
-    this.setMaxResults = function (maxResults) {
+    this.setMaxResults = function(maxResults) {
         _maxResults = maxResults;
         return _self;
     };
@@ -586,16 +583,16 @@ s4a.ir.QueryHelper = function () {
      * @param {String} extent - A comma separate list of minx, miny, maxx, maxy values
      * @returns {s4a.ir.QueryHelper}
      */
-    this.setExtent = function (extent) {
+    this.setExtent = function(extent) {
         _extent = extent;
         return _self;
     };
 
-    this.addFacet = function (facet, term) {
+    this.addFacet = function(facet, term) {
         return _self;
     };
 
-    this.filter = function (facet, value) {
+    this.filter = function(facet, value) {
         return _self;
     };
 
@@ -604,7 +601,7 @@ s4a.ir.QueryHelper = function () {
      *
      * @returns {Promise.<Object>}
      */
-    this.query = function () {
+    this.query = function() {
 
         var params = {};
 
@@ -712,7 +709,7 @@ s4a.map.ITool = {
 };
 
 'use strict';
- 
+
 /**
  * A layer switcher control for OpenLayers 3
  *
@@ -722,7 +719,7 @@ s4a.map.ITool = {
  * @constructor
  */
 s4a.map.LayerSwitcher = function() {
- 
+
     /**
      * @property {Number} [test=1] - description
      */
@@ -1173,17 +1170,17 @@ s4a.extend('mobile');
 
 /**
  * Offline layer
- * 
+ *
  * @class
  */
-s4a.map.OfflineLayer = function () {
+s4a.map.OfflineLayer = function() {
 
     /**
      * Dataset
      *
      * @type {GeoJSON}
      */
-    this.dataset = null; 
+    this.dataset = null;
 
 };
 
@@ -1752,6 +1749,7 @@ s4a.viz.color = {
     }};
 
 'use strict';
+
 'use strict';
 /**
  * Legend for a visualization

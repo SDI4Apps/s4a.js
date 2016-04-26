@@ -1,6 +1,6 @@
 s4a.extend('config');
 
-s4a.config = (function () {
+s4a.config = (function() {
     'use strict';
 
     /**
@@ -13,7 +13,7 @@ s4a.config = (function () {
      *
      * @param {Object} configObject - Override any defaults
      */
-    module.loadConfig = function (configObject) {
+    module.loadConfig = function(configObject) {
 
         configObject = configObject || {};
 

@@ -1,7 +1,7 @@
 
 s4a.extend('analytics');
 
-s4a.analytics.Routing = (function () {
+s4a.analytics.Routing = (function() {
     'use strict';
 
     /**
@@ -27,7 +27,7 @@ s4a.analytics.Routing = (function () {
      * @return {Promise} description
      * @public
      */
-    module.getShortestRoute = function (from, to) {
+    module.getShortestRoute = function(from, to) {
 
         var params = {
             action: 'GetShortestPath',
@@ -49,7 +49,7 @@ s4a.analytics.Routing = (function () {
      * @returns {Promise}
      * @public
      */
-    module.getNearestNode = function (lon, lat, radius) {
+    module.getNearestNode = function(lon, lat, radius) {
 
         if (radius === undefined) {
             radius = 100;
@@ -74,7 +74,7 @@ s4a.analytics.Routing = (function () {
      * @param {Array.<Number>} via - Array of intermediate node IDs
      * @return {Object.<RouteResponse>} - Returns a route object
      */
-    module.getOptimalRoute = function (from, to, via) {
+    module.getOptimalRoute = function(from, to, via) {
         //throw 'Not committed to code';
         return {};
     };
@@ -87,7 +87,7 @@ s4a.analytics.Routing = (function () {
      * all directions from start node
      * @return {Object.<AreaResponse>} - Returns an area object
      */
-    module.getReachableArea = function (fromNode, distance) {
+    module.getReachableArea = function(fromNode, distance) {
         var params = {
             action: 'GetReachableArea',
             fromNode: fromNode,

@@ -9,7 +9,7 @@
         "catch"
     ],
     "requireOperatorBeforeLineBreak": true,
-    "requireCamelCaseOrUpperCaseIdentifiers": true,
+    "requireCamelCaseOrUpperCaseIdentifiers": false,
     "maximumLineLength": {
       "value": 110,
       "allExcept": ["comments", "regex"]

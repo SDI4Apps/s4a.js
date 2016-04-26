@@ -1,4 +1,4 @@
-/*! s4a - v1.0.0 - 2016-04-26
+/*! s4a - v1.0.0 - 2016-04-27
 * https://github.com/SDI4Apps/s4a.js
 * Copyright (c) 2016 SDI4Apps Partnership; Licensed  */
 'use strict';
@@ -347,7 +347,7 @@ s4a.data.SensLog = (function() {
                 +dateParts[2],
                 +hourMinuteSecond[0],
                 +hourMinuteSecond[1],
-                hourMinuteSecond[2]);
+                +hourMinuteSecond[2]);
         return date;
     };
 
@@ -535,6 +535,7 @@ s4a.data.SensLog = (function() {
     SensLog.getLastObservation = function(unitId, sensorId, username) {
         return SensLog.getSensors(unitId, username).then(function(res) {
             var tmpSensor = null;
+            console.log(res);
             for (var i = 0; i < res.length; i++) {
                 if (res[i].sensorId === sensorId) {
                     tmpSensor = res[i];
@@ -544,13 +545,18 @@ s4a.data.SensLog = (function() {
             if (tmpSensor !== null) {
                 var toDate = _toJsDate(tmpSensor.lastObservationTime);
                 var fromDate = new Date(toDate.getTime());
-                fromDate.setSeconds(fromDate.getSeconds() - 2);
+                fromDate.setSeconds(fromDate.getSeconds() - 1);
+                toDate.setSeconds(toDate.getSeconds() + 1);
+
+                console.log(_toIsoDate(toDate));
+                console.log(_toIsoDate(fromDate));
                 return SensLog.getObservations(unitId,
                         sensorId,
                         username,
                         fromDate,
                         toDate)
                         .then(function(res) {
+                            console.log(res);
                             return res[res.length - 1];
                         });
             } else {

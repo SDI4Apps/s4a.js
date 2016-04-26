@@ -1,4 +1,4 @@
-/*! s4a - v1.0.0 - 2016-04-22
+/*! s4a - v1.0.0 - 2016-04-26
 * https://github.com/SDI4Apps/s4a.js
 * Copyright (c) 2016 SDI4Apps Partnership; Licensed  */
 'use strict';
@@ -18,7 +18,7 @@
  * @requires topojson.v1
  * @namespace s4a
  */
-var s4a = (function() {
+var s4a = (function () {
 
     var mod = {};
 
@@ -48,7 +48,7 @@ var s4a = (function() {
      * @param {String} proxyUrl URL of local proxy script for non-CORS access to platform
      * @return {String} URL of proxy script if set
      */
-    mod.proxy = function(proxyUrl) {
+    mod.proxy = function (proxyUrl) {
         if (proxyUrl !== undefined) {
             _proxyUrl = proxyUrl;
         }
@@ -61,7 +61,7 @@ var s4a = (function() {
      * @param {String} openApiUrl URI for SDI4Apps platform instance
      * @return {String} URL of OpenAPI instance if set
      */
-    mod.openApiUrl = function(openApiUrl) {
+    mod.openApiUrl = function (openApiUrl) {
         if (openApiUrl !== undefined) {
             _openApiUrl = openApiUrl;
         }
@@ -74,7 +74,7 @@ var s4a = (function() {
      * @param {String} namespaceString - A namespace string where namespaces are separated by dots '.'
      * @return {Object} - Namespace object
      */
-    mod.extend = function(namespaceString) {
+    mod.extend = function (namespaceString) {
 
         var parts = namespaceString.split('.');
 
@@ -98,15 +98,35 @@ var s4a = (function() {
     };
 
     /**
-     * Generic, re-usable Ajax function to perform all calls to server
+     * Generic, re-usable Ajax function to perform all Http Post calls to server
      *
      * @param {String} wsFragment - The name of the web service including the leading slash
      * @param {Object} params - An object of parameters to be passed to the web service
      * @returns {Promise.<Object>} - A jQuery Promise object
+     * @param {String} dataType - The expected response type 
      */
-    mod.doPost = function(wsFragment, params) {
+    mod.doPost = function (wsFragment, params, dataType) {
+        if (dataType === undefined) {
+            dataType = 'json';
+        }
         var wsUrl = s4a.openApiUrl() + wsFragment;
-        return jQuery.post(wsUrl, params, null, 'json');
+        return jQuery.post(wsUrl, params, null, dataType);
+    };
+
+    /**
+     * Generic, re-usable Ajax function to perform all Http Get calls to server
+     *
+     * @param {String} wsFragment - The name of the web service including the leading slash
+     * @param {Object} params - An object of parameters to be passed to the web service
+     * @param {String} dataType - The expected response type 
+     * @returns {Promise.<Object>} - A jQuery Promise object
+     */
+    mod.doGet = function (wsFragment, params, dataType) {
+        if (dataType === undefined) {
+            dataType = 'json';
+        }
+        var wsUrl = s4a.openApiUrl() + wsFragment;
+        return jQuery.get(wsUrl, params, null, dataType);
     };
 
     return mod;
@@ -262,6 +282,193 @@ s4a.analytics.Routing = (function () {
     return module;
 
 }());
+
+'use strict';
+
+s4a.extend('data');
+
+s4a.data.SensLog = (function () {
+    /**
+     * Class with methods to interact with SensLog
+     * 
+     * @exports SensLog
+     */
+    var SensLog = {};
+
+    /**
+     * Formats a date for insertion into SensLog
+     * 
+     * @param {Date} date - A JavaScript date
+     * @returns {String} - Formatted date string
+     */
+    var _formatDate = function (date) {
+
+        var year = date.getFullYear();
+        var month = (date.getMonth() + 1).toString();
+        if (month.length === 1) {
+            month = '0' + month;
+        }
+        var day = date.getDate().toString();
+        if (day.length === 1) {
+            day = '0' + day;
+        }
+        var hours = date.getHours().toString();
+        if (hours.length === 1) {
+            hours = '0' + hours;
+        }
+
+        var minutes = date.getMinutes().toString();
+        if (minutes.length === 1) {
+            minutes = '0' + minutes;
+        }
+        var seconds = date.getSeconds().toString();
+
+        if (seconds.length === 1) {
+            seconds = '0' + seconds;
+        }
+
+        return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes + ':' + seconds;
+    };
+
+    var _controllerServletUriFragment = '/../SensLog/ControllerServlet';
+
+    var _feederUriFragment = '/../SensLog/FeederServlet';
+
+    var _dataServiceUriFragment = '/../SensLog/DataService';
+
+    var _sensorServiceUriFragment = '/../SensLog/SensorService';
+
+    /**
+     * Send an auth request
+     * 
+     * @param {String} username
+     * @param {String} password
+     * @returns {Promise.<Object>}
+     */
+    SensLog.login = function (username, password) {
+        return s4a.doPost(_controllerServletUriFragment, {
+            username: username,
+            password: password
+        });
+    };
+
+    /**
+     * Insert of sensor unit position
+     * 
+     * @param {Number} lat
+     * @param {Number} lon
+     * @param {Number} unitId
+     * @param {Date} date
+     * @returns {Promise.<Object>}
+     */
+    SensLog.insertPosition = function (lat, lon, unitId, date) {
+
+        return s4a.doGet(_feederUriFragment, {
+            Operation: "InsertPosition",
+            lat: lat,
+            lon: lon,
+            unit_id: unitId,
+            date: _formatDate(date)
+        }, 'text');
+
+    };
+
+    /**
+     * Insert a sensor observation
+     * 
+     * @param {Number} value
+     * @param {Number} unitId
+     * @param {Number} sensorId
+     * @param {Date} date
+     * @returns {Promise.<Object>}
+     */
+    SensLog.insertObservation = function (value, unitId, sensorId, date) {
+        return s4a.doGet(_feederUriFragment, {
+            Operation: "InsertObservation",
+            value: value,
+            unit_id: unitId,
+            sensor_id: sensorId,
+            date: _formatDate(date)
+        }, 'text');
+    };
+
+    /**
+     * Get last position for devices belonging to user
+     * 
+     * @param {String} username
+     * @returns {Promise.<Object>}
+     */
+    SensLog.getLastPositions = function (username) {
+        return s4a.doGet(_dataServiceUriFragment, {
+            Operation: 'GetLastPositions',
+            user: username
+        });
+    };
+
+    /**
+     * Get last position for specific device belonging to user
+     * 
+     * @param {Number} unitId
+     * @param {String} username
+     * @returns {Promise.<Object|null>}
+     */
+    SensLog.getLastPosition = function (unitId, username) {
+        return SensLog.getLastPositions(username).then(function (res) {
+            for (var i = 0; i < res.length; i++) {
+                var pos = res[i];
+                if (pos.unit_id === unitId) {
+                    return pos;
+                }
+            }
+            return null;
+        });
+    };
+
+    /**
+     * Get observations for a sensor
+     * 
+     * @param {Number} unitId
+     * @param {Number} sensorId
+     * @param {String} username
+     * @param {String} from - ISO date/time YYYY-MM-DD hh:mm:ss
+     * @param {String} to - ISO date/time YYYY-MM-DD hh:mm:ss
+     * @returns {Promise.<Object>}
+     */
+    SensLog.getObservations = function (unitId, sensorId, username, from, to) {
+
+        var params = {
+            Operation: 'GetObservations',
+            unit_id: unitId,
+            sensor_id: sensorId,
+            user: username
+        };
+
+        return s4a.doGet(_sensorServiceUriFragment, params);
+    };
+
+    /**
+     * Get sensors for a device
+     * 
+     * @param {Number} unitId - Id of sensor
+     * @param {String} username - User name of user owning sensor
+     * @returns {Promise.<Object>}
+     */
+    SensLog.getSensors = function (unitId, username) {
+
+        return s4a.doGet(_sensorServiceUriFragment, {
+            Operation: 'GetSensors',
+            unit_id: unitId,
+            user: username
+        });
+    };
+
+    return SensLog;
+
+}());
+
+
+
+
 
 
 s4a.extend('ir');

@@ -15,7 +15,7 @@
  * @requires topojson.v1
  * @namespace s4a
  */
-var s4a = (function() {
+var s4a = (function () {
 
     var mod = {};
 
@@ -45,7 +45,7 @@ var s4a = (function() {
      * @param {String} proxyUrl URL of local proxy script for non-CORS access to platform
      * @return {String} URL of proxy script if set
      */
-    mod.proxy = function(proxyUrl) {
+    mod.proxy = function (proxyUrl) {
         if (proxyUrl !== undefined) {
             _proxyUrl = proxyUrl;
         }
@@ -58,7 +58,7 @@ var s4a = (function() {
      * @param {String} openApiUrl URI for SDI4Apps platform instance
      * @return {String} URL of OpenAPI instance if set
      */
-    mod.openApiUrl = function(openApiUrl) {
+    mod.openApiUrl = function (openApiUrl) {
         if (openApiUrl !== undefined) {
             _openApiUrl = openApiUrl;
         }
@@ -71,7 +71,7 @@ var s4a = (function() {
      * @param {String} namespaceString - A namespace string where namespaces are separated by dots '.'
      * @return {Object} - Namespace object
      */
-    mod.extend = function(namespaceString) {
+    mod.extend = function (namespaceString) {
 
         var parts = namespaceString.split('.');
 
@@ -95,15 +95,35 @@ var s4a = (function() {
     };
 
     /**
-     * Generic, re-usable Ajax function to perform all calls to server
+     * Generic, re-usable Ajax function to perform all Http Post calls to server
      *
      * @param {String} wsFragment - The name of the web service including the leading slash
      * @param {Object} params - An object of parameters to be passed to the web service
      * @returns {Promise.<Object>} - A jQuery Promise object
+     * @param {String} dataType - The expected response type 
      */
-    mod.doPost = function(wsFragment, params) {
+    mod.doPost = function (wsFragment, params, dataType) {
+        if (dataType === undefined) {
+            dataType = 'json';
+        }
         var wsUrl = s4a.openApiUrl() + wsFragment;
-        return jQuery.post(wsUrl, params, null, 'json');
+        return jQuery.post(wsUrl, params, null, dataType);
+    };
+
+    /**
+     * Generic, re-usable Ajax function to perform all Http Get calls to server
+     *
+     * @param {String} wsFragment - The name of the web service including the leading slash
+     * @param {Object} params - An object of parameters to be passed to the web service
+     * @param {String} dataType - The expected response type 
+     * @returns {Promise.<Object>} - A jQuery Promise object
+     */
+    mod.doGet = function (wsFragment, params, dataType) {
+        if (dataType === undefined) {
+            dataType = 'json';
+        }
+        var wsUrl = s4a.openApiUrl() + wsFragment;
+        return jQuery.get(wsUrl, params, null, dataType);
     };
 
     return mod;

@@ -2,7 +2,7 @@
 
 s4a.extend('data');
 
-s4a.data.SensLog = (function() {
+s4a.data.SensLog = (function () {
     /**
      * Class with methods to interact with SensLog
      *
@@ -16,7 +16,7 @@ s4a.data.SensLog = (function() {
      * @param {Date} date - A JavaScript date
      * @returns {String} - SensLog formatted date string YYYY-MM-DDThh:mm:ss
      */
-    var _toSensLogDate = function(date) {
+    var _toSensLogDate = function (date) {
 
         var year = date.getFullYear();
         var month = (date.getMonth() + 1).toString();
@@ -51,7 +51,7 @@ s4a.data.SensLog = (function() {
      * @param {String} sensLogDateString
      * @returns {Date} - JavaScript date object
      */
-    var _toJsDate = function(sensLogDateString) {
+    var _toJsDate = function (sensLogDateString) {
         var dateAndTime = sensLogDateString.split(' ');
         var dateParts = dateAndTime[0].split('-');
         // TODO: Only supports positive time-zone
@@ -62,7 +62,7 @@ s4a.data.SensLog = (function() {
                 +dateParts[2],
                 +hourMinuteSecond[0],
                 +hourMinuteSecond[1],
-                hourMinuteSecond[2]);
+                +hourMinuteSecond[2]);
         return date;
     };
 
@@ -72,7 +72,7 @@ s4a.data.SensLog = (function() {
      * @param {Date} date
      * @returns {String} - ISO date YYYY-MM-DD hh:mm:ss
      */
-    var _toIsoDate = function(date) {
+    var _toIsoDate = function (date) {
         var year = date.getFullYear();
         var month = (date.getMonth() + 1).toString();
         if (month.length === 1) {
@@ -117,7 +117,7 @@ s4a.data.SensLog = (function() {
      * @param {String} password
      * @returns {Promise.<Object>}
      */
-    SensLog.login = function(username, password) {
+    SensLog.login = function (username, password) {
         return s4a.doPost(_controllerServletUriFragment, {
             username: username,
             password: password
@@ -133,7 +133,7 @@ s4a.data.SensLog = (function() {
      * @param {Date} date
      * @returns {Promise.<Object>}
      */
-    SensLog.insertPosition = function(lat, lon, unitId, date) {
+    SensLog.insertPosition = function (lat, lon, unitId, date) {
 
         return s4a.doGet(_feederUriFragment, {
             Operation: 'InsertPosition',
@@ -154,7 +154,7 @@ s4a.data.SensLog = (function() {
      * @param {Date} date
      * @returns {Promise.<Object>}
      */
-    SensLog.insertObservation = function(value, unitId, sensorId, date) {
+    SensLog.insertObservation = function (value, unitId, sensorId, date) {
         return s4a.doGet(_feederUriFragment, {
             Operation: 'InsertObservation',
             value: value,
@@ -170,7 +170,7 @@ s4a.data.SensLog = (function() {
      * @param {String} username
      * @returns {Promise.<Object>}
      */
-    SensLog.getLastPositions = function(username) {
+    SensLog.getLastPositions = function (username) {
         return s4a.doGet(_dataServiceUriFragment, {
             Operation: 'GetLastPositions',
             user: username
@@ -184,8 +184,8 @@ s4a.data.SensLog = (function() {
      * @param {String} username
      * @returns {Promise.<Object|null>}
      */
-    SensLog.getLastPosition = function(unitId, username) {
-        return SensLog.getLastPositions(username).then(function(res) {
+    SensLog.getLastPosition = function (unitId, username) {
+        return SensLog.getLastPositions(username).then(function (res) {
             for (var i = 0; i < res.length; i++) {
                 var pos = res[i];
                 if (pos.unit_id === unitId) {
@@ -206,7 +206,7 @@ s4a.data.SensLog = (function() {
      * @param {Date} [to=undefined] - Observation end-time
      * @returns {Promise.<Object>}
      */
-    SensLog.getObservations = function(unitId, sensorId, username, from, to) {
+    SensLog.getObservations = function (unitId, sensorId, username, from, to) {
 
         var params = {
             Operation: 'GetObservations',
@@ -230,7 +230,7 @@ s4a.data.SensLog = (function() {
      * @param {String} username - User name of user owning sensor
      * @returns {Promise.<Object>}
      */
-    SensLog.getSensors = function(unitId, username) {
+    SensLog.getSensors = function (unitId, username) {
 
         return s4a.doGet(_sensorServiceUriFragment, {
             Operation: 'GetSensors',
@@ -247,8 +247,8 @@ s4a.data.SensLog = (function() {
      * @param {String} username
      * @returns {Promise.<Object|null>}
      */
-    SensLog.getLastObservation = function(unitId, sensorId, username) {
-        return SensLog.getSensors(unitId, username).then(function(res) {
+    SensLog.getLastObservation = function (unitId, sensorId, username) {
+        return SensLog.getSensors(unitId, username).then(function (res) {
             var tmpSensor = null;
             for (var i = 0; i < res.length; i++) {
                 if (res[i].sensorId === sensorId) {
@@ -265,7 +265,7 @@ s4a.data.SensLog = (function() {
                         username,
                         fromDate,
                         toDate)
-                        .then(function(res) {
+                        .then(function (res) {
                             return res[res.length - 1];
                         });
             } else {

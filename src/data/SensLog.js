@@ -259,7 +259,7 @@ s4a.data.SensLog = (function () {
             if (tmpSensor !== null) {
                 var toDate = _toJsDate(tmpSensor.lastObservationTime);
                 var fromDate = new Date(toDate.getTime());
-                fromDate.setSeconds(fromDate.getSeconds() - 2);
+                fromDate.setSeconds(fromDate.getSeconds() - 10);
                 return SensLog.getObservations(unitId,
                         sensorId,
                         username,

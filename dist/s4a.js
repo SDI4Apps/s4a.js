@@ -251,14 +251,22 @@ s4a.analytics.Routing = (function() {
     /**
      * Calulate the optimal route
      *
-     * @param {Number} from - ID of start node
-     * @param {Number} to - ID of end node
-     * @param {Array.<Number>} via - Array of intermediate node IDs
-     * @return {Object.<RouteResponse>} - Returns a route object
+     * @param {Number[]} nodes - Array of via node IDs
+     * @param {Number} start - ID of start node
+     * @param {Number} finish - ID of end node
+     * @return {Object.<DataResponse>} - Returns a route object
      */
-    module.getOptimalRoute = function(from, to, via) {
-        //throw 'Not committed to code';
-        return {};
+    module.getOptimalRoute = function(nodes, start, finish) {
+
+        var params = {
+            action: 'GetOptimalRoute',
+            nodeIds: nodes.concat([finish, start]),
+            start: start,
+            finish: finish
+        };
+
+        return s4a.doPost(_wsFragment, params);
+
     };
 
     /**

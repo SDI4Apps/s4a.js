@@ -25,6 +25,8 @@
         "queue": true,
         "s4a": true,
         "$": true,
-        "ol": true
+        "ol": true,
+        "Blob": true,
+        "FileReader": true
     }
 }

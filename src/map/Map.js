@@ -1,7 +1,7 @@
 'use strict';
 
 /* global s4a */
-s4a.map = {};
+s4a.extend('map');
 
 /**
  * Create a map

@@ -19,47 +19,202 @@ and open the template in the editor.
         <script>
             jQuery("document").ready(function () {
 
+                // Set the verision of the OpenAPI to work against
                 s4a.openApiUrl('http://localhost:8080/openapi');
+                // Define shorthand aliases for namespaces
+                var ir = s4a.ir;
+                var map = s4a.map;
+                // Define the source of a vector layer to hold
+                // routing calculataed features
+                var searchResultsVectorSource = new ol.source.Vector();
+                // Define a format reader to parse WKT to OpenLayers features
+                var wktFormatParser = new ol.format.WKT();
+                // Define the style to apply to the routing feature
+                // layer
+                var searchResultsLayerStyle = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: '#ffffff'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#ff0000',
+                        width: 1
+                    }),
+                    image: new ol.style.Circle({
+                        radius: 10,
+                        fill: new ol.style.Fill({
+                            color: '#ff0000'
+                        })
+                    })
+                });
 
+                // An object to cache icon style definitions to prevent duplicate
+                // object declarations
+                var styleCache = {
+                };
+
+                /**
+                 * Get a ol.Style object for a number icon
+                 * 
+                 * @param {Number} number - a number between 0 and 100
+                 * @returns {ol.style.Style}
+                 */
+                var getNumberStyle = function (number) {
+                    var key = 'num' + number;
+                    var style;
+                    if (styleCache[key] === undefined) {
+                        style = new ol.style.Style({
+                            image: new ol.style.Icon({
+                                anchor: [0.5, 1],
+                                anchorXUnits: 'fraction',
+                                anchorYUnits: 'fraction',
+                                src: '../../img/number_' + number + '.png'
+                            })
+                        });
+                        styleCache[key] = style;
+                    } else {
+                        style = styleCache[key];
+                    }
+                    return style;
+                };
+
+                /**
+                 * Create a re-usable vector layer with the specific source and style
+                 * 
+                 * @type ol.layer.Vector
+                 */
+                var searchResultsLayer = new ol.layer.Vector({
+                    source: searchResultsVectorSource,
+                    style: searchResultsLayerStyle
+                });
+
+                /**
+                 * Create a new instance of the map helper
+                 * 
+                 * @type map.MapHelper
+                 */
+                var myMap = new map.MapHelper('map', {
+                    zoomLevel: 6,
+                    extent: [-179, -85, 179, 85],
+                    center: {
+                        lon: 7,
+                        lat: 50.58
+                    }
+                });
+
+                // Add the search results layer to the map
+                myMap.getMap().addLayer(searchResultsLayer);
+
+                // Create a new instance of the QueryHelper class
                 var myQueryHelper = new s4a.ir.QueryHelper();
 
-                myQueryHelper
-                        .setQuery('Norway')
-                        .setMaxResults(3)
-                        .setExtent('0,40,20,80')
-                        .query()
-                        .then(function (res) {
-                            jQuery("#searchResults").html('Response 1: ' + JSON.stringify(res));
-                        });
+                /**
+                 * Execute search function
+                 * 
+                 */
+                var _performSearch = function () {
 
-                var myQueryHelper2 = new s4a.ir.QueryHelper();
-                myQueryHelper2
-                        .setQuery('Norway')
-                        .setMaxResults(3)
-                        .query()
-                        .then(function (res2) {
-                            jQuery("#searchResults2").html('Reponse 2: ' + JSON.stringify(res2));
-                        });
+                    var extentForSearch = map.Transform.extentTo4326(myMap.getExtent());
+                    myQueryHelper
+                            .setQuery(jQuery("#q").val())
+                            .setMaxResults(100)
+                            .setExtent(extentForSearch)
+                            .query()
+                            .then(function (searchResults) {
+                                _processResults(searchResults);
+                            });
+                };
+                /**
+                 * Process the search results
+                 * 
+                 * @param {Object} searchResults
+                 */
+                var _processResults = function (searchResults) {
 
+                    // Remove current search results from map
+                    searchResultsVectorSource.clear();
+                    // Start building a HTML response object
+                    var html = '';
+                    // Write search result header
+                    html = html + '<div><small>Returned ' + searchResults.count + ' results in ' + searchResults.time + ' ms...</small></div>';
+                    html = html + '<ol>';
+                    // If there are search results, loop through them
+                    if (searchResults.count > 0) {
+
+                        // First create a blank extent to record extent of search results
+                        var searchResultsExtent = new s4a.map.Extent();
+                        // Loop through each result
+                        for (var resultIndex = 0; resultIndex < searchResults.data.length; resultIndex++) {
+
+                            // For convenience, assign each result to a temprary object
+                            var row = searchResults.data[resultIndex];
+                            // Format the HTML output
+                            html = html + '<li>';
+                            html = html + '<div>';
+                            html = html + '<h4>' + row.DisplayTitle + '</h4>';
+                            html = html + '<p><small>Score: ' + row.Score + ' / Source: ' + row.Layer + '</small></p>';
+                            html = html + '<p>' + row.DisplayDescription + '</p>';
+                            html = html + '</div>';
+                            html = html + '</li>';
+                            // Get the point geometry feature of the result item
+                            var feature = wktFormatParser.readFeature(row.PointGeom, {
+                                dataProjection: 'EPSG:4326',
+                                featureProjection: 'EPSG:3857'
+                            });
+
+                            // Set style for the feature
+                            feature.setStyle(getNumberStyle(resultIndex + 1));
+
+                            // Add it to the vector source of the search result layer
+                            searchResultsVectorSource.addFeature(feature);
+                            // Extend the search result extent to contain the coordinate
+                            searchResultsExtent.extendByCoordinate(feature.getGeometry().getCoordinates());
+                        }
+
+                        html = html + '</ol>';
+                        // Zoom to the new extent
+                        console.log(searchResultsExtent);
+                        myMap.zoomToExtent(searchResultsExtent.getOlExtent(), 12);
+                    }
+
+                    // Output the HTML to the search results tag
+                    jQuery("#searchResults2").html(html);
+                };
+                // Detect when enter key is pressed on input field
+                jQuery('#q').keypress(function (e) {
+                    if (e.which === 13) {
+                        _performSearch();
+                        return false;
+                    }
+                });
             });
         </script>
         <style>
-            #searchResults {
-                width: 400px;
-                height: 400px;
-                border: 1px solid red;
-                float: left;
-            }
             #searchResults2 {
-                width: 400px;
-                height: 400px;
-                border: 1px solid blue;
-                float: left;
+                width: 100%;
+            }
+
+            .margin {
+                padding: 10px;
+            }
+
+            #q {
+                width: 100%;
+                height: 2em;
+            }
+
+            #map {
+                width: 100%;
+                height: 300px;
             }
         </style>
     </head>
     <body>
-        <div id="searchResults"></div>
-        <div id="searchResults2"></div>
+        <h1>QueryHelper demo</h1>
+        <div id="map"></div>
+        <div class="form">
+            <input type="text" id="q" value="Brussels">            
+        </div>
+        <div class="margin" id="searchResults2">
+        </div>
     </body>
 </html>

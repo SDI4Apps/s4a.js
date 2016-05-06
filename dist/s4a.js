@@ -1,4 +1,4 @@
-/*! s4a - v1.0.0 - 2016-04-27
+/*! s4a - v1.0.0 - 2016-05-06
 * https://github.com/SDI4Apps/s4a.js
 * Copyright (c) 2016 SDI4Apps Partnership; Licensed  */
 'use strict';
@@ -492,6 +492,7 @@ s4a.data.SensLog = (function() {
      * @returns {Promise.<Object>}
      */
     SensLog.insertObservation = function(value, unitId, sensorId, date) {
+
         return s4a.doGet(_feederUriFragment, {
             Operation: 'InsertObservation',
             value: value,
@@ -499,6 +500,7 @@ s4a.data.SensLog = (function() {
             sensor_id: sensorId,
             date: _toSensLogDate(date)
         }, 'text');
+
     };
 
     /**
@@ -774,6 +776,75 @@ s4a.ir.QueryHelper = function() {
 
 };
 
+/* global s4a */
+
+'use strict';
+s4a.extend('map');
+
+/**
+ * Extent object
+ *
+ * @class
+ */
+s4a.map.Extent = function() {
+
+    /**
+     * Internal object to hold extent values
+     * @type Number[]
+     */
+    var _extent = {
+        minx: null,
+        miny: null,
+        maxx: null,
+        maxy: null
+    };
+
+    /**
+     * Get OpenLayers extent
+     *
+     * @returns {Number[]}
+     */
+    this.getOlExtent = function() {
+        return [_extent.minx, _extent.miny, _extent.maxx, _extent.maxy];
+    };
+
+    /**
+     * Extend the extent to contain an x, y pair
+     *
+     * @param {Number} x
+     * @param {Number} y
+     */
+    this.extendByXY = function(x, y) {
+        if (_extent.minx === null || x < _extent.minx) {
+            _extent.minx = x;
+        }
+        if (_extent.maxx === null || x > _extent.maxx) {
+            _extent.maxx = x;
+        }
+        if (_extent.miny === null || y < _extent.miny) {
+            _extent.miny = y;
+        }
+        if (_extent.maxy === null || y > _extent.maxy) {
+            _extent.maxy = y;
+        }
+    };
+
+    /**
+     * Extend the extent to contain an ol.Coordinate
+     *
+     * @param {ol.Coordinate} coordinate
+     */
+    this.extendByCoordinate = function(coordinate) {
+        return this.extendByXY(coordinate[0], coordinate[1]);
+    };
+
+    /**
+     * @property {s4a.map.Extent} extent - An extent object
+     */
+    this.extent = _extent;
+
+};
+
 'use strict';
 
 s4a.extend('map');
@@ -880,7 +951,7 @@ s4a.map.LayerSwitcher = function() {
 'use strict';
 
 /* global s4a */
-s4a.map = {};
+s4a.extend('map');
 
 /**
  * Create a map
@@ -1010,7 +1081,6 @@ s4a.map.Map = function(nodeId, cfg) {
 };
 
 'use strict';
-
 /**
  * A helper class to quickly add maps to your HTML5 applications
  *
@@ -1040,17 +1110,32 @@ s4a.map.MapHelper = function(nodeSelector, config) {
                 source: new ol.source.MapQuest({
                     layer: 'osm'
                 })
+            }),
+            OFFLINE: new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    format: new ol.format.GeoJSON(),
+                    projection: 'EPSG:3857',
+                    url: '../../data/countries.json',
+                    style: new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: 'rgba(255, 255, 0, 0)'
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#ff0000',
+                            width: 1
+                        }),
+                    })
+                })
             })
         }
     };
-
     if (config !== undefined) {
         jQuery.extend(_config, config);
     }
 
     var _map = new ol.Map({
         layers: [
-            _config.baseMaps.MAPQUEST
+            _config.baseMaps.OFFLINE
         ],
         target: nodeSelector,
         view: new ol.View({
@@ -1061,7 +1146,6 @@ s4a.map.MapHelper = function(nodeSelector, config) {
             zoom: _config.zoomLevel
         })
     });
-
     /**
      * Transform coordinates between EPSG:4326 and EPSG:3857 SRS
      *
@@ -1078,7 +1162,30 @@ s4a.map.MapHelper = function(nodeSelector, config) {
         }
         return p;
     };
+    /**
+     * Returns the extent of the current map view
+     *
+     * @returns {ol.Extent}
+     */
+    this.getExtent = function() {
+        return _map.getView().calculateExtent(_map.getSize());
+    };
+    /**
+     * Zooms the map to the largest scale capable of displaying the entire extent
+     * and optionally limits the view to a maximum zoom level
+     *
+     * @param {ol.Extent} extent
+     * @param {Number} [maxZoom=14] - A number between 0 and 22
+     */
+    this.zoomToExtent = function(extent, maxZoom) {
 
+        maxZoom = maxZoom || 14;
+        _map.getView().fit(extent, _map.getSize());
+        if (_map.getView().getZoom() > maxZoom) {
+            _map.getView().setZoom(maxZoom);
+        }
+
+    };
     /**
      * Add a tool to the map
      *
@@ -1097,13 +1204,12 @@ s4a.map.MapHelper = function(nodeSelector, config) {
         var vector = new ol.layer.Vector({
             source: new ol.source.GeoJSON({
                 projection: 'EPSG:3857',
-                url: 'data/geojson/countries.geojson'
+                url: 'data/countries.json'
             })
         });
         _map.addLayer(vector);
         return _self;
     };
-
     /**
      * Draw the map
      *
@@ -1113,7 +1219,6 @@ s4a.map.MapHelper = function(nodeSelector, config) {
 
         return _self;
     };
-
     /**
      * Add an event handler to a double click
      *
@@ -1123,7 +1228,6 @@ s4a.map.MapHelper = function(nodeSelector, config) {
         this.getMap().on('dblclick', clickHandler);
         return _self;
     };
-
     /**
      * Add an event handler to single click
      *
@@ -1133,14 +1237,12 @@ s4a.map.MapHelper = function(nodeSelector, config) {
         this.getMap().on('singleclick', clickHandler);
         return _self;
     };
-
     /**
      * Return an ol map object for the MapHelper class
      */
     this.getMap = function() {
         return _map;
     };
-
 };
 
 'use strict';
@@ -1155,6 +1257,97 @@ s4a.map.ToolType = {
     TOOL: 'tool',
     INPUT: 'input'
 };
+
+'use strict';
+
+s4a.extend('map');
+
+/**
+ * Utility class with functions for coordinate transformations
+ *
+ * @static
+ * @requires ol
+ */
+s4a.map.Transform = (function() {
+
+    var Transform = {};
+
+    /**
+     * Private method to perform the actual transformation
+     *
+     * @param {Number} fromSrs - An SRS id from the EPSG namespace
+     * @param {Number} toSrs - An SRS id from the EPSG namespace
+     * @param {ol.Coordinate} coordinate - A JavaScritp array with an x, y pair
+     * @returns {ol.Coordinate}
+     * @private
+     */
+    var _transform = function(fromSrs, toSrs, coordinate) {
+        return ol.proj.transform(coordinate, 'EPSG:' + fromSrs, 'EPSG:' + toSrs);
+    };
+
+    /**
+     * Transform a coordinate between user specified coordinate systems
+     *
+     * @param {Number} fromSrs - An SRS id from the EPSG namespace
+     * @param {Number} toSrs - An SRS id from the EPSG namespace
+     * @param {ol.Coordinate} coordinate - A JavaScritp array with an x, y pair
+     * @returns {ol.Coordinate}
+     */
+    Transform.fromTo = function(fromSrs, toSrs, coordinate) {
+        return _transform(fromSrs, toSrs, coordinate);
+    };
+
+    /**
+     * Transform a coordinate from EPSG:4326 to EPSG:3857
+     *
+     * @param {ol.Coordinate} coordinate - A JavaScript array with an x, y pair
+     * @returns {ol.Coordinate} - A JavaScritp array with an x, y pair
+     */
+    Transform.to3857 = function(coordinate) {
+        return _transform(4326, 3857, coordinate);
+    };
+
+    /**
+     * Transform a coordinate from EPSG:3857 to EPSG:4326
+     *
+     * @param {ol.Coordinate} coordinate - A JavaScritp array with an x, y pair
+     * @returns {ol.Coordinate} - A JavaScritp array with an x, y pair
+     */
+    Transform.to4326 = function(coordinate) {
+        return _transform(3857, 4326, coordinate);
+    };
+
+    /**
+     * Transforms an ol.Extent from EPSG:4326 to EPSG:3857
+     *
+     * @param {type} extent - A JavaScript array with four elements in the order
+     * minx, miny, maxx, maxy
+     * @returns {Number[]} - A JavaScript array with four elements in the order
+     * minx, miny, maxx, maxy
+     */
+    Transform.extentTo3857 = function(extent) {
+        var minXY = _transform(4326, 3857, [extent[0], extent[1]]);
+        var maxXY = _transform(4326, 3857, [extent[2], extent[3]]);
+        return [minXY[0], minXY[1], maxXY[0], maxXY[1]];
+    };
+
+    /**
+     * Transforms an ol.Extent from EPSG:3857 to EPSG:4326
+     *
+     * @param {type} extent - A JavaScript array with four elements in the order
+     * minx, miny, maxx, maxy
+     * @returns {Number[]} - A JavaScript array with four elements in the order
+     * minx, miny, maxx, maxy
+     */
+    Transform.extentTo4326 = function(extent) {
+        var minXY = _transform(3857, 4326, [extent[0], extent[1]]);
+        var maxXY = _transform(3857, 4326, [extent[2], extent[3]]);
+        return [minXY[0], minXY[1], maxXY[0], maxXY[1]];
+    };
+
+    return Transform;
+
+}());
 
 'use strict';
 
@@ -1318,6 +1511,300 @@ s4a.map.VizLayer = function() {
 
 s4a.extend('mobile');
 
+s4a.mobile.FeatureSync = (function() {
+
+    /**
+     * [module description]
+     * @exports s4a.mobile.FeatureSync
+     */
+    var module = {};
+
+    /**
+     * Check out a portion of a feature layer
+     */
+    module.CheckOut = function() {
+
+    };
+
+    /**
+     * Check in an edited feature layer
+     */
+    module.CheckIn = function() {
+
+    };
+
+    /**
+     * Get conflicts if any for a featyre layer
+     */
+    module.GetConflicts = function() {
+
+    };
+
+    /**
+     * Resolve conflict
+     */
+    module.Resolve = function() {
+
+    };
+
+    return module;
+
+}());
+
+/* global s4a, LocalFileSystem */
+
+'use strict';
+
+s4a.extend('mobile');
+
+s4a.mobile.File = (function() {
+
+    var File = {};
+
+    /**
+     * Get a file entry for a specific filename
+     *
+     * @function getFileEntry
+     * @param {String} filename
+     * @returns {Promise.<s4a.mobile.FileResponse>}
+     * @name File#getFileEntry
+     */
+    File.getFileEntry = function(filename, directory) {
+
+        var promise = jQuery.Deferred();
+
+        if (window.cordova !== undefined && window.cordova.file !== undefined) {
+
+            if (directory === undefined) {
+                directory = window.cordova.file.dataDirectory;
+            }
+
+            window.resolveLocalFileSystemURL(directory, function(directoryEntry) {
+                directoryEntry.getFile(filename, {create: true}, function(fileEntry) {
+                    promise.resolve(s4a.mobile.FileResponse.createSuccess(fileEntry));
+                }, function(directoryEntryError) {
+                    promise.resolve(s4a.mobile.FileResponse.createError(directoryEntryError));
+                });
+
+            }, function(resolveFileSystemError) {
+                promise.resolve(s4a.mobile.FileResponse.createError(resolveFileSystemError));
+            });
+
+        } else {
+            promise.resolve(
+                    s4a.mobile.FileResponse
+                    .createError('Requires Cordova with "cordova-plugin-file".'));
+        }
+
+        return promise;
+    };
+
+    /**
+     * Write JSON object to file using the cordova-plugin-file API
+     *
+     * @param {String} filename - Filename to write to
+     * @param {String} contents - Text to write to file
+     * @returns {Promise.<s4a.mobile.FileResponse>}
+     * @memberof s4a.mobile.File
+     */
+    File.writeFile = function(filename, contents) {
+
+        var promise = jQuery.Deferred();
+
+        File.getFileEntry(filename).then(function(fileResponse) {
+            if (fileResponse.isSuccess()) {
+                fileResponse.data.createWriter(function(fileWriter) {
+                    fileWriter.onwriteend = function() {
+
+                        promise.resolve(s4a.mobile.FileResponse.createSuccess(contents));
+
+                    };
+                    fileWriter.onerror = function(e) {
+
+                        promise.resolve(s4a.mobile.FileResponse.createError(e.toString()));
+
+                    };
+                    var blob = new Blob([JSON.stringify(contents, null, '\t')], {type: 'text/plain'});
+                    fileWriter.write(blob);
+                });
+
+            } else {
+                promise.resolve(s4a.mobile.FileResponse.createError(fileResponse.messages));
+            }
+        });
+
+        return promise;
+    };
+
+    /**
+     * Read the JSON contents from a file using the cordova-plugin-file API
+     *
+     * @param {String} filename - Name of file to read
+     * @returns {Promise.<s4a.mobile.FileResponse>} - If success, data property will be file contents
+     * @memberof s4a.mobile.File
+     */
+    File.readFile = function(filename) {
+
+        var promise = jQuery.Deferred();
+
+        File.getFileEntry(filename).then(function(fileResponse) {
+            if (fileResponse.isSuccess()) {
+                fileResponse.data.file(function(file) {
+                    var reader = new FileReader();
+                    reader.onloadend = function() {
+                        promise.resolve(s4a.mobile.FileResponse.createSuccess(JSON.parse(this.result)));
+                    };
+                    reader.readAsText(file);
+
+                }, function(onErrorReadFile) {
+                    promise.resolve(s4a.mobile.FileResponse.createError(onErrorReadFile));
+                });
+            } else {
+                promise.resolve(s4a.mobile.FileResponse.createError(fileResponse.messages));
+            }
+        });
+
+        return promise;
+    };
+
+    return File;
+
+}());
+
+/* global s4a, LocalFileSystem */
+
+'use strict';
+
+s4a.extend('mobile');
+
+/**
+ * Response object for file operations
+ *
+ * @param {Boolean} [status=true] - Status of the response true for success, false for error
+ * @param {Object} [data] - An Object
+ * @param {String} [message] - A message to attach to the response
+ * @class - A response object that is passed back and forth between methods in the s4a.mobile.File module
+ * @constructor - Create a new FileResponse instance
+ */
+s4a.mobile.FileResponse = function(status, data, message) {
+
+    /**
+     * @type {Boolean}
+     * @private
+     */
+    this.status = undefined;
+
+    if (status !== undefined && status !== null) {
+        this.status = status;
+    } else {
+        status = true;
+    }
+
+    /**
+     * @type {Object}
+     * @private
+     */
+    this.data = undefined;
+
+    if (data !== undefined && data !== null) {
+        this.data = data;
+    }
+
+    /**
+     * @type {String[]}
+     * @private
+     */
+    this.messages = [];
+
+    // Add initial message to messages array
+    if (message !== undefined && message !== null) {
+        this.messages.push(message);
+    }
+
+    /**
+     * Checks if response is success
+     *
+     * @returns {Boolean} - True on success, false on error
+     * @public
+     */
+    this.isSuccess = function() {
+        return this.status === true ? true : false;
+    };
+
+    /**
+     * Checks if response is error
+     *
+     * @returns {Boolean} - True on error, false on success
+     * @public
+     */
+    this.isError = function() {
+        return this.status === false ? true : false;
+    };
+
+    /**
+     * Returns any messages in the response object
+     *
+     * @returns {String}
+     * @public
+     */
+    this.getMessages = function() {
+        var messages = '';
+        for (var i = 0; i < this.messages.length; i++) {
+            message += this.messages[i] + '\n';
+        }
+        return message;
+    };
+
+    /**
+     * Overloads default toString, alias for getMessages()
+     *
+     * @returns {String}
+     * @public
+     */
+    this.toString = function() {
+        return this.getMessages();
+    };
+
+    /**
+     * Add a message to the response
+     *
+     * @param {String} message
+     * @public
+     */
+    this.addMessage = function(message) {
+        this.messages.push(message);
+    };
+
+};
+
+/**
+ * Create an error FileResponse
+ *
+ * @param {String} message - An error message
+ * @returns {s4a.mobile.FileResponse}
+ * @memberof s4a.mobile.FileResponse
+ * @static
+ */
+s4a.mobile.FileResponse.createError = function(message) {
+    return new s4a.mobile.FileResponse(false, null, message);
+};
+
+/**
+ * Create a success FileReponse
+ *
+ * @param {Object} data - A data object
+ * @returns {s4a.mobile.FileResponse}
+ * @memberof s4a.mobile.FileResponse
+ * @static
+ */
+s4a.mobile.FileResponse.createSuccess = function(data) {
+    return new s4a.mobile.FileResponse(true, data, null);
+};
+
+'use strict';
+
+s4a.extend('mobile');
+
 /**
  * Offline layer
  *
@@ -1381,50 +1868,6 @@ s4a.mobile.OfflineTileLayer.clearBaseMapCache = function(baseMapId) {
     return {};
 
 };
-
-'use strict';
-
-s4a.extend('mobile');
-
-s4a.mobile.FeatureSync = (function() {
-
-    /**
-     * [module description]
-     * @exports s4a.mobile.FeatureSync
-     */
-    var module = {};
-
-    /**
-     * Check out a portion of a feature layer
-     */
-    module.CheckOut = function() {
-
-    };
-
-    /**
-     * Check in an edited feature layer
-     */
-    module.CheckIn = function() {
-
-    };
-
-    /**
-     * Get conflicts if any for a featyre layer
-     */
-    module.GetConflicts = function() {
-
-    };
-
-    /**
-     * Resolve conflict
-     */
-    module.Resolve = function() {
-
-    };
-
-    return module;
-
-}());
 
 'use strict';
 s4a.extend('viz');

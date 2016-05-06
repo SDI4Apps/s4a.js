@@ -199,6 +199,7 @@ s4a.data.SensLog = (function() {
      * @returns {Promise.<Object>}
      */
     SensLog.insertObservation = function(value, unitId, sensorId, date) {
+
         return s4a.doGet(_feederUriFragment, {
             Operation: 'InsertObservation',
             value: value,
@@ -206,6 +207,7 @@ s4a.data.SensLog = (function() {
             sensor_id: sensorId,
             date: _toSensLogDate(date)
         }, 'text');
+
     };
 
     /**

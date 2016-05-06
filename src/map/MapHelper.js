@@ -1,5 +1,4 @@
 'use strict';
-
 /**
  * A helper class to quickly add maps to your HTML5 applications
  *
@@ -29,17 +28,32 @@ s4a.map.MapHelper = function(nodeSelector, config) {
                 source: new ol.source.MapQuest({
                     layer: 'osm'
                 })
+            }),
+            OFFLINE: new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    format: new ol.format.GeoJSON(),
+                    projection: 'EPSG:3857',
+                    url: '../../data/countries.json',
+                    style: new ol.style.Style({
+                        fill: new ol.style.Fill({
+                            color: 'rgba(255, 255, 0, 0)'
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#ff0000',
+                            width: 1
+                        }),
+                    })
+                })
             })
         }
     };
-
     if (config !== undefined) {
         jQuery.extend(_config, config);
     }
 
     var _map = new ol.Map({
         layers: [
-            _config.baseMaps.MAPQUEST
+            _config.baseMaps.OFFLINE
         ],
         target: nodeSelector,
         view: new ol.View({
@@ -50,7 +64,6 @@ s4a.map.MapHelper = function(nodeSelector, config) {
             zoom: _config.zoomLevel
         })
     });
-
     /**
      * Transform coordinates between EPSG:4326 and EPSG:3857 SRS
      *
@@ -67,7 +80,30 @@ s4a.map.MapHelper = function(nodeSelector, config) {
         }
         return p;
     };
+    /**
+     * Returns the extent of the current map view
+     *
+     * @returns {ol.Extent}
+     */
+    this.getExtent = function() {
+        return _map.getView().calculateExtent(_map.getSize());
+    };
+    /**
+     * Zooms the map to the largest scale capable of displaying the entire extent
+     * and optionally limits the view to a maximum zoom level
+     *
+     * @param {ol.Extent} extent
+     * @param {Number} [maxZoom=14] - A number between 0 and 22
+     */
+    this.zoomToExtent = function(extent, maxZoom) {
 
+        maxZoom = maxZoom || 14;
+        _map.getView().fit(extent, _map.getSize());
+        if (_map.getView().getZoom() > maxZoom) {
+            _map.getView().setZoom(maxZoom);
+        }
+
+    };
     /**
      * Add a tool to the map
      *
@@ -86,13 +122,12 @@ s4a.map.MapHelper = function(nodeSelector, config) {
         var vector = new ol.layer.Vector({
             source: new ol.source.GeoJSON({
                 projection: 'EPSG:3857',
-                url: 'data/geojson/countries.geojson'
+                url: 'data/countries.json'
             })
         });
         _map.addLayer(vector);
         return _self;
     };
-
     /**
      * Draw the map
      *
@@ -102,7 +137,6 @@ s4a.map.MapHelper = function(nodeSelector, config) {
 
         return _self;
     };
-
     /**
      * Add an event handler to a double click
      *
@@ -112,7 +146,6 @@ s4a.map.MapHelper = function(nodeSelector, config) {
         this.getMap().on('dblclick', clickHandler);
         return _self;
     };
-
     /**
      * Add an event handler to single click
      *
@@ -122,12 +155,10 @@ s4a.map.MapHelper = function(nodeSelector, config) {
         this.getMap().on('singleclick', clickHandler);
         return _self;
     };
-
     /**
      * Return an ol map object for the MapHelper class
      */
     this.getMap = function() {
         return _map;
     };
-
 };

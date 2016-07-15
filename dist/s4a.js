@@ -1,4 +1,4 @@
-/*! s4a - v1.0.0 - 2016-05-06
+/*! s4a - v1.0.0 - 2016-06-21
 * https://github.com/SDI4Apps/s4a.js
 * Copyright (c) 2016 SDI4Apps Partnership; Licensed  */
 'use strict';
@@ -1135,7 +1135,7 @@ s4a.map.MapHelper = function(nodeSelector, config) {
 
     var _map = new ol.Map({
         layers: [
-            _config.baseMaps.OFFLINE
+            _config.baseMaps.MAPQUEST
         ],
         target: nodeSelector,
         view: new ol.View({
@@ -1621,7 +1621,8 @@ s4a.mobile.File = (function() {
                     };
                     fileWriter.onerror = function(e) {
 
-                        promise.resolve(s4a.mobile.FileResponse.createError(e.toString()));
+                        promise.resolve(s4a.mobile.FileResponse
+                            .createError('Error writing file: ' + e.toString()));
 
                     };
                     var blob = new Blob([JSON.stringify(contents, null, '\t')], {type: 'text/plain'});
@@ -1629,7 +1630,8 @@ s4a.mobile.File = (function() {
                 });
 
             } else {
-                promise.resolve(s4a.mobile.FileResponse.createError(fileResponse.messages));
+                promise.resolve(s4a.mobile.FileResponse
+                    .createError('Error getting file entry: ' + fileResponse.messages));
             }
         });
 

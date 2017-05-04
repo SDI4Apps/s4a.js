@@ -60,7 +60,13 @@ and open the template in the editor.
                     source: geoJsonSource
                 });
 
-                var myMap = new s4a.map.MapHelper('map');
+                var myMap = new s4a.map.MapHelper('map', {
+                    zoomLevel: 8,
+                    center: {
+                        lon: 14.55,
+                        lat: 47.51
+                    }
+                });
 
                 var myAB = [];
 
@@ -70,7 +76,6 @@ and open the template in the editor.
 
 
                 Routing.getOptimalRoute([1, 2, 3, 5, 6, 7, 10, 100, 14, 16, 23, 1204], 2, 3).then(function (res) {
-                    console.log(res);
                     var nodes = res.data;
                     for (var i = 0; i < nodes.length - 1; i++) {
                         Routing.getShortestRoute(nodes[i].id, nodes[i + 1].id).then(function (res) {
@@ -122,7 +127,8 @@ and open the template in the editor.
                                     geoJsonSource.clear();
                                     if (res.status === 'success' && res.count > 0) {
                                         for (var i = 0; i < res.data.length; i++) {
-                                            var f = vectorFormat.readFeature({type: 'Feature', geometry: JSON.parse(res.data[i].geoJson)}, {
+                                            console.log(res.data[i]);
+                                            var f = vectorFormat.readFeature({type: 'Feature', geometry: res.data[i].geometry}, {
                                                 featureProjection: 'EPSG:3857'
                                             });
                                             geoJsonSource.addFeature(f);

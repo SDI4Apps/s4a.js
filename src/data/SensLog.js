@@ -2,6 +2,11 @@
 
 s4a.extend('data');
 
+/**
+ * SensLog communication object
+ * 
+ * @class
+ */
 s4a.data.SensLog = (function() {
     /**
      * Class with methods to interact with SensLog

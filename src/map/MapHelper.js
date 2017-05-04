@@ -53,7 +53,7 @@ s4a.map.MapHelper = function(nodeSelector, config) {
 
     var _map = new ol.Map({
         layers: [
-            _config.baseMaps.OFFLINE
+            _config.baseMaps.MAPQUEST
         ],
         target: nodeSelector,
         view: new ol.View({

@@ -68,7 +68,8 @@ s4a.mobile.File = (function() {
                     };
                     fileWriter.onerror = function(e) {
 
-                        promise.resolve(s4a.mobile.FileResponse.createError(e.toString()));
+                        promise.resolve(s4a.mobile.FileResponse
+                            .createError('Error writing file: ' + e.toString()));
 
                     };
                     var blob = new Blob([JSON.stringify(contents, null, '\t')], {type: 'text/plain'});
@@ -76,7 +77,8 @@ s4a.mobile.File = (function() {
                 });
 
             } else {
-                promise.resolve(s4a.mobile.FileResponse.createError(fileResponse.messages));
+                promise.resolve(s4a.mobile.FileResponse
+                    .createError('Error getting file entry: ' + fileResponse.messages));
             }
         });
 

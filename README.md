@@ -9,7 +9,8 @@ without the workload of running a server, installing and maintaining software an
 the professional concepts of GIS.
 
 ## Status
-* The first version of the library was released on the 31st of March 2016
+* The first (1.0) version of the library was released on the 31st of March 2016
+* The seconc (2.0) version of the library was released on the 20th of March 2017
 * The library is under still under active development and we advise users to check out the develop branch for the latest features
 * New releases with incremental functionality are frequent at this stage
 
